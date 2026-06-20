@@ -1,0 +1,20 @@
+# --- OS / editor cruft ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.tmp
+*.bak~
+
+# --- VS Code (keep shared settings, ignore personal/workspace state) ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.code-workspace
+
+# --- OneDrive sync conflict copies (e.g. "index-DESKTOP-ABC123.html") ---
+*-DESKTOP-*.*
+*-LAPTOP-*.*
+
+# NOTE: the manual backup files (_backup_before_*, *bak*, *_original*, indexbak.html)
+# are intentionally NOT ignored yet — they stay tracked until we decide to remove them.

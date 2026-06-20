@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p .pre_claude_edits)",
+      "Bash(cp app.py apartment_core.py .pre_claude_edits/)",
+      "Read(//c/c/Users/DELL/OneDrive/Documents/Claude_workspace/ApartmentManager/**)",
+      "Bash(cd \"/c/Users/DELL/OneDrive/Documents/Claude_workspace/ApartmentManager\" && sed -i 's/datetime\\\\.utcnow\\(\\)/datetime.now\\(timezone.utc\\)/g' app.py && echo \"Replaced. Remaining utcnow \\(should be 0\\):\" && grep -c \"utcnow\" app.py && echo \"New now\\(timezone.utc\\) count \\(should be 6\\):\" && grep -c \"datetime.now\\(timezone.utc\\)\" app.py)",
+      "Bash(py -W error::DeprecationWarning -c \"import apartment_core, app; print\\('Both modules import cleanly, no deprecation warnings'\\)\")",
+      "Bash(py -W error::DeprecationWarning -c \"import app, apartment_core; print\\('OK: compiles clean'\\)\")",
+      "Bash(py app.py)",
+      "Bash([ -d \"$CODEX\" ])",
+      "Bash([ -d \"$CODEX/.git\" ])",
+      "Read(//c/Users/DELL/Documents/Codex/apartment_app/**)",
+      "Bash(xargs -d '\\\\n' rm -f)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(python -c \"import pypdf, sys; print\\('pypdf ok'\\)\")",
+      "Bash(python -c \"import pdfplumber; print\\('pdfplumber ok'\\)\")",
+      "Bash(py --version)",
+      "Bash(where.exe py *)",
+      "Bash(where.exe python3 *)",
+      "Bash(where.exe pdftotext *)",
+      "Bash(where.exe pdftoppm *)",
+      "Bash(py -m pip install --quiet pdfplumber)",
+      "Bash(py -c \"import pdfplumber; print\\('pdfplumber', pdfplumber.__version__\\)\")",
+      "Bash(py extract.py \"Pergo T600  Jun 2026.pdf\")",
+      "Bash(py extract.py \"Pergo T600  Jun 2026.pdf\" 7,8)",
+      "Bash(py extract.py \"iPergo Pricelist \\(2026\\).pdf\" 1,2,3,4)",
+      "Bash(cat)",
+      "Bash(py show_t600.py)",
+      "Bash(py verify_r500.py)",
+      "Bash(py -c ' *)",
+      "Bash(pdfinfo \"C:/Users/DELL/Downloads/update price/iPergo Pricelist \\(2026\\).pdf\")"
+    ]
+  }
+}

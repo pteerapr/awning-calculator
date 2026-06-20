@@ -1,0 +1,656 @@
+<!-- Sangthong Calculator Package Version: clean-v1 | Packaged: 2026-05-13 | Source file: terra-fs-premium-without-LED.html -->
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TERRA FS Full Cassette Premium Without LED Price Calculator</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 24px;
+    }
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .brand {
+      color: #1e3a8a;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    h1 {
+      font-size: 38px;
+      line-height: 1.05;
+      margin: 6px 0;
+      font-weight: 900;
+    }
+    .subtitle {
+      margin: 0;
+      color: #64748b;
+      font-size: 15px;
+    }
+    .badge {
+      background: #e5e7eb;
+      color: #1e2b5c;
+      border-radius: 18px;
+      padding: 12px 16px;
+      font-weight: 800;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+    }
+    h2 {
+      margin: 0 0 18px;
+      font-size: 22px;
+    }
+    h3 {
+      margin: 0;
+      font-size: 17px;
+    }
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    input, select {
+      width: 100%;
+      border: 1px solid #d6d3d1;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+      background: white;
+    }
+    input:focus, select:focus {
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.14);
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: #f8fafc;
+    }
+    .check-row input {
+      width: auto;
+      transform: scale(1.15);
+    }
+    .check-row label {
+      margin: 0;
+      color: #334155;
+    }
+    .warning {
+      margin-top: 14px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      border-radius: 14px;
+      padding: 12px;
+      font-weight: 700;
+      display: none;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .btn-blue {
+      background: #1e3a8a;
+      color: white;
+    }
+    .result-box {
+      background: #0f172a;
+      color: white;
+      border-radius: 22px;
+      padding: 20px;
+    }
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding: 10px 0;
+    }
+    .result-line span {
+      color: #cbd5e1;
+    }
+    .result-line strong {
+      text-align: right;
+    }
+    .grand {
+      padding-top: 10px;
+    }
+    .grand-label {
+      color: #c7d2fe;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .grand-total {
+      font-size: 38px;
+      font-weight: 950;
+      letter-spacing: -1px;
+    }
+    .preview {
+      margin-top: 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px;
+    }
+    pre {
+      margin: 8px 0 0;
+      white-space: pre-wrap;
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 12px;
+      max-height: 520px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .note {
+      margin-top: 18px;
+      background: #f8fafc;
+      color: #475569;
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    .note strong {
+      color: #1e3a8a;
+    }
+    .mt {
+      margin-top: 18px;
+    }
+    @media (max-width: 520px) {
+      body { padding: 14px; }
+      h1 { font-size: 30px; }
+    }
+  .languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="header">
+<div>
+<div class="brand">SANGTHONG CREATION</div>
+<h1>TERRA FS Full Cassette Premium Without LED (<a href="index.html">Back to Index</a>)</h1>
+<p class="subtitle">รุ่นพรีเมี่ยม + มอเตอร์ RTS ไม่มีไฟ LED</p>
+</div>
+<div class="badge">Premium Model Without LED · Acrylic Fabric · VAT 7% Included</div>
+</div>
+<div class="grid">
+<section class="card">
+<h2>Input / รายละเอียดงาน</h2>
+<div class="input-grid">
+<div>
+<label for="width">Width / ขนาดกว้าง</label>
+<select id="width">
+<option value="3.00">3.00 m</option>
+<option value="3.50">3.50 m</option>
+<option selected="" value="4.00">4.00 m</option>
+<option value="4.50">4.50 m</option>
+<option value="5.00">5.00 m</option>
+<option value="5.50">5.50 m</option>
+<option value="6.00">6.00 m</option>
+</select>
+</div>
+<div>
+<label for="projection">Projection / ระยะแขนยื่น</label>
+<select id="projection">
+<option value="1.50">1.50 m</option>
+<option value="2.00">2.00 m</option>
+<option selected="" value="2.50">2.50 m</option>
+<option value="3.00">3.00 m</option>
+<option value="3.50">3.50 m</option>
+</select>
+</div>
+<div>
+<label for="awningQty">Awning Quantity / จำนวนกันสาด</label>
+<input id="awningQty" min="1" type="number" value="1"/>
+</div>
+<div>
+<label for="specialDiscount">ส่วนลดพิเศษ</label>
+<input id="specialDiscount" min="0" oninput="calculate()" step="1" type="number" value="0"/>
+</div>
+<div>
+<label for="discount">Discount % / ส่วนลด</label>
+<input id="discount" max="100" min="0" type="number" value="0"/>
+</div>
+</div>
+<h3 class="mt">Optional Extras / อุปกรณ์เสริม</h3>
+<div class="input-grid mt">
+<div class="check-row">
+<input id="tuyaWifi" type="checkbox"/>
+<label for="tuyaWifi">Tuya Wifi = 9,000 B.</label>
+</div>
+<div class="check-row">
+<input id="windSunSensor" type="checkbox"/>
+<label for="windSunSensor">Wind-Sun Sensor = 6,600 B.</label>
+</div>
+</div>
+<div class="warning" id="warning">
+          No price found for this size. This size was grey/blank in the original table.
+        </div>
+<div class="mt">
+<label for="jobNote">Note / หมายเหตุ</label>
+<input id="jobNote" placeholder="Optional note"/>
+</div>
+</section>
+<section class="card">
+<div style="display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:18px;">
+<h2 style="margin:0;">Quotation Preview / ข้อความส่งลูกค้า</h2>
+<button class="btn-blue" id="copyBtn" onclick="copyAll()" type="button">Copy All</button>
+</div>
+
+<div class="preview">
+<h3>Customer copy text / ข้อความสำหรับส่งลูกค้า</h3>
+<div class="languageToggle" aria-label="Result language"><button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button><button type="button" data-result-lang="en" aria-pressed="false">EN</button></div>
+<pre id="copyPreview"></pre>
+</div>
+<div class="note">
+<strong>หมายเหตุ</strong>
+<div>* ราคารวม VAT 7%</div>
+<div>* ราคานี้ติดตั้งภายในกทมเท่านั้น</div>
+<div>* โครงสร้างสีดํา/เทา มีฝาครอบกันนํ้า</div>
+<div>* มอเตอร์พร้อมมือหมุน + 1 ก้านหมุน</div>
+<div>* Crank Size: ก้านหมุนเลือกได้ 1.00 m, 1.50 m, 2.00 m</div>
+<div>* Pre-order สั่งตัดพิเศษ รอสินค้า 60-90 วัน</div>
+<div>* Optional Extras: Tuya Wifi = 9,000 B. / Wind-Sun Sensor = 6,600 B.</div>
+</div>
+</section>
+</div>
+</div>
+<script>
+let resultLanguage = 'th';
+const RESULT_EN_REPLACEMENTS = [
+  ['\u0e43\u0e19\u0e01\u0e23\u0e13\u0e35\u0e43\u0e0a\u0e49', 'when using'],
+  ['\u0e43\u0e0a\u0e49', 'using'],
+
+  ['\u0e0a\u0e19\u0e34\u0e14\u0e1c\u0e49\u0e32\u0e43\u0e1a', 'Fabric'],
+
+  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e14\u0e36\u0e07', 'Manual Pull System'],
+  ['\u0e21\u0e37\u0e2d\u0e14\u0e36\u0e07', 'Manual pull'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d\u0e15\u0e23\u0e21', 'Rate per sqm'],
+  ['\u0e15\u0e23\u0e21', 'sqm'],
+  ['\u0e1c\u0e49\u0e32\u0e43\u0e1a\u0e42\u0e0b\u0e25\u0e48\u0e32\u0e41\u0e0b\u0e19\u0e14\u0e4c', 'Solar Sand Fabric'],
+  ['\u0e1c\u0e49\u0e32 Acrylic', 'Acrylic Fabric'],
+  ['\u0e1c\u0e49\u0e32\u0e43\u0e1a', 'Fabric'],
+  ['\u0e1c\u0e49\u0e32', 'Fabric'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d\u0e0a\u0e38\u0e14\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Unit Price Before Discount'],
+  ['//\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d\u0e0a\u0e38\u0e14\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Unit Price Before Discount'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d', 'Unit Price'],
+  ['\u0e01\u0e48\u0e2d\u0e19', 'Before'],
+  ['\u0e0a\u0e48\u0e2d\u0e07', 'channel'],
+  ['\u0e43\u0e19\u0e01\u0e23\u0e13\u0e35', 'for'],
+  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19', 'Warranty'],
+  ['\u0e1b\u0e35', 'years'],
+  ['\u0e23\u0e30\u0e1a\u0e1a', 'System'],
+  ['\u0e23\u0e27\u0e21', 'Total'],
+  ['\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'for manual system'],
+  ['\u0e41\u0e02\u0e19\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e44\u0e1f', 'arms with LED'],
+  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21', 'Accessories'],
+  ['Customer copy text / \u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32', 'Customer copy text'],
+  ['Quotation Preview / \u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32', 'Quotation Preview'],
+  ['\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32', 'Customer copy text'],
+  ['\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32', 'Customer copy text'],
+  ['\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e04\u0e33\u0e19\u0e27\u0e13\u0e23\u0e32\u0e04\u0e32', 'Price Calculation Result'],
+  ['\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e04\u0e33\u0e19\u0e27\u0e13', 'Calculation Result'],
+  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c RTS + \u0e23\u0e35\u0e42\u0e21\u0e17 + LED Lighting', 'RTS motor system + remote + LED lighting'],
+  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c RTS + \u0e23\u0e35\u0e42\u0e21\u0e17', 'RTS motor system + remote'],
+  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c: 50/12 \u0e40\u0e17\u0e48\u0e32\u0e19\u0e31\u0e49\u0e19', 'Motor system: 50/12 only'],
+  ['\u0e23\u0e38\u0e48\u0e19\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19 + \u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c RTS \u0e44\u0e21\u0e48\u0e21\u0e35\u0e44\u0e1f LED', 'Standard model + RTS motor without LED'],
+  ['\u0e23\u0e38\u0e48\u0e19\u0e1e\u0e23\u0e35\u0e40\u0e21\u0e35\u0e48\u0e22\u0e21 + \u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c RTS \u0e44\u0e21\u0e48\u0e21\u0e35\u0e44\u0e1f LED', 'Premium model + RTS motor without LED'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e4d\u0e32/\u0e40\u0e17\u0e32 \u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e32\u0e27 , Waterproof Cover', 'Black/gray or white frame, waterproof cover'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e33/\u0e40\u0e17\u0e32 \u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e32\u0e27 , Waterproof Cover', 'Black/gray or white frame, waterproof cover'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e4d\u0e32/\u0e40\u0e17\u0e32 \u0e21\u0e35\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e4d\u0e49\u0e32', 'Black/gray frame with waterproof cover'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e33/\u0e40\u0e17\u0e32 \u0e21\u0e35\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e49\u0e33', 'Black/gray frame with waterproof cover'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e4d\u0e32/\u0e40\u0e17\u0e32 \u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e32\u0e27', 'Black/gray or white frame'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e33/\u0e40\u0e17\u0e32 \u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e32\u0e27', 'Black/gray or white frame'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2d\u0e25\u0e39\u0e21\u0e34\u0e40\u0e19\u0e35\u0e22\u0e21 \u0e40\u0e04\u0e25\u0e37\u0e2d\u0e1a Powder Coated', 'Powder-coated aluminum structure'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19\u0e15\u0e32\u0e21\u0e23\u0e38\u0e48\u0e19 MA4', 'Standard frame structure for MA4 model'],
+  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19\u0e15\u0e32\u0e21\u0e23\u0e38\u0e48\u0e19\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32', 'Standard frame color for this model'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e19\u0e35\u0e49\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e23\u0e27\u0e21\u0e07\u0e32\u0e19\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e1e\u0e34\u0e40\u0e28\u0e29 \u0e2b\u0e32\u0e01\u0e21\u0e35', 'This price excludes additional structural work, if any'],
+  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19 + 1 \u0e01\u0e49\u0e32\u0e19\u0e2b\u0e21\u0e38\u0e19 / \u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e4d\u0e49\u0e32', 'Motor with manual override + 1 crank handle / waterproof cover'],
+  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19 + 1 \u0e01\u0e49\u0e32\u0e19\u0e2b\u0e21\u0e38\u0e19', 'Motor with manual override + 1 crank handle'],
+  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'Motor with manual override'],
+  ['Crank Size: \u0e01\u0e49\u0e32\u0e19\u0e2b\u0e21\u0e38\u0e19\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e44\u0e14\u0e49', 'Crank size: selectable'],
+  ['\u0e01\u0e49\u0e32\u0e19\u0e2b\u0e21\u0e38\u0e19\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e44\u0e14\u0e49', 'selectable crank handle'],
+  ['\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32 Pre-Order \u0e23\u0e2d\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32', 'Pre-order product, lead time'],
+  ['\u0e23\u0e2d\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32', 'lead time'],
+  ['\u0e23\u0e35\u0e42\u0e21\u0e17', 'Remote'],
+  ['\u0e44\u0e21\u0e48\u0e21\u0e35\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19\u0e43\u0e19\u0e02\u0e19\u0e32\u0e14\u0e19\u0e35\u0e49', 'No price found for manual system at this size'],
+  ['\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e23\u0e32\u0e04\u0e32\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e02\u0e19\u0e32\u0e14\u0e19\u0e35\u0e49', 'No motorized price found for this size'],
+  ['\u0e01\u0e23\u0e38\u0e13\u0e32\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19\u0e2b\u0e23\u0e37\u0e2d\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e2d\u0e22\u0e48\u0e32\u0e07\u0e19\u0e49\u0e2d\u0e22 1 \u0e23\u0e30\u0e1a\u0e1a', 'Please select at least one system: manual or motorized'],
+  ['\u0e01\u0e23\u0e38\u0e13\u0e32\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e2d\u0e22\u0e48\u0e32\u0e07\u0e19\u0e49\u0e2d\u0e22 1 \u0e23\u0e30\u0e1a\u0e1a: \u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19 \u0e2b\u0e23\u0e37\u0e2d \u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Please select at least one system: manual or motorized'],
+  ['\u0e44\u0e21\u0e48\u0e21\u0e35\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e02\u0e19\u0e32\u0e14\u0e19\u0e35\u0e49', 'No price found for this size'],
+  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e2d\u0e25\u0e39\u0e21\u0e34\u0e40\u0e19\u0e35\u0e22\u0e21', 'Aluminum cover'],
+  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e2a\u0e35\u0e02\u0e32\u0e27', 'White cover'],
+  ['\u0e44\u0e21\u0e48\u0e21\u0e35\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a', 'No cover'],
+  ['\u0e04\u0e34\u0e14\u0e08\u0e32\u0e01\u0e01\u0e27\u0e49\u0e32\u0e07\u0e23\u0e27\u0e21', 'calculated from total width'],
+  ['\u0e01\u0e27\u0e49\u0e32\u0e07\u0e23\u0e27\u0e21', 'Total width'],
+  ['\u0e41\u0e1a\u0e48\u0e07\u0e1c\u0e49\u0e32', 'Fabric split'],
+  ['\u0e0a\u0e34\u0e49\u0e19\u0e17\u0e35\u0e48 1', 'Panel 1'],
+  ['\u0e0a\u0e34\u0e49\u0e19\u0e17\u0e35\u0e48 2', 'Panel 2'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e1c\u0e49\u0e32\u0e0a\u0e34\u0e49\u0e19\u0e17\u0e35\u0e48 1', 'Panel 1 fabric price'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e1c\u0e49\u0e32\u0e0a\u0e34\u0e49\u0e19\u0e17\u0e35\u0e48 2', 'Panel 2 fabric price'],
+  ['\u0e23\u0e27\u0e21\u0e23\u0e32\u0e04\u0e32\u0e1c\u0e49\u0e32 2 \u0e0a\u0e34\u0e49\u0e19', 'Total fabric price for 2 panels'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e1c\u0e49\u0e32/\u0e42\u0e04\u0e23\u0e07\u0e15\u0e48\u0e2d\u0e0a\u0e38\u0e14', 'Fabric/frame price per set'],
+  ['\u0e23\u0e32\u0e22\u0e25\u0e30\u0e40\u0e2d\u0e35\u0e22\u0e14\u0e23\u0e32\u0e04\u0e32', 'Price details'],
+  ['\u0e23\u0e39\u0e1b\u0e41\u0e1a\u0e1a', 'Format'],
+  ['\u0e1c\u0e49\u0e32\u0e0a\u0e34\u0e49\u0e19\u0e40\u0e14\u0e35\u0e22\u0e27', 'Single fabric panel'],
+  ['\u0e41\u0e1a\u0e48\u0e07\u0e1c\u0e49\u0e32 2 \u0e0a\u0e34\u0e49\u0e19\u0e43\u0e19\u0e23\u0e30\u0e1a\u0e1a\u0e40\u0e14\u0e35\u0e22\u0e27', 'Split into 2 fabric panels in one system'],
+  ['\u0e01\u0e32\u0e23\u0e43\u0e0a\u0e49\u0e07\u0e32\u0e19\u0e41\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'Manual operation'],
+  ['\u0e04\u0e34\u0e14\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 1 \u0e15\u0e31\u0e27\u0e15\u0e48\u0e2d\u0e23\u0e30\u0e1a\u0e1a', 'one motor per system'],
+  ['\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38*-', 'Notes:'],
+  ['* \u0e23\u0e32\u0e04\u0e32\u0e17\u0e35\u0e48\u0e41\u0e08\u0e49\u0e07\u0e40\u0e1b\u0e47\u0e19\u0e01\u0e32\u0e23\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13\u0e01\u0e32\u0e23 \u0e23\u0e32\u0e04\u0e32\u0e2d\u0e32\u0e08\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\u0e41\u0e1b\u0e25\u0e07\u0e44\u0e14\u0e49\u0e40\u0e21\u0e37\u0e48\u0e2d\u0e2a\u0e33\u0e23\u0e27\u0e08\u0e2b\u0e19\u0e49\u0e32\u0e07\u0e32\u0e19\u0e08\u0e23\u0e34\u0e07', '* This is an initial estimate and may change after the site survey'],
+  ['* \u0e23\u0e32\u0e04\u0e32\u0e17\u0e35\u0e48\u0e41\u0e08\u0e49\u0e07\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e23\u0e27\u0e21\u0e20\u0e32\u0e29\u0e35\u0e21\u0e39\u0e25\u0e04\u0e48\u0e32\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e41\u0e25\u0e49\u0e27', '* VAT is included'],
+  ['* \u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07 \u0e41\u0e15\u0e48\u0e44\u0e21\u0e48\u0e04\u0e23\u0e2d\u0e1a\u0e04\u0e25\u0e38\u0e21\u0e15\u0e31\u0e27\u0e1c\u0e49\u0e32\u0e43\u0e1a1 \u0e1b\u0e35,\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e01\u0e32\u0e23\u0e17\u0e33\u0e07\u0e32\u0e19\u0e02\u0e2d\u0e07\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 2 \u0e1b\u0e35  (\u0e40\u0e1b\u0e47\u0e19\u0e44\u0e1b\u0e15\u0e32\u0e21\u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02\u0e02\u0e2d\u0e07\u0e17\u0e32\u0e07\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17)', '* Structure and installation warranty: 1 year, excluding fabric. Motor warranty: 2 years, subject to company terms.'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e1b\u0e23\u0e30\u0e40\u0e21\u0e34\u0e19\u0e40\u0e1a\u0e37\u0e49\u0e2d\u0e07\u0e15\u0e49\u0e19 \u0e2d\u0e32\u0e08\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\u0e41\u0e1b\u0e25\u0e07\u0e2b\u0e25\u0e31\u0e07\u0e2a\u0e33\u0e23\u0e27\u0e08\u0e2b\u0e19\u0e49\u0e32\u0e07\u0e32\u0e19\u0e08\u0e23\u0e34\u0e07', 'This is an initial estimate and may change after the site survey'],
+  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07 1 \u0e1b\u0e35', 'Structure and installation warranty: 1 year'],
+  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e01\u0e32\u0e23\u0e17\u0e33\u0e07\u0e32\u0e19\u0e02\u0e2d\u0e07\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 2 \u0e1b\u0e35 \u0e15\u0e32\u0e21\u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17', 'Motor warranty: 2 years, subject to company terms'],
+  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e01\u0e32\u0e23\u0e17\u0e33\u0e07\u0e32\u0e19\u0e02\u0e2d\u0e07\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 2 \u0e1b\u0e35', 'Motor warranty: 2 years'],
+  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07', 'Structure and installation warranty'],
+  ['\u0e44\u0e21\u0e48\u0e04\u0e23\u0e2d\u0e1a\u0e04\u0e25\u0e38\u0e21\u0e15\u0e31\u0e27\u0e1c\u0e49\u0e32\u0e43\u0e1a', 'excluding fabric'],
+  ['\u0e40\u0e1b\u0e47\u0e19\u0e44\u0e1b\u0e15\u0e32\u0e21\u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02\u0e02\u0e2d\u0e07\u0e17\u0e32\u0e07\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17', 'subject to company terms'],
+  ['\u0e0a\u0e19\u0e34\u0e14\u0e1c\u0e49\u0e32', 'Fabric'],
+  ['\u0e02\u0e19\u0e32\u0e14', 'Size'],
+  ['\u0e01\u0e27\u0e49\u0e32\u0e07', 'Width'],
+  ['\u0e23\u0e30\u0e22\u0e30\u0e22\u0e37\u0e48\u0e19', 'Projection'],
+  ['\u0e22\u0e37\u0e48\u0e19', 'Projection'],
+  ['\u0e2a\u0e39\u0e07', 'Height'],
+  ['\u0e22\u0e32\u0e27', 'Length'],
+  ['\u0e08\u0e33\u0e19\u0e27\u0e19', 'Quantity'],
+  ['\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14\u0e1e\u0e34\u0e40\u0e28\u0e29', 'Special Discount'],
+  ['\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Discount'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Before Discount'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Total Before Discount'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e38\u0e17\u0e18\u0e34', 'Net Total'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21\u0e2a\u0e38\u0e17\u0e18\u0e34', 'Net Total'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21', 'Total'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e23\u0e38\u0e1b', 'Final Price'],
+  ['\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38', 'Note'],
+  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Motor'],
+  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e49\u0e33', 'Waterproof Cover'],
+  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a', 'Cover'],
+  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e15\u0e34\u0e21', 'Additional Accessories'],
+  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Motor Accessories'],
+  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e2d\u0e37\u0e48\u0e19 \u0e46', 'Other Accessories'],
+  ['\u0e2a\u0e35\u0e02\u0e32\u0e27', 'white'],
+  ['\u0e2d\u0e25\u0e39\u0e21\u0e34\u0e40\u0e19\u0e35\u0e22\u0e21', 'aluminum'],
+  ['\u0e44\u0e21\u0e48\u0e21\u0e35', 'None'],
+  ['\u0e40\u0e21\u0e15\u0e23', 'm'],
+  ['\u0e27\u0e31\u0e19', 'days'],
+  ['???', 'Height'],
+  ['???', 'Length'],
+  ['???', 'days'],
+
+  ['\u0e01\u0e31\u0e19\u0e2a\u0e32\u0e14\u0e1e\u0e31\u0e1a\u0e40\u0e01\u0e47\u0e1a\u0e44\u0e14\u0e49', 'Retractable Awning'],
+  ['\u0e0a\u0e19\u0e34\u0e14\u0e1c\u0e49\u0e32', 'Fabric'],
+  ['\u0e02\u0e19\u0e32\u0e14', 'Size'],
+  ['\u0e01\u0e27\u0e49\u0e32\u0e07', 'Width'],
+  ['\u0e22\u0e37\u0e48\u0e19', 'Projection'],
+  ['\u0e23\u0e30\u0e22\u0e30\u0e22\u0e37\u0e48\u0e19', 'Projection'],
+  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Motor System'],
+  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'Manual System'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e40\u0e23\u0e34\u0e48\u0e21\u0e15\u0e49\u0e19\u0e15\u0e48\u0e2d\u0e0a\u0e38\u0e14', 'Starting Price / Set'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d\u0e0a\u0e38\u0e14\u0e23\u0e27\u0e21\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c', 'Unit Price with Accessories'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Before Discount'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Total Before Discount'],
+  ['\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14\u0e1e\u0e34\u0e40\u0e28\u0e29', 'Special Discount'],
+  ['\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Discount'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e38\u0e17\u0e18\u0e34', 'Net Total'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e23\u0e38\u0e1b', 'Final Price'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21', 'Total'],
+  ['\u0e08\u0e33\u0e19\u0e27\u0e19', 'Quantity'],
+  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e49\u0e33', 'Waterproof Cover'],
+  ['\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'Add Manual Override'],
+  ['\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e2b\u0e21\u0e38\u0e19\u0e43\u0e19\u0e15\u0e31\u0e27', 'Add Manual Override'],
+  ['\u0e15\u0e31\u0e27\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e17\u0e35\u0e48', 'Option'],
+  ['\u0e44\u0e21\u0e48\u0e21\u0e35\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a', 'No price found for'],
+  ['\u0e01\u0e23\u0e38\u0e13\u0e32\u0e40\u0e25\u0e37\u0e2d\u0e01', 'Please select'],
+  ['\u0e01\u0e23\u0e38\u0e13\u0e32\u0e01\u0e23\u0e2d\u0e01', 'Please enter'],
+  ['\u0e23\u0e27\u0e21 VAT 7% \u0e41\u0e25\u0e49\u0e27', 'VAT 7% included'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07\u0e20\u0e32\u0e22\u0e43\u0e19\u0e01\u0e17\u0e21\u0e40\u0e17\u0e48\u0e32\u0e19\u0e31\u0e49\u0e19', 'Installation in Bangkok only'],
+  ['\u0e23\u0e32\u0e04\u0e32\u0e19\u0e35\u0e49\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e23\u0e27\u0e21\u0e04\u0e48\u0e32\u0e02\u0e19\u0e2a\u0e48\u0e07\u0e41\u0e25\u0e30\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07', 'This price excludes delivery and installation'],
+  ['\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32 Pre-Order \u0e23\u0e2d\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32', 'Pre-order product, lead time'],
+  ['\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38', 'Note'],
+  ['Note/\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38', 'Note'],
+  ['\u0e1a\u0e32\u0e17', 'THB'],
+  ['\u0e0a\u0e38\u0e14', 'set'],
+  ['\u0e21.', 'm.']
+];
+function localizeResultText(text){
+  if (resultLanguage !== 'en') return String(text || '');
+  let output = String(text || '');
+  RESULT_EN_REPLACEMENTS
+    .slice()
+    .sort((a, b) => b[0].length - a[0].length)
+    .forEach(([from, to]) => { output = output.split(from).join(to); });
+  return output
+    .split(')THB').join(') THB')
+    .replace(new RegExp('([0-9,])THB', 'g'), '$1 THB')
+    .replace(new RegExp('\\bB\\.', 'g'), 'THB')
+    .replace(new RegExp('\\s+THB', 'g'), ' THB')
+    .replace(new RegExp('Pre-order product, lead time\\s+([0-9-]+)\\s+days', 'g'), 'Pre-order product, lead time $1 days')
+    .replace(new RegExp('MotorWarranty', 'g'), 'Motor warranty')
+    .replace(new RegExp(':\\s*None', 'g'), ': None')
+    .replace(new RegExp('/\\s*None', 'g'), '/ None')
+    .trim();
+}
+
+
+
+function updateResultLanguageLabels(){
+  const resultSignal = '\u0e1c\u0e25\u0e01\u0e32\u0e23';
+  const customerSignal = '\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21';
+  document.querySelectorAll('h2,h3,h4,.panel-title,.customer-copy-title,.customer-copy-label').forEach(el => {
+    const original = el.getAttribute('data-result-label-th') || el.textContent.trim();
+    if (!original.includes(resultSignal) && !original.includes(customerSignal)) return;
+    if (!el.getAttribute('data-result-label-th')) el.setAttribute('data-result-label-th', original);
+    el.textContent = resultLanguage === 'en' ? localizeResultText(original) : original;
+  });
+}
+
+function setLocalizedCopyPreview(text){
+  const preview = document.getElementById('copyPreview');
+  if (preview) preview.textContent = localizeResultText(text);
+  updateResultLanguageLabels();
+}
+
+function setResultLanguage(lang){
+  resultLanguage = lang === 'en' ? 'en' : 'th';
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  if (typeof calculate === 'function') calculate(false);
+  else if (typeof calc === 'function') calc();
+  else if (typeof calculatePrice === 'function') calculatePrice();
+  updateResultLanguageLabels();
+}
+function initResultLanguageToggle(){
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    button.addEventListener('click', () => setResultLanguage(button.dataset.resultLang));
+  });
+  updateResultLanguageLabels();
+}
+
+initResultLanguageToggle();
+
+
+    const PRICE_ROWS = [
+      { width: 3.0, projection: 1.5, price: 50300 },
+      { width: 3.5, projection: 1.5, price: 55600 },
+      { width: 4.0, projection: 1.5, price: 63500 },
+      { width: 4.5, projection: 1.5, price: 70100 },
+      { width: 5.0, projection: 1.5, price: 76700 },
+      { width: 5.5, projection: 1.5, price: 83300 },
+      { width: 6.0, projection: 1.5, price: 89900 },
+
+      { width: 3.0, projection: 2.0, price: 60900 },
+      { width: 3.5, projection: 2.0, price: 67500 },
+      { width: 4.0, projection: 2.0, price: 72800 },
+      { width: 4.5, projection: 2.0, price: 78000 },
+      { width: 5.0, projection: 2.0, price: 83300 },
+      { width: 5.5, projection: 2.0, price: 89900 },
+      { width: 6.0, projection: 2.0, price: 95200 },
+
+      { width: 3.0, projection: 2.5, price: 74700 },
+      { width: 3.5, projection: 2.5, price: 80700 },
+      { width: 4.0, projection: 2.5, price: 87300 },
+      { width: 4.5, projection: 2.5, price: 93900 },
+      { width: 5.0, projection: 2.5, price: 101000 },
+      { width: 5.5, projection: 2.5, price: 106000 },
+      { width: 6.0, projection: 2.5, price: 113000 },
+
+      { width: 3.5, projection: 3.0, price: 90600 },
+      { width: 4.0, projection: 3.0, price: 96600 },
+      { width: 4.5, projection: 3.0, price: 103000 },
+      { width: 5.0, projection: 3.0, price: 109000 },
+      { width: 5.5, projection: 3.0, price: 121000 },
+      { width: 6.0, projection: 3.0, price: 126000 },
+
+      { width: 4.0, projection: 3.5, price: 98000 },
+      { width: 4.5, projection: 3.5, price: 106000 },
+      { width: 5.0, projection: 3.5, price: 113000 },
+      { width: 5.5, projection: 3.5, price: 123000 },
+      { width: 6.0, projection: 3.5, price: 130000 }
+    ];
+
+    function cleanNumber(value) {
+      const n = Number(String(value || "0").replace(/,/g, ""));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function money(value) {
+  return Number(value || 0).toLocaleString("th-TH") + " บาท";
+}
+
+    function getBasePrice() {
+      const width = cleanNumber(document.getElementById("width").value);
+      const projection = cleanNumber(document.getElementById("projection").value);
+      const found = PRICE_ROWS.find(row => row.width === width && row.projection === projection);
+      return found ? found.price : 0;
+    }
+
+    function calculate() {
+      const width = cleanNumber(document.getElementById("width").value);
+      const projection = cleanNumber(document.getElementById("projection").value);
+      const discountPercent = cleanNumber(document.getElementById("discount").value);
+      const specialDiscountInput = cleanNumber(document.getElementById("specialDiscount").value);
+      const jobNote = document.getElementById("jobNote").value.trim();
+      const awningQty = Math.max(cleanNumber(document.getElementById("awningQty").value), 1);
+
+      const tuyaWifi = document.getElementById("tuyaWifi").checked ? 9000 : 0;
+      const windSunSensor = document.getElementById("windSunSensor").checked ? 6600 : 0;
+      const optionalExtras = tuyaWifi + windSunSensor;
+
+      const basePrice = getBasePrice();
+      const unitSubtotal = basePrice + optionalExtras;
+      const subtotal = unitSubtotal * awningQty;
+      const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
+      const discountBase = Math.max(subtotal - specialDiscountAmount, 0);
+      const discountAmount = discountBase * (discountPercent / 100);
+      const grandTotal = Math.max(discountBase - discountAmount, 0);
+
+      document.getElementById("warning").style.display = basePrice === 0 ? "block" : "none";
+
+      const lines = [];
+      lines.push("TERRA FS Full Cassette Premium Model Without LED");
+      lines.push("รุ่นพรีเมี่ยม + มอเตอร์ RTS ไม่มีไฟ LED");
+      lines.push("ชนิดผ้า: Acrylic Fabric");
+      lines.push(`กว้าง: ${width.toFixed(2)} m`);
+      lines.push(`ยื่น: ${projection.toFixed(2)} m`);  //lines.push(`ราคาตั้งต่อชุด: ${basePrice ? money(basePrice) : "No price found"}`);
+      if (tuyaWifi) lines.push(`Tuya Wifi: +${money(tuyaWifi)}`);
+      if (windSunSensor) lines.push(`Wind-Sun Sensor: +${money(windSunSensor)}`);
+      //lines.push(`//ราคาต่อชุดก่อนส่วนลด: ${basePrice ? money(unitSubtotal) : "No price found"}`);
+      lines.push(`จำนวน: ${awningQty}`);
+      lines.push(`ราคาก่อนส่วนลด: ${basePrice ? money(subtotal) : "No price found"}`);
+      if (specialDiscountAmount > 0) lines.push(`ส่วนลดพิเศษ: -${money(specialDiscountAmount)}`);
+      lines.push(`ส่วนลด: ${discountPercent}% = ${money(discountAmount)}`);
+      lines.push(`ราคารวม: ${basePrice ? money(grandTotal) : "No price found"}`);
+      if (jobNote) lines.push(`Note/หมายเหตุ: ${jobNote}`);
+      lines.push("รวม VAT 7% แล้ว");
+      lines.push("ราคาติดตั้งภายในกทมเท่านั้น");
+      lines.push("โครงสร้างสีดํา/เทา มีฝาครอบกันนํ้า");
+      lines.push("มอเตอร์พร้อมมือหมุน + 1 ก้านหมุน");
+      lines.push("Crank Size: ก้านหมุนเลือกได้ 1.00 m, 1.50 m, 2.00 m");
+      lines.push("สินค้า Pre-Order รอสินค้า 60-90 วัน");
+
+      setLocalizedCopyPreview(lines.join("\n"));
+    }
+
+    function copyAll() {
+      const text = document.getElementById("copyPreview").textContent;
+      const btn = document.getElementById("copyBtn");
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = "Copied";
+          setTimeout(() => btn.textContent = "Copy All", 1500);
+        });
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        btn.textContent = "Copied";
+        setTimeout(() => btn.textContent = "Copy All", 1500);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("width").addEventListener("change", calculate);
+      document.getElementById("projection").addEventListener("change", calculate);
+      document.getElementById("awningQty").addEventListener("input", calculate);
+      document.getElementById("specialDiscount").addEventListener("input", calculate);
+      document.getElementById("discount").addEventListener("input", calculate);
+      document.getElementById("jobNote").addEventListener("input", calculate);
+      document.getElementById("tuyaWifi").addEventListener("change", calculate);
+      document.getElementById("windSunSensor").addEventListener("change", calculate);
+
+      calculate();
+    });
+  
+</script>
+</body>
+</html>

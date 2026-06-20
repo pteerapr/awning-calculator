@@ -1,0 +1,445 @@
+<!-- Sangthong Calculator Package Version: clean-v1 | Packaged: 2026-05-13 | Source file: izip-screen.html -->
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<style>
+:root {
+  --primary:#003366;
+  --accent:#007bff;
+  --bg:#f8f9fb;
+  --text:#111827;
+  --panel:#ffffff;
+  --muted:#e5e7eb;
+  --shadow:0 12px 30px rgba(15,23,42,.08);
+  --radius:14px;
+}
+html,body{background:var(--bg)!important; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text);}
+h1,h2,h3{color:var(--primary)!important; margin-top:0.5rem;}
+.container,.panel,.card,.result-panel,.main-wrapper,#resultPanel{
+  background:var(--panel)!important; border-radius:var(--radius)!important; box-shadow:var(--shadow)!important;
+}
+button, .btn {
+  background:var(--primary)!important; color:#fff!important; border:none!important; border-radius:10px!important;
+  padding:.6rem 1rem!important; cursor:pointer!important; font-weight:600!important;
+}
+button:hover, .btn:hover { background:var(--accent)!important; }
+input, select {
+  border:1px solid #d1d5db!important; border-radius:10px!important; padding:.55rem .7rem!important;
+}
+label{font-weight:700!important; font-size:.9rem!important;}
+table{width:100%; border-collapse:collapse;}
+th,td{border:1px solid #e5e7eb; padding:.5rem .6rem; text-align:left;}
+th{background:#f3f4f6;}
+.totalBox, .price-lg { color:#0f5132!important; background:#e9f7ef!important; border:2px solid #198754!important; border-radius:12px!important; padding:.6rem 1rem!important; display:inline-block; }
+</style><style>
+  body { font-family: Arial, sans-serif; background:#f8f9fb; margin:30px; }
+  h1 { text-align:center; color:#003366; }
+  .container { display:flex; justify-content:center; align-items:flex-start; gap:20px; max-width:1200px; margin:auto; }
+  .card { flex:1; background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+  label { display:block; margin-top:10px; font-weight:bold; }
+  input, select { width:100%; padding:8px; margin-top:5px; border-radius:6px; border:1px solid #ccc; }
+
+  input[type="checkbox"] {
+    width: auto !important;
+    padding: 0 !important;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  label input[type="checkbox"] {
+    display: inline-block;
+  }
+
+  button { margin-top:15px; padding:10px 15px; border:none; border-radius:6px; background:#003366; color:white; font-size:16px; cursor:pointer; }
+  button:hover { background:#0055aa; }
+  #resultPanel { flex:1; background:#eef5ff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); min-height:400px; }
+  #result { font-size:15px; }
+  #areaDisplay { margin-top:10px; font-weight:bold; color:#004488; background:#eef5ff; padding:8px; border-radius:6px; text-align:center; }
+  table { border-collapse:collapse; width:100%; margin-top:10px; }
+  th, td { border:1px solid #ccc; padding:6px 10px; text-align:center; }
+  th { background:#f0f0f0; }
+  .highlight { color:#0055aa; font-weight:bold; background:#d8e8ff; border-radius:6px; padding:3px 6px; display:inline-block; }
+  .totalBox { background:#ffe6e6; border:2px solid #cc0000; border-radius:8px; padding:10px; color:#cc0000; font-size:22px; font-weight:bold; text-align:center; }
+  .discountBox { background:#e6ffe6; border:2px solid #009933; border-radius:8px; padding:8px; color:#006600; font-size:18px; font-weight:bold; text-align:center; margin-top:10px; }
+  .note { margin-top:18px; background:#f8fafc; color:#475569; border-radius:14px; padding:14px; font-size:14px; line-height:1.65; }
+  .note strong { color:#003366; }
+</style><title>Izip Screen Calculator</title><link rel="stylesheet" href="css/calculator.css">
+</head><body>
+<h1>Izip Screen Price Calculator  (<a href="index.html">Back to Index</a>)</h1>
+<div class="container">
+<div class="card">
+<label>กว้าง (m)</label>
+<input id="width" max="6.0" min="0.7" oninput="updateArea()" step="0.01" type="number"/>
+<label>สูง(m)</label>
+<input id="height" max="2.9" min="0.85" oninput="updateArea()" step="0.01" type="number"/>
+<div id="areaDisplay">ตรม: 0.00 m²</div>
+<label>ชนิดผ้าใบ</label>
+<select id="fabric" onchange="calculate(false)">
+<option value="0">ผ้าใบ 0%</option>
+<option value="1">ผ้าใบ 1%</option>
+<option value="5">ผ้าใบ 5%</option>
+</select>
+<label>ระบบ </label>
+<select id="operation" onchange="toggleOptions()">
+<option value="manual">มือดึง</option>
+<option value="motor">มอเตอร์</option>
+</select>
+
+<div id="motorBrandOptions" style="display:none;">
+<label>ชนิดมอเตอร์</label>
+<select id="motorBrand" onchange="toggleOptions(); calculate(false);">
+<option value="aok">A-ok Motor + Remote 1 ช่อง</option>
+<option value="somfy">Somfy Motor + Remote 1 ช่อง</option>
+</select>
+
+<div id="somfyMotorOptions" style="display:none;">
+<label>รุ่นมอเตอร์ Somfy</label>
+<select id="somfyMotor" onchange="calculate(false)">
+<option value="21800">Somfy Altus 50 RTS 10/17 + Remote 1 ช่อง = 21,800 บาท</option>
+<option value="23800">Somfy Altus 50 RTS 20/17 + Remote 1 ช่อง = 23,800 บาท</option>
+<option value="24800">Somfy Altus 50 RTS 30/17 + Remote 1 ช่อง = 24,800 บาท</option>
+<option value="25800">Somfy Altus 50 RTS 40/17 + Remote 1 ช่อง = 25,800 บาท</option>
+</select>
+</div>
+
+<div id="somfyAccessoryOptions" style="display:none;">
+<h3>Somfy Accessories / อุปกรณ์เสริม Somfy</h3>
+<label><input id="chkSomfyOndeisRain" type="checkbox" onchange="calculate(false)"/> Ondeis Rain Sensor (+13,675 บาท)</label>
+<label><input id="chkSomfyDryContact" type="checkbox" onchange="calculate(false)"/> Dry Contact Transmitter RTS (+14,918 บาท)</label>
+<label><input id="chkSomfySunis" type="checkbox" onchange="calculate(false)"/> Sunis Sensor RTS Wirefree (+23,315 บาท)</label>
+<label><input id="chkSomfyEolis" type="checkbox" onchange="calculate(false)"/> Eolis Sensor RTS (+11,663 บาท)</label>
+<label><input id="chkSomfyEolis3D" type="checkbox" onchange="calculate(false)"/> Eolis 3D Sensor RTS (+11,663 บาท)</label>
+<label><input id="chkSomfySoliris" type="checkbox" onchange="calculate(false)"/> Soliris RTS Sensor (+21,756 บาท)</label>
+<label><input id="chkSomfyTaHoma" type="checkbox" onchange="calculate(false)"/> TaHoma (+11,005 บาท)</label>
+<label><input id="chkSomfyRemote1" type="checkbox" onchange="calculate(false)"/> Somfy Remote 1 Channel / รีโมท 1 ช่อง (+3,017 บาท)</label>
+<label><input id="chkSomfyRemote2" type="checkbox" onchange="calculate(false)"/> Somfy Remote 2 Channel / รีโมท 2 ช่อง (+3,862 บาท)</label>
+<label><input id="chkSomfyRemote5" type="checkbox" onchange="calculate(false)"/> Somfy Remote 5 Channel / รีโมท 5 ช่อง (+6,035 บาท)</label>
+<div class="note">หมายเหตุ: อุปกรณ์เสริม Somfy จะแสดงและคำนวณเฉพาะเมื่อเลือก Somfy Motor เท่านั้น</div>
+</div>
+
+<div class="note">
+หมายเหตุ:<br>
+* A-ok Motor ใช้ราคาอัตโนมัติตามความกว้าง: ไม่เกิน 3.99 ม. = 7,650 บาท / มากกว่า 3.99 ม. = 10,250 บาท<br>
+* Somfy Motor เลือกรุ่นจากรายการด้านบน และราคานี้รวม Remote 1 ช่องแล้ว<br>
+* ช่องเพิ่มรีโมทด้านล่างจะคำนวณเฉพาะเมื่อเลือก A-ok Motor เท่านั้น
+</div>
+</div>
+<div id="manualOptions">
+<label>ความยาวก้านดึง</label>
+<select id="crank" onchange="calculate(false)">
+<option value="0">0.0 m = 0 บาท</option>
+<option value="820">0.7 m = 820 บาท</option>
+<option value="950">1.2 m = 950 บาท</option>
+<option value="1200">1.5 m =1,200 บาท</option>
+</select>
+</div>
+<label>เพิ่มรีโมท</label>
+<select id="transmitter" onchange="calculate(false)">
+<option value="0">0</option>
+<option value="800">1 ช่อง = 800 บาท</option>
+<option value="950">2 ช่อง = 950 บาท</option>
+<option value="1100">6 ช่อง = 1,100 บาท</option>
+</select>
+<label><input id="customColour" type="checkbox" onchange="calculate(false)"/> ทําสีเพิ่ม (+500บาท/ตรม)</label>
+<label for="jobNote">Note / หมายเหตุ</label>
+<input id="jobNote" placeholder="Optional note" type="text" oninput="calculate(false)" />
+<label for="specialDiscount">ส่วนลดพิเศษ</label>
+<input id="specialDiscount" min="0" step="1" type="number" value="0" oninput="calculate(false)"/>
+<label>ส่วนลด (%)</label>
+<input id="discount" max="100" min="0" placeholder="ใส่ส่วนลด" step="0.1" type="number" oninput="calculate(false)"/>
+<label>จำนวน (ชุด)</label>
+<input id="qty" min="1" step="1" type="number" value="1" oninput="calculate(false)"/>
+</div>
+<div id="resultPanel">
+<div style="display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:18px;">
+  <h2 style="margin:0;color:#003366;">Quotation Preview / ข้อความส่งลูกค้า</h2>
+  <button type="button" onclick="copyResult()" id="copyBtn">Copy All</button>
+</div>
+<div class="preview">
+  <h3>Customer copy text / ข้อความสำหรับส่งลูกค้า</h3>
+  <pre id="copyPreview">ระบบจะแสดงข้อความสำหรับส่งลูกค้าอัตโนมัติเมื่อมีการเปลี่ยนข้อมูล</pre>
+</div>
+<div class="note">
+  <strong>หมายเหตุ</strong><br>
+  * ราคารวม VAT 7%<br>
+  * ราคานี้ติดตั้งภายในกทมเท่านั้น<br>
+  * สินค้า Pre-Order สั่งตัดพิเศษ รอสินค้า 60-90 วัน
+</div>
+</div>
+</div>
+<script>
+const table = [
+  {range:[0,3], f0:7700, f1:7500, f5:7300},
+  {range:[3.01,4], f0:6300, f1:6200, f5:6000},
+  {range:[4.01,5], f0:5800, f1:5700, f5:5500},
+  {range:[5.01,6], f0:5600, f1:5300, f5:5100},
+  {range:[6.01,7], f0:5300, f1:5100, f5:5000},
+  {range:[7.01,8], f0:5100, f1:4900, f5:4700},
+  {range:[8.01,9], f0:4800, f1:4600, f5:4500},
+  {range:[9.01,10], f0:4600, f1:4400, f5:4200},
+  {range:[10.01,999], f0:4500, f1:4200, f5:4000}
+];
+
+function toggleOptions(){
+  const op = document.getElementById("operation").value;
+  const motorBrand = document.getElementById("motorBrand") ? document.getElementById("motorBrand").value : "aok";
+  const showSomfy = op === "motor" && motorBrand === "somfy";
+
+  document.getElementById("manualOptions").style.display = op==="manual" ? "block" : "none";
+
+  const motorBrandOptions = document.getElementById("motorBrandOptions");
+  if (motorBrandOptions) {
+    motorBrandOptions.style.display = op==="motor" ? "block" : "none";
+  }
+
+  const somfyMotorOptions = document.getElementById("somfyMotorOptions");
+  if (somfyMotorOptions) {
+    somfyMotorOptions.style.display = showSomfy ? "block" : "none";
+  }
+
+  const somfyAccessoryOptions = document.getElementById("somfyAccessoryOptions");
+  if (somfyAccessoryOptions) {
+    somfyAccessoryOptions.style.display = showSomfy ? "block" : "none";
+  }
+
+  if (!showSomfy) {
+    [
+      "chkSomfyOndeisRain",
+      "chkSomfyDryContact",
+      "chkSomfySunis",
+      "chkSomfyEolis",
+      "chkSomfyEolis3D",
+      "chkSomfySoliris",
+      "chkSomfyTaHoma",
+      "chkSomfyRemote1",
+      "chkSomfyRemote2",
+      "chkSomfyRemote5"
+    ].forEach(function(id) {
+      const el = document.getElementById(id);
+      if (el) el.checked = false;
+    });
+  }
+
+  calculate(false);
+}
+
+function updateArea(){
+  const w=parseFloat(document.getElementById("width").value)||0;
+  const h=parseFloat(document.getElementById("height").value)||0;
+  const area=w*h;
+  document.getElementById("areaDisplay").innerText=`ตรม: ${area.toFixed(2)} m²`;
+  calculate(false);
+}
+
+function getRate(area,fabric){
+  for (const r of table){
+    if(area>=r.range[0] && area<=r.range[1]){
+      if(fabric==0) return r.f0;
+      if(fabric==1) return r.f1;
+      if(fabric==5) return r.f5;
+    }
+  }
+  return 0;
+}
+
+function calculate(showAlert = true){
+  const w=parseFloat(document.getElementById("width").value)||0;
+  const h=parseFloat(document.getElementById("height").value)||0;
+  const fabric=parseFloat(document.getElementById("fabric").value);
+  const op=document.getElementById("operation").value;
+  const motorBrand=document.getElementById("motorBrand") ? document.getElementById("motorBrand").value : "aok";
+  const somfyMotorEl=document.getElementById("somfyMotor");
+  const somfyMotor=parseFloat(somfyMotorEl ? somfyMotorEl.value : 0)||0;
+  const somfyMotorName=somfyMotorEl ? somfyMotorEl.options[somfyMotorEl.selectedIndex].text : "";
+  const crank=parseFloat(document.getElementById("crank").value)||0;
+  const transmitter=parseFloat(document.getElementById("transmitter").value)||0;
+  const area=w*h;
+  const custom=document.getElementById("customColour").checked?500*area:0;
+  const somfyAccessoryItems = [
+    { label: "Ondeis Rain Sensor", value: 13675, id: "chkSomfyOndeisRain" },
+    { label: "Dry Contact Transmitter RTS", value: 14918, id: "chkSomfyDryContact" },
+    { label: "Sunis Sensor RTS Wirefree", value: 23315, id: "chkSomfySunis" },
+    { label: "Eolis Sensor RTS", value: 11663, id: "chkSomfyEolis" },
+    { label: "Eolis 3D Sensor RTS", value: 11663, id: "chkSomfyEolis3D" },
+    { label: "Soliris RTS Sensor", value: 21756, id: "chkSomfySoliris" },
+    { label: "TaHoma", value: 11005, id: "chkSomfyTaHoma" },
+    { label: "Somfy Remote 1 Channel / รีโมท 1 ช่อง", value: 3017, id: "chkSomfyRemote1" },
+    { label: "Somfy Remote 2 Channel / รีโมท 2 ช่อง", value: 3862, id: "chkSomfyRemote2" },
+    { label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: 6035, id: "chkSomfyRemote5" }
+  ];
+  const discount=parseFloat(document.getElementById("discount").value)||0;
+  const specialDiscountInput=parseFloat(document.getElementById("specialDiscount").value)||0;
+  const jobNote=(document.getElementById("jobNote").value||"").trim();
+  const qty=Math.max(1, parseInt(document.getElementById("qty").value, 10)||1);
+
+  if(area<=0){
+    const preview = document.getElementById("copyPreview");
+    if (preview) preview.textContent = "กรุณากรอกความกว้างและความสูง";
+    if (showAlert) alert("Please input width and height.");
+    return;
+  }
+
+  const rate=getRate(area,fabric);
+  const base=rate*area;
+
+  let extras=custom;
+  let extrasDetail=[];
+
+  if(op==="manual"){
+    extras+=crank;
+    extrasDetail.push(`มือหมุน ${crank.toLocaleString()}`);
+	
+}else{
+    if (motorBrand === "somfy") {
+      extras += somfyMotor;
+      extrasDetail.push(`${somfyMotorName}`);
+
+      somfyAccessoryItems.forEach(function(item) {
+        const el = document.getElementById(item.id);
+        if (el && el.checked) {
+          extras += item.value;
+          extrasDetail.push(`${item.label} ${item.value.toLocaleString()} บาท`);
+        }
+      });
+    } else {
+      // A-ok auto motor price from width
+      let motorPrice = (w > 3.99) ? 10250 : 7650;
+      extras += motorPrice;
+      extrasDetail.push(`A-ok Motor + Remote 1 ช่อง ${motorPrice.toLocaleString()} บาท`);
+
+      // Transmitter dropdown applies only when A-ok motor is used
+      if(transmitter>0){
+        extras += transmitter;
+        extrasDetail.push(`เพิ่มรีโมท ${transmitter.toLocaleString()} บาท`);
+      }
+    }
+}
+  if(custom>0) extrasDetail.push(`<span class='highlight'>ลูกค้าเลือกสีพิเศษ ${custom.toLocaleString()} บาท (500 บาท/ตรม)</span>`);
+
+  const unitSubtotal=base+extras;
+  const subtotal=unitSubtotal*qty;
+  const specialDiscountAmount=Math.min(specialDiscountInput, subtotal);
+  const discountBase=Math.max(subtotal-specialDiscountAmount,0);
+  const discountAmount=(discountBase*discount)/100;
+ const total = Math.round(discountBase - discountAmount);
+
+  const fabricLabel = fabric==0 ? "Screen 0%" : fabric==1 ? "Screen 1%" : "Screen 5%";
+  const systemLabel = op === "manual" ? "มือดึง" : (motorBrand === "somfy" ? "Somfy Motor" : "A-ok Motor");
+  const cleanExtrasDetail = extrasDetail.map(item => String(item).replace(/<[^>]*>/g, "")).filter(Boolean);
+
+  const lines = [];
+  lines.push("Izip Screen");
+  lines.push(`ขนาด: กว้าง ${w.toFixed(2)} m × สูง ${h.toFixed(2)} m = ${area.toFixed(2)} ตรม`);
+  lines.push(`ชนิดผ้าใบ: ${fabricLabel}`);
+  lines.push(`ระบบ: ${systemLabel}`);
+  if (cleanExtrasDetail.length > 0) {
+    cleanExtrasDetail.forEach(item => lines.push(`- ${item}`));
+  }
+  lines.push(`ราคาต่อตรม: ${rate.toLocaleString()} บาท/ตรม`);
+  //lines.push(`ราคาตั้งต้นต่อชุด: ${base.toLocaleString()} บาท`);
+//lines.push(`//ราคาต่อชุดก่อนส่วนลด: ${unitSubtotal.toLocaleString()} บาท`);
+  lines.push(`จำนวน: ${qty.toLocaleString()} ชุด`);
+  lines.push(`ราคาก่อนส่วนลด: ${subtotal.toLocaleString()} บาท`);
+  if (specialDiscountAmount > 0) lines.push(`ส่วนลดพิเศษ: -${specialDiscountAmount.toLocaleString()} บาท`);
+  lines.push(`ส่วนลด: ${discount}% = ${discountAmount.toLocaleString()} บาท`);
+  lines.push(`ราคาสุทธิ: ${total.toLocaleString()} บาท`);
+  if (jobNote) lines.push(`Note/หมายเหตุ: ${jobNote}`);
+  lines.push("รวม VAT 7% แล้ว");
+  lines.push("ราคาติดตั้งภายในกทมเท่านั้น");
+  //lines.push("สินค้า Pre-Order รอสินค้า 60-90 วัน");
+
+  document.getElementById("copyPreview").textContent = lines.join("\n");
+}
+
+function clearAll(){
+  document.querySelectorAll("input,select").forEach(e=>{
+    if(e.type==="checkbox") e.checked=false;
+    else if(e.tagName==="SELECT") e.selectedIndex=0;
+    else e.value="";
+  });
+  document.getElementById("qty").value="1";
+  document.getElementById("areaDisplay").innerText="ตรม: 0.00 m²";
+  const preview = document.getElementById("copyPreview");
+  if (preview) preview.textContent="ระบบจะแสดงข้อความสำหรับส่งลูกค้าอัตโนมัติเมื่อมีการเปลี่ยนข้อมูล";
+}
+function copyResult() {
+  const text = document.getElementById("copyPreview").innerText.trim();
+  if (!text) {
+    alert("ไม่มีข้อมูลให้คัดลอก (No data to copy)");
+    return;
+  }
+
+  // 1️⃣ Try modern Clipboard API (preferred)
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => alert("✅ คัดลอกผลลัพธ์เรียบร้อยแล้ว! (Copied successfully!)"))
+      .catch(() => manualCopyFallback(text));
+  } 
+  // 2️⃣ Fallback for insecure/sandboxed environments
+  else {
+    manualCopyFallback(text);
+  }
+}
+
+function manualCopyFallback(text) {
+  // Create a temporary <textarea> for copying
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.top = "-9999px";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+
+  try {
+    const success = document.execCommand("copy");
+    alert(success 
+      ? "✅ คัดลอกผลลัพธ์เรียบร้อยแล้ว! (Copied via fallback!)" 
+      : "⚠️ กรุณาคัดลอกด้วยตนเอง (Please copy manually)");
+  } catch (err) {
+    // 3️⃣ Final fallback: manual copy prompt
+    prompt("⚠️ Clipboard blocked — กรุณาคัดลอกด้วยตนเอง:", text);
+  }
+
+  document.body.removeChild(ta);
+}
+
+// ===== Auto-calculate whenever input changes =====
+document.addEventListener("DOMContentLoaded", function () {
+  [
+    "width",
+    "height",
+    "fabric",
+    "operation",
+    "motorBrand",
+    "somfyMotor",
+    "crank",
+    "transmitter",
+    "customColour",
+    "jobNote",
+    "specialDiscount",
+    "discount",
+    "qty"
+  ].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", function() {
+      updateArea();
+      calculate(false);
+    });
+    el.addEventListener("change", function() {
+      updateArea();
+      toggleOptions();
+      calculate(false);
+    });
+  });
+
+  toggleOptions();
+  updateArea();
+  calculate(false);
+});
+
+</script></body></html>
+
+
+
+
+

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SEATEL ST1000E Vertical Awning Calculator</title>
+  <style>
+    :root {
+      --primary:#003366;
+      --accent:#007bff;
+      --bg:#f8f9fb;
+      --text:#111827;
+      --panel:#ffffff;
+      --muted:#e5e7eb;
+      --soft:#f3f6fb;
+      --success:#0f5132;
+      --success-bg:#e9f7ef;
+      --danger:#dc3545;
+      --shadow:0 12px 30px rgba(15,23,42,.08);
+      --radius:14px;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);}
+    body{padding:20px;}
+    a{color:var(--primary);font-weight:800;text-decoration:none;}
+    .main-wrapper{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(360px,440px) minmax(360px,1fr);gap:20px;align-items:start;}
+    .container,.result-panel{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;}
+    h1,h2,h3,h4{color:var(--primary);margin-top:.25rem;}
+    h2{text-align:center;margin-bottom:6px;}
+    .sub-title{text-align:center;color:#475569;margin:0 0 18px;font-weight:700;}
+    label{display:block;margin:11px 0 4px;font-weight:800;font-size:.92rem;}
+    input,select,button{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:.62rem .75rem;font-size:15px;background:#fff;}
+    input[type="checkbox"]{width:auto!important;margin-right:8px;vertical-align:middle;}
+    button{background:var(--primary);color:#fff;border:none;cursor:pointer;font-weight:800;}
+    button:hover{background:var(--accent);}
+    .copy-btn{margin-top:12px;background:#198754;}
+    .small{font-size:12px;color:#64748b;line-height:1.45;}
+    .error{display:none;margin-top:12px;background:#f8d7da;border-left:4px solid var(--danger);padding:10px;border-radius:8px;}
+    .result{display:none;background:#e9f7ef;border-left:4px solid #198754;padding:10px;border-radius:10px;}
+    .accessory-box{display:none;margin-top:12px;padding:12px;background:#eef5ff;border:1px solid #cfe2ff;border-radius:10px;}
+    .accessory-box h4{margin:0 0 8px;color:var(--primary);}
+    .accessory-box label{font-weight:700;margin:8px 0;}
+    .quote-box{background:#f7f9fc;border:1px solid #d9e2ef;border-radius:10px;padding:12px;line-height:1.65;}
+    .customer-copy-label{font-size:13px;font-weight:800;color:var(--primary);margin-bottom:8px;}
+    .customer-copy-text{margin:0;padding:12px;background:#f1f3f5;border:1px solid #d8dee4;border-radius:8px;white-space:pre-wrap;font-family:Arial,sans-serif;font-size:14px;line-height:1.65;color:#111827;}
+    .price-lg{color:var(--success);background:var(--success-bg);border:2px solid #198754;border-radius:12px;padding:.55rem .85rem;display:inline-block;font-size:18px;font-weight:900;}
+    table{width:100%;border-collapse:collapse;font-size:12px;}
+    th,td{border:1px solid #d1d5db;padding:.45rem .4rem;text-align:right;}
+    th{background:#f3f4f6;color:#111827;text-align:center;}
+    td:first-child,th:first-child{text-align:left;font-weight:800;background:#f9fafb;}
+    @media (max-width:880px){.main-wrapper{grid-template-columns:1fr;}body{padding:12px;}}
+  </style>
+</head>
+<body>
+  <div class="main-wrapper">
+    <div class="container">
+      <h2>SEATEL ST1000E Calculator</h2>
+      <p class="sub-title">Vertical Awning · <a href="index.html">Back to Index</a></p>
+
+      <label for="modelGroup">กลุ่มราคา / Price List</label>
+      <select id="modelGroup"></select>
+
+      <label for="width">ความกว้าง Width (เมตร)</label>
+      <input id="width" placeholder="เช่น 2.40" type="number" min="0" step="0.01" value="3.00" />
+
+      <label for="drop">ความสูง Drop (เมตร)</label>
+      <input id="drop" placeholder="เช่น 2.00" type="number" min="0" step="0.01" value="3.00" />
+
+      <label for="fabric">ชนิดผ้า / Fabric</label>
+      <select id="fabric"></select>
+
+      <label for="motor">มอเตอร์ / Motor</label>
+      <select id="motor">
+        <option value="0">ไม่มีมอเตอร์</option>
+        <option value="9900" data-brand="strongup" selected>Strong Up Motor 50/12 + Remote 1 ช่อง (9,900 บาท)</option>
+        <option value="24500" data-brand="somfy">Somfy Altus 30/17 + Remote 1 ช่อง (24,500 บาท)</option>
+        <option value="26500" data-brand="somfy">Somfy Altus 40/17 + Remote 1 ช่อง (26,500 บาท)</option>
+        <option value="36500" data-brand="somfy">Somfy Altus 85/17 + Remote 1 ช่อง (36,500 บาท)</option>
+        <option value="24500" data-brand="somfy">Somfy Maestria 15/17 + Remote 1 ช่อง (24,500 บาท)</option>
+        <option value="30500" data-brand="somfy">Somfy Maestria 35/17 + Remote 1 ช่อง (30,500 บาท)</option>
+      </select>
+
+      <div id="strongUpAccessoryBox" class="accessory-box">
+        <h4>Strong Up Accessories / อุปกรณ์เสริม Strong Up</h4>
+        <label><input id="chkStrongRemote1" type="checkbox" data-label="รีโมท Strong Up 1 ช่อง" data-price="950" /> รีโมท 1 ช่อง เพิ่ม 950 บาท</label>
+        <label><input id="chkStrongRemote15" type="checkbox" data-label="รีโมท Strong Up 15 ช่อง" data-price="1800" /> รีโมท 15 ช่อง เพิ่ม 1,800 บาท</label>
+        <label><input id="chkStrongWindSun" type="checkbox" data-label="เซ็นเซอร์ลม-แดด Strong Up" data-price="6600" /> เซ็นเซอร์ลม-แดด เพิ่ม 6,600 บาท</label>
+      </div>
+
+      <div id="somfyAccessoryBox" class="accessory-box">
+        <h4>Somfy Accessories / อุปกรณ์เสริม Somfy</h4>
+        <label><input id="chkSomfyRemote1" type="checkbox" data-label="รีโมท Somfy 1 ช่อง" data-price="2498" /> รีโมท 1 ช่อง เพิ่ม 2,498 บาท</label>
+        <label><input id="chkSomfyRemote2" type="checkbox" data-label="รีโมท Somfy 2 ช่อง" data-price="2636" /> รีโมท 2 ช่อง เพิ่ม 2,636 บาท</label>
+        <label><input id="chkSomfyRemote5" type="checkbox" data-label="รีโมท Somfy 5 ช่อง" data-price="4163" /> รีโมท 5 ช่อง เพิ่ม 4,163 บาท</label>
+      </div>
+
+      <label for="cover">ฝาครอบกันน้ำ / Cover Profile</label>
+      <select id="cover">
+        <option value="0">ไม่มี</option>
+        <option value="2400">ฝาครอบกันน้ำ สีเงิน MF (2,400 บาท/เมตร)</option>
+        <option value="2900">ฝาครอบกันน้ำ สีขาว WH (2,900 บาท/เมตร)</option>
+      </select>
+
+      <label for="accessoryLabel">ชื่ออุปกรณ์เสริมเพิ่มเติม</label>
+      <input id="accessoryLabel" placeholder="เช่น งานเสริม / ค่าอุปกรณ์อื่น ๆ" type="text" />
+
+      <label for="accessories">ราคาอุปกรณ์เสริมเพิ่มเติม (บาท)</label>
+      <input id="accessories" min="0" step="1" placeholder="เช่น 1500" type="number" value="0" />
+
+      <label for="qty">จำนวน (ชุด)</label>
+      <input id="qty" min="1" step="1" type="number" value="1" />
+
+      <label for="specialDiscount">ส่วนลดพิเศษ (บาท)</label>
+      <input id="specialDiscount" min="0" step="1" type="number" value="0" />
+
+      <label for="discount">ส่วนลด (%)</label>
+      <input id="discount" max="100" min="0" step="0.01" type="number" value="0" />
+
+      <label for="jobNote">หมายเหตุเพิ่มเติม / Note</label>
+      <input id="jobNote" placeholder="Optional note" type="text" />
+      <div class="error" id="error"></div>
+      <p class="small">ตารางราคาอ้างอิง ST1000E June 2026 ตามช่วงกว้าง/สูงในใบราคาใหม่</p>
+    </div>
+
+    <div class="result-panel">
+      <h3>ผลการคำนวณ</h3>
+      <div class="result" id="result"></div>
+      <button type="button" id="copyResult" class="copy-btn">คัดลอกผลลัพธ์ทั้งหมด</button>
+    </div>
+  </div>
+  <script>
+    const WIDTH_BANDS = ["1.00-1.50", "1.51-2.00", "2.01-2.50", "2.51-3.00", "3.01-3.50", "3.51-4.00", "4.01-4.50", "4.51-5.00"];
+    const DROP_BANDS = ["0.10-1.00", "1.01-1.50", "1.51-2.00", "2.01-2.50", "2.51-3.00", "3.01-3.50", "3.51-4.00"];
+    const MODELS = {"vinistar": {"name": "SEATEL ST1000E - Vinistar", "shortName": "ST1000E Vinistar", "description": "ราคาใบใส Vinistar", "fabrics": ["Vinistar 0.75 mm", "Vinistar 1.00 mm"], "table": {"0.10-1.00": {"1.00-1.50": {"Vinistar 0.75 mm": 11100, "Vinistar 1.00 mm": 11500}, "1.51-2.00": {"Vinistar 0.75 mm": 12500, "Vinistar 1.00 mm": 13000}, "2.01-2.50": {"Vinistar 0.75 mm": 13500, "Vinistar 1.00 mm": 14100}, "2.51-3.00": {"Vinistar 0.75 mm": 14800, "Vinistar 1.00 mm": 15600}, "3.01-3.50": {"Vinistar 0.75 mm": 16200, "Vinistar 1.00 mm": 17100}, "3.51-4.00": {"Vinistar 0.75 mm": 17600, "Vinistar 1.00 mm": 18600}, "4.01-4.50": {"Vinistar 0.75 mm": 18900, "Vinistar 1.00 mm": 20100}, "4.51-5.00": {"Vinistar 0.75 mm": 21000, "Vinistar 1.00 mm": 22300}}, "1.01-1.50": {"1.00-1.50": {"Vinistar 0.75 mm": 12300, "Vinistar 1.00 mm": 12800}, "1.51-2.00": {"Vinistar 0.75 mm": 14000, "Vinistar 1.00 mm": 14800}, "2.01-2.50": {"Vinistar 0.75 mm": 15400, "Vinistar 1.00 mm": 16300}, "2.51-3.00": {"Vinistar 0.75 mm": 17200, "Vinistar 1.00 mm": 18200}, "3.01-3.50": {"Vinistar 0.75 mm": 18900, "Vinistar 1.00 mm": 20100}, "3.51-4.00": {"Vinistar 0.75 mm": 20600, "Vinistar 1.00 mm": 22100}, "4.01-4.50": {"Vinistar 0.75 mm": 22300, "Vinistar 1.00 mm": 24000}, "4.51-5.00": {"Vinistar 0.75 mm": 24800, "Vinistar 1.00 mm": 26600}}, "1.51-2.00": {"1.00-1.50": {"Vinistar 0.75 mm": 13500, "Vinistar 1.00 mm": 14200}, "1.51-2.00": {"Vinistar 0.75 mm": 15600, "Vinistar 1.00 mm": 16500}, "2.01-2.50": {"Vinistar 0.75 mm": 17400, "Vinistar 1.00 mm": 18500}, "2.51-3.00": {"Vinistar 0.75 mm": 19500, "Vinistar 1.00 mm": 20800}, "3.01-3.50": {"Vinistar 0.75 mm": 21600, "Vinistar 1.00 mm": 23200}, "3.51-4.00": {"Vinistar 0.75 mm": 23700, "Vinistar 1.00 mm": 25500}, "4.01-4.50": {"Vinistar 0.75 mm": 25800, "Vinistar 1.00 mm": 27900}, "4.51-5.00": {"Vinistar 0.75 mm": 28600, "Vinistar 1.00 mm": 30900}}, "2.01-2.50": {"1.00-1.50": {"Vinistar 0.75 mm": 14700, "Vinistar 1.00 mm": 15500}, "1.51-2.00": {"Vinistar 0.75 mm": 17200, "Vinistar 1.00 mm": 18300}, "2.01-2.50": {"Vinistar 0.75 mm": 19300, "Vinistar 1.00 mm": 20700}, "2.51-3.00": {"Vinistar 0.75 mm": 21800, "Vinistar 1.00 mm": 23400}, "3.01-3.50": {"Vinistar 0.75 mm": 24200, "Vinistar 1.00 mm": 26200}, "3.51-4.00": {"Vinistar 0.75 mm": 26700, "Vinistar 1.00 mm": 29000}, "4.01-4.50": {"Vinistar 0.75 mm": 29200, "Vinistar 1.00 mm": 31700}, "4.51-5.00": {"Vinistar 0.75 mm": 32400, "Vinistar 1.00 mm": 35200}}, "2.51-3.00": {"1.00-1.50": {"Vinistar 0.75 mm": 15800, "Vinistar 1.00 mm": 16800}, "1.51-2.00": {"Vinistar 0.75 mm": 18700, "Vinistar 1.00 mm": 20000}, "2.01-2.50": {"Vinistar 0.75 mm": 21200, "Vinistar 1.00 mm": 22900}, "2.51-3.00": {"Vinistar 0.75 mm": 24100, "Vinistar 1.00 mm": 26100}, "3.01-3.50": {"Vinistar 0.75 mm": 26900, "Vinistar 1.00 mm": 29200}, "3.51-4.00": {"Vinistar 0.75 mm": 29800, "Vinistar 1.00 mm": 32400}, "4.01-4.50": {"Vinistar 0.75 mm": 32600, "Vinistar 1.00 mm": 35600}, "4.51-5.00": {"Vinistar 0.75 mm": 36200, "Vinistar 1.00 mm": 39500}}, "3.01-3.50": {"1.00-1.50": {"Vinistar 0.75 mm": 17000, "Vinistar 1.00 mm": 18200}, "1.51-2.00": {"Vinistar 0.75 mm": 20300, "Vinistar 1.00 mm": 21800}, "2.01-2.50": {"Vinistar 0.75 mm": 23100, "Vinistar 1.00 mm": 25000}, "2.51-3.00": {"Vinistar 0.75 mm": 26400, "Vinistar 1.00 mm": 28700}, "3.01-3.50": {"Vinistar 0.75 mm": 29600, "Vinistar 1.00 mm": 32300}, "3.51-4.00": {"Vinistar 0.75 mm": 32800, "Vinistar 1.00 mm": 35900}, "4.01-4.50": {"Vinistar 0.75 mm": 36100, "Vinistar 1.00 mm": 39500}, "4.51-5.00": {"Vinistar 0.75 mm": 40000, "Vinistar 1.00 mm": 43800}}, "3.51-4.00": {"1.00-1.50": {"Vinistar 0.75 mm": 18200, "Vinistar 1.00 mm": 19500}, "1.51-2.00": {"Vinistar 0.75 mm": 21800, "Vinistar 1.00 mm": 23600}, "2.01-2.50": {"Vinistar 0.75 mm": 25100, "Vinistar 1.00 mm": 27200}, "2.51-3.00": {"Vinistar 0.75 mm": 28700, "Vinistar 1.00 mm": 31300}, "3.01-3.50": {"Vinistar 0.75 mm": 32300, "Vinistar 1.00 mm": 35300}, "3.51-4.00": {"Vinistar 0.75 mm": 35900, "Vinistar 1.00 mm": 39300}, "4.01-4.50": {"Vinistar 0.75 mm": 39500, "Vinistar 1.00 mm": 43400}, "4.51-5.00": {"Vinistar 0.75 mm": 43900, "Vinistar 1.00 mm": 48200}}}}, "pvc-nova-prima": {"name": "SEATEL ST1000E - PVC / Nova / Prima", "shortName": "ST1000E PVC / Nova / Prima", "description": "ราคา PVC / Nova / Prima", "fabrics": ["PVC", "Nova", "Prima"], "table": {"0.10-1.00": {"1.00-1.50": {"PVC": 9290, "Nova": 10100, "Prima": 11100}, "1.51-2.00": {"PVC": 10100, "Nova": 11200, "Prima": 12500}, "2.01-2.50": {"PVC": 10600, "Nova": 11900, "Prima": 13500}, "2.51-3.00": {"PVC": 11300, "Nova": 12900, "Prima": 14800}, "3.01-3.50": {"PVC": 12100, "Nova": 13900, "Prima": 16200}, "3.51-4.00": {"PVC": 12900, "Nova": 15000, "Prima": 17600}, "4.01-4.50": {"PVC": 13700, "Nova": 16000, "Prima": 18900}, "4.51-5.00": {"PVC": 15200, "Nova": 17800, "Prima": 21000}}, "1.01-1.50": {"1.00-1.50": {"PVC": 9820, "Nova": 10900, "Prima": 12300}, "1.51-2.00": {"PVC": 10800, "Nova": 12200, "Prima": 14000}, "2.01-2.50": {"PVC": 11400, "Nova": 13200, "Prima": 15400}, "2.51-3.00": {"PVC": 12300, "Nova": 14500, "Prima": 17200}, "3.01-3.50": {"PVC": 13200, "Nova": 15700, "Prima": 18900}, "3.51-4.00": {"PVC": 14100, "Nova": 17000, "Prima": 20600}, "4.01-4.50": {"PVC": 15100, "Nova": 18300, "Prima": 22300}, "4.51-5.00": {"PVC": 16700, "Nova": 20300, "Prima": 24800}}, "1.51-2.00": {"1.00-1.50": {"PVC": 10400, "Nova": 11800, "Prima": 13500}, "1.51-2.00": {"PVC": 11500, "Nova": 13300, "Prima": 15600}, "2.01-2.50": {"PVC": 12200, "Nova": 14500, "Prima": 17400}, "2.51-3.00": {"PVC": 13200, "Nova": 16000, "Prima": 19500}, "3.01-3.50": {"PVC": 14300, "Nova": 17500, "Prima": 21600}, "3.51-4.00": {"PVC": 15400, "Nova": 19100, "Prima": 23700}, "4.01-4.50": {"PVC": 16500, "Nova": 20600, "Prima": 25800}, "4.51-5.00": {"PVC": 18300, "Nova": 22900, "Prima": 28600}}, "2.01-2.50": {"1.00-1.50": {"PVC": 10900, "Nova": 12600, "Prima": 14700}, "1.51-2.00": {"PVC": 12100, "Nova": 14400, "Prima": 17200}, "2.01-2.50": {"PVC": 13000, "Nova": 15800, "Prima": 19300}, "2.51-3.00": {"PVC": 14200, "Nova": 17600, "Prima": 21800}, "3.01-3.50": {"PVC": 15400, "Nova": 19300, "Prima": 24200}, "3.51-4.00": {"PVC": 16700, "Nova": 21100, "Prima": 26700}, "4.01-4.50": {"PVC": 17900, "Nova": 22900, "Prima": 29200}, "4.51-5.00": {"PVC": 19800, "Nova": 25400, "Prima": 32400}}, "2.51-3.00": {"1.00-1.50": {"PVC": 11400, "Nova": 13400, "Prima": 15800}, "1.51-2.00": {"PVC": 12800, "Nova": 15400, "Prima": 18700}, "2.01-2.50": {"PVC": 13800, "Nova": 17100, "Prima": 21200}, "2.51-3.00": {"PVC": 15200, "Nova": 19100, "Prima": 24100}, "3.01-3.50": {"PVC": 16500, "Nova": 21200, "Prima": 26900}, "3.51-4.00": {"PVC": 17900, "Nova": 23200, "Prima": 29800}, "4.01-4.50": {"PVC": 19300, "Nova": 25200, "Prima": 32600}, "4.51-5.00": {"PVC": 21400, "Nova": 28000, "Prima": 36200}}, "3.01-3.50": {"1.00-1.50": {"PVC": 11900, "Nova": 14200, "Prima": 17000}, "1.51-2.00": {"PVC": 13400, "Nova": 16500, "Prima": 20300}, "2.01-2.50": {"PVC": 14600, "Nova": 18400, "Prima": 23100}, "2.51-3.00": {"PVC": 16100, "Nova": 20700, "Prima": 26400}, "3.01-3.50": {"PVC": 17600, "Nova": 23000, "Prima": 29600}, "3.51-4.00": {"PVC": 19200, "Nova": 25200, "Prima": 32800}, "4.01-4.50": {"PVC": 20700, "Nova": 27500, "Prima": 36100}, "4.51-5.00": {"PVC": 22900, "Nova": 30500, "Prima": 40000}}, "3.51-4.00": {"1.00-1.50": {"PVC": 12400, "Nova": 15000, "Prima": 18200}, "1.51-2.00": {"PVC": 14100, "Nova": 17500, "Prima": 21800}, "2.01-2.50": {"PVC": 15400, "Nova": 19700, "Prima": 25100}, "2.51-3.00": {"PVC": 17100, "Nova": 22200, "Prima": 28700}, "3.01-3.50": {"PVC": 18700, "Nova": 24800, "Prima": 32300}, "3.51-4.00": {"PVC": 20400, "Nova": 27300, "Prima": 35900}, "4.01-4.50": {"PVC": 22100, "Nova": 29800, "Prima": 39500}, "4.51-5.00": {"PVC": 24500, "Nova": 33100, "Prima": 43900}}}}, "screen-text": {"name": "SEATEL ST1000E - View Sand / Solar Screen / Sun Text", "shortName": "ST1000E View Sand / Solar Screen / Sun Text", "description": "ราคา View Sand / Solar Screen / Sun Text", "fabrics": ["View Sand", "Solar Screen", "Sun Text"], "table": {"0.10-1.00": {"1.00-1.50": {"View Sand": 9880, "Solar Screen": 10400, "Sun Text": 10700}, "1.51-2.00": {"View Sand": 10900, "Solar Screen": 11600, "Sun Text": 12000}, "2.01-2.50": {"View Sand": 11500, "Solar Screen": 12400, "Sun Text": 12800}, "2.51-3.00": {"View Sand": 12500, "Solar Screen": 13500, "Sun Text": 14100}, "3.01-3.50": {"View Sand": 13500, "Solar Screen": 14700, "Sun Text": 15300}, "3.51-4.00": {"View Sand": 14400, "Solar Screen": 15800, "Sun Text": 16500}, "4.01-4.50": {"View Sand": 15400, "Solar Screen": 16900, "Sun Text": 17700}, "4.51-5.00": {"View Sand": 17100, "Solar Screen": 18800, "Sun Text": 19700}}, "1.01-1.50": {"1.00-1.50": {"View Sand": 10700, "Solar Screen": 11400, "Sun Text": 11800}, "1.51-2.00": {"View Sand": 11900, "Solar Screen": 12800, "Sun Text": 13300}, "2.01-2.50": {"View Sand": 12700, "Solar Screen": 13900, "Sun Text": 14500}, "2.51-3.00": {"View Sand": 13900, "Solar Screen": 15300, "Sun Text": 16100}, "3.01-3.50": {"View Sand": 15100, "Solar Screen": 16700, "Sun Text": 17600}, "3.51-4.00": {"View Sand": 16300, "Solar Screen": 18200, "Sun Text": 19200}, "4.01-4.50": {"View Sand": 17500, "Solar Screen": 19600, "Sun Text": 20700}, "4.51-5.00": {"View Sand": 19400, "Solar Screen": 21800, "Sun Text": 23000}}, "1.51-2.00": {"1.00-1.50": {"View Sand": 11400, "Solar Screen": 12300, "Sun Text": 12800}, "1.51-2.00": {"View Sand": 12800, "Solar Screen": 14000, "Sun Text": 14700}, "2.01-2.50": {"View Sand": 13900, "Solar Screen": 15400, "Sun Text": 16200}, "2.51-3.00": {"View Sand": 15300, "Solar Screen": 17100, "Sun Text": 18100}, "3.01-3.50": {"View Sand": 16700, "Solar Screen": 18800, "Sun Text": 20000}, "3.51-4.00": {"View Sand": 18200, "Solar Screen": 20500, "Sun Text": 21800}, "4.01-4.50": {"View Sand": 19600, "Solar Screen": 22300, "Sun Text": 23700}, "4.51-5.00": {"View Sand": 21700, "Solar Screen": 24700, "Sun Text": 26300}}, "2.01-2.50": {"1.00-1.50": {"View Sand": 12100, "Solar Screen": 13200, "Sun Text": 13800}, "1.51-2.00": {"View Sand": 13800, "Solar Screen": 15300, "Sun Text": 16000}, "2.01-2.50": {"View Sand": 15100, "Solar Screen": 16900, "Sun Text": 17900}, "2.51-3.00": {"View Sand": 16700, "Solar Screen": 18900, "Sun Text": 20100}, "3.01-3.50": {"View Sand": 18400, "Solar Screen": 20900, "Sun Text": 22300}, "3.51-4.00": {"View Sand": 20000, "Solar Screen": 22900, "Sun Text": 24500}, "4.01-4.50": {"View Sand": 21700, "Solar Screen": 24900, "Sun Text": 26700}, "4.51-5.00": {"View Sand": 24000, "Solar Screen": 27700, "Sun Text": 29600}}, "2.51-3.00": {"1.00-1.50": {"View Sand": 12900, "Solar Screen": 14200, "Sun Text": 14900}, "1.51-2.00": {"View Sand": 14800, "Solar Screen": 16500, "Sun Text": 17400}, "2.01-2.50": {"View Sand": 16300, "Solar Screen": 18400, "Sun Text": 19600}, "2.51-3.00": {"View Sand": 18100, "Solar Screen": 20700, "Sun Text": 22100}, "3.01-3.50": {"View Sand": 20000, "Solar Screen": 23000, "Sun Text": 24600}, "3.51-4.00": {"View Sand": 21900, "Solar Screen": 25300, "Sun Text": 27100}, "4.01-4.50": {"View Sand": 23700, "Solar Screen": 27600, "Sun Text": 29700}, "4.51-5.00": {"View Sand": 26300, "Solar Screen": 30600, "Sun Text": 32900}}, "3.01-3.50": {"1.00-1.50": {"View Sand": 13600, "Solar Screen": 15100, "Sun Text": 15900}, "1.51-2.00": {"View Sand": 15700, "Solar Screen": 17700, "Sun Text": 18800}, "2.01-2.50": {"View Sand": 17400, "Solar Screen": 19900, "Sun Text": 21200}, "2.51-3.00": {"View Sand": 19500, "Solar Screen": 22500, "Sun Text": 24100}, "3.01-3.50": {"View Sand": 21600, "Solar Screen": 25100, "Sun Text": 27000}, "3.51-4.00": {"View Sand": 23700, "Solar Screen": 27700, "Sun Text": 29800}, "4.01-4.50": {"View Sand": 25800, "Solar Screen": 30300, "Sun Text": 32700}, "4.51-5.00": {"View Sand": 28600, "Solar Screen": 33600, "Sun Text": 36200}}, "3.51-4.00": {"1.00-1.50": {"View Sand": 14300, "Solar Screen": 16000, "Sun Text": 16900}, "1.51-2.00": {"View Sand": 16700, "Solar Screen": 18900, "Sun Text": 20100}, "2.01-2.50": {"View Sand": 18600, "Solar Screen": 21400, "Sun Text": 22900}, "2.51-3.00": {"View Sand": 20900, "Solar Screen": 24300, "Sun Text": 26100}, "3.01-3.50": {"View Sand": 23300, "Solar Screen": 27200, "Sun Text": 29300}, "3.51-4.00": {"View Sand": 25600, "Solar Screen": 30100, "Sun Text": 32500}, "4.01-4.50": {"View Sand": 27900, "Solar Screen": 32900, "Sun Text": 35600}, "4.51-5.00": {"View Sand": 31000, "Solar Screen": 36500, "Sun Text": 39600}}}}};
+
+    const STRONG_UP_ACCESSORY_IDS = ['chkStrongRemote1','chkStrongRemote15','chkStrongWindSun'];
+    const SOMFY_ACCESSORY_IDS = ['chkSomfyRemote1','chkSomfyRemote2','chkSomfyRemote5'];
+
+    function baht(n) {
+      return (Math.round(Number(n) || 0)).toLocaleString('th-TH') + ' บาท';
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function parseBand(band) {
+      const parts = String(band).replace(/–/g, '-').split('-').map(v => parseFloat(v));
+      return [parts[0], parts[1]];
+    }
+
+    function findBand(value, bands) {
+      const n = Number(value);
+      for (const band of bands) {
+        const [lo, hi] = parseBand(band);
+        if (n >= lo && n <= hi) return band;
+      }
+      return null;
+    }
+
+    function cleanOptionText(text) {
+      return String(text || '').replace(/\s*\([^)]*\)\s*$/,'').trim();
+    }
+
+    function initModelSelect() {
+      const modelSelect = document.getElementById('modelGroup');
+      modelSelect.innerHTML = Object.entries(MODELS).map(([id, model]) =>
+        `<option value="${id}">${model.name}</option>`
+      ).join('');
+      modelSelect.value = 'vinistar';
+      updateFabricOptions();
+    }
+
+    function updateFabricOptions() {
+      const modelId = document.getElementById('modelGroup').value;
+      const model = MODELS[modelId];
+      const fabricSelect = document.getElementById('fabric');
+      const oldValue = fabricSelect.value;
+      fabricSelect.innerHTML = model.fabrics.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+      if (model.fabrics.includes(oldValue)) fabricSelect.value = oldValue;
+      calculatePrice();
+    }
+
+    function getSelectedMotorBrand() {
+      const motorSelect = document.getElementById('motor');
+      const opt = motorSelect.options[motorSelect.selectedIndex];
+      return opt ? (opt.dataset.brand || 'none') : 'none';
+    }
+
+    function updateAccessoryVisibility() {
+      const brand = getSelectedMotorBrand();
+      const strongBox = document.getElementById('strongUpAccessoryBox');
+      const somfyBox = document.getElementById('somfyAccessoryBox');
+      strongBox.style.display = brand === 'strongup' ? 'block' : 'none';
+      somfyBox.style.display = brand === 'somfy' ? 'block' : 'none';
+      if (brand !== 'strongup') STRONG_UP_ACCESSORY_IDS.forEach(id => { const el=document.getElementById(id); if(el) el.checked=false; });
+      if (brand !== 'somfy') SOMFY_ACCESSORY_IDS.forEach(id => { const el=document.getElementById(id); if(el) el.checked=false; });
+      return brand;
+    }
+
+    function selectedMotorAccessories() {
+      const brand = getSelectedMotorBrand();
+      const ids = brand === 'strongup' ? STRONG_UP_ACCESSORY_IDS : brand === 'somfy' ? SOMFY_ACCESSORY_IDS : [];
+      return ids.map(id => document.getElementById(id)).filter(el => el && el.checked).map(el => ({
+        label: el.dataset.label,
+        price: Number(el.dataset.price) || 0
+      }));
+    }
+
+    function getBasePrice(modelId, fabric, width, drop) {
+      const wb = findBand(width, WIDTH_BANDS);
+      const db = findBand(drop, DROP_BANDS);
+      if (!wb || !db) return null;
+      const model = MODELS[modelId];
+      const price = model && model.table && model.table[db] && model.table[db][wb] ? model.table[db][wb][fabric] : null;
+      if (price == null) return null;
+      return { price, widthBand: wb, dropBand: db };
+    }
+
+    function applyDiscounts(subtotal, specialDiscount, discountPercent) {
+      const safeSubtotal = Math.max(Number(subtotal) || 0, 0);
+      const special = Math.min(Math.max(Number(specialDiscount) || 0, 0), safeSubtotal);
+      const baseAfterSpecial = safeSubtotal - special;
+      const percent = Math.min(Math.max(Number(discountPercent) || 0, 0), 100);
+      const percentAmount = baseAfterSpecial * (percent / 100);
+      const total = baseAfterSpecial - percentAmount;
+      return { special, baseAfterSpecial, percent, percentAmount, total };
+    }
+
+    function buildDiscountLines(calc) {
+      const lines = [];
+      if (calc.special > 0) lines.push('ส่วนลดพิเศษ: -' + baht(calc.special));
+      if (calc.percent > 0) lines.push('ส่วนลด ' + calc.percent + '%: -' + baht(calc.percentAmount));
+      return lines;
+    }
+
+    function calculatePrice() {
+      const error = document.getElementById('error');
+      const result = document.getElementById('result');
+      error.style.display = 'none';
+      result.style.display = 'none';
+
+      updateAccessoryVisibility();
+
+      const modelId = document.getElementById('modelGroup').value;
+      const model = MODELS[modelId];
+      const fabric = document.getElementById('fabric').value;
+      const width = parseFloat(document.getElementById('width').value);
+      const drop = parseFloat(document.getElementById('drop').value);
+      const qty = Math.max(parseInt(document.getElementById('qty').value, 10) || 1, 1);
+      const specialDiscount = parseFloat(document.getElementById('specialDiscount').value) || 0;
+      const discountPercent = parseFloat(document.getElementById('discount').value) || 0;
+      const accessoryLabel = (document.getElementById('accessoryLabel').value || '').trim();
+      const accessories = parseFloat(document.getElementById('accessories').value) || 0;
+      const note = (document.getElementById('jobNote').value || '').trim();
+
+      if (!width || !drop || width <= 0 || drop <= 0) {
+        error.innerText = 'กรุณากรอกความกว้างและความสูงให้ถูกต้อง';
+        error.style.display = 'block';
+        window.latestCopyText = '';
+        return;
+      }
+
+      const lookup = getBasePrice(modelId, fabric, width, drop);
+      if (!lookup) {
+        error.innerText = 'ไม่พบราคาสำหรับขนาดนี้ ตาราง ST1000E รองรับกว้าง 1.00-5.00 ม. และสูง 0.10-4.00 ม.';
+        error.style.display = 'block';
+        window.latestCopyText = '';
+        return;
+      }
+
+      const coverSelect = document.getElementById('cover');
+      const coverRate = parseFloat(coverSelect.value) || 0;
+      const coverName = cleanOptionText(coverSelect.options[coverSelect.selectedIndex].text);
+      const coverPrice = coverRate * width;
+      const coverLine = coverRate > 0 ? coverName + ' = ' + baht(coverPrice) : 'ไม่มี';
+
+      const motorSelect = document.getElementById('motor');
+      const motorPrice = parseFloat(motorSelect.value) || 0;
+      const motorName = cleanOptionText(motorSelect.options[motorSelect.selectedIndex].text);
+      const accessoryItems = selectedMotorAccessories();
+      const motorAccessoryTotal = accessoryItems.reduce((sum, item) => sum + item.price, 0);
+      const motorAccessoryLines = accessoryItems.length
+        ? accessoryItems.map(item => '- ' + item.label + ' = ' + baht(item.price))
+        : ['ไม่มี'];
+
+      const extraAccessoryLine = accessories > 0
+        ? ((accessoryLabel || 'อุปกรณ์เสริมเพิ่มเติม') + ' = ' + baht(accessories))
+        : 'ไม่มี';
+
+      const unitManual = lookup.price + coverPrice + accessories;
+      const subtotalManual = unitManual * qty;
+      const calcManual = applyDiscounts(subtotalManual, specialDiscount, discountPercent);
+
+      const unitMotor = lookup.price + motorPrice + motorAccessoryTotal + coverPrice + accessories;
+      const subtotalMotor = unitMotor * qty;
+      const calcMotor = applyDiscounts(subtotalMotor, specialDiscount, discountPercent);
+
+      const motorLines = motorPrice > 0 ? [
+        '',
+        'Motorized System / ระบบมอเตอร์',
+        'มอเตอร์: ' + motorName + ' = ' + baht(motorPrice),
+        'อุปกรณ์เสริมมอเตอร์:',
+        ...motorAccessoryLines,
+        'ราคาก่อนส่วนลด: ' + baht(subtotalMotor),
+        ...buildDiscountLines(calcMotor),
+        'ราคาสรุประบบมอเตอร์: ' + baht(calcMotor.total)
+      ] : [
+        '',
+        'Motorized System / ระบบมอเตอร์',
+        'ยังไม่ได้เลือกมอเตอร์'
+      ];
+
+      const customerLines = [
+        'SEATEL ST1000E',
+        'กลุ่มราคา: ' + model.description,
+        'ชนิดผ้า: ' + fabric,
+        'ขนาด: กว้าง ' + width.toFixed(2) + ' x สูง ' + drop.toFixed(2) + ' m',
+        //'ช่วงราคาที่ใช้: กว้าง ' + lookup.widthBand + ' m / สูง ' + lookup.dropBand + ' m',
+        //'ราคาพื้นฐานระบบมือหมุนตามตาราง: ' + baht(lookup.price),
+        'ฝาครอบ: ' + coverLine,
+        'อุปกรณ์เสริมเพิ่มเติม: ' + extraAccessoryLine,
+        'จำนวน: ' + qty + ' ชุด',
+        '',
+        'Manual Operation / ระบบมือหมุน',
+        'ราคาก่อนส่วนลด: ' + baht(subtotalManual),
+        ...buildDiscountLines(calcManual),
+        'ราคาสรุประบบมือหมุน: ' + baht(calcManual.total),
+        ...motorLines,
+        ...(note ? ['', 'หมายเหตุเพิ่มเติม: ' + note] : []),
+        '',
+        'หมายเหตุ*-',
+        '* ราคาที่แจ้งเป็นการประมาณการ ราคาอาจเปลี่ยนแปลงได้เมื่อสำรวจหน้างานจริง',
+        '* ราคาที่แจ้งรวมภาษีมูลค่าเพิ่มแล้ว',
+        '* ราคานี้รวมค่าติดตั้งในเขตกรุงเทพฯ และปริมณฑล',
+        '* พื้นที่นอกเขต อาจมีค่าขนส่ง/ติดตั้งเพิ่มเติม',
+        '* ชุดมอเตอร์ Somfy พร้อมรีโมท หากใช้กับกันสาดกว้างตั้งแต่ 5 เมตร และสูงเกิน 3 เมตร ให้ใช้ Somfy รุ่น Altus 85/17',
+        '* รับประกันโครงสร้างและการติดตั้ง 1 ปี และรับประกันการทำงานของมอเตอร์ 2 ปี ตามเงื่อนไขบริษัท'
+      ];
+
+      const customerText = customerLines.join('\n');
+      window.latestCopyText = customerText;
+
+      result.innerHTML = '<div class="quote-box">' +
+        '<div class="customer-copy-label">Customer copy text / ข้อความสำหรับส่งลูกค้า</div>' +
+        '<pre class="customer-copy-text">' + escapeHtml(customerText) + '</pre>' +
+        '</div>';
+      result.style.display = 'block';
+    }
+
+    function clearAll() {
+      document.getElementById('width').value = '';
+      document.getElementById('drop').value = '';
+      document.getElementById('modelGroup').value = 'vinistar';
+      updateFabricOptions();
+      document.getElementById('motor').selectedIndex = 1;
+      document.getElementById('cover').selectedIndex = 0;
+      document.getElementById('accessoryLabel').value = '';
+      document.getElementById('accessories').value = '0';
+      document.getElementById('qty').value = '1';
+      document.getElementById('specialDiscount').value = '0';
+      document.getElementById('discount').value = '0';
+      document.getElementById('jobNote').value = '';
+      [...STRONG_UP_ACCESSORY_IDS, ...SOMFY_ACCESSORY_IDS].forEach(id => { const el=document.getElementById(id); if(el) el.checked=false; });
+      updateAccessoryVisibility();
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('result').style.display = 'none';
+      window.latestCopyText = '';
+    }
+
+    function bindEvents() {
+      ['modelGroup','width','drop','fabric','motor','cover','accessoryLabel','accessories','qty','specialDiscount','discount','jobNote', ...STRONG_UP_ACCESSORY_IDS, ...SOMFY_ACCESSORY_IDS]
+        .forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener('input', id === 'modelGroup' ? updateFabricOptions : calculatePrice);
+          el.addEventListener('change', id === 'modelGroup' ? updateFabricOptions : calculatePrice);
+        });
+      document.getElementById('copyResult').addEventListener('click', () => {
+        const text = window.latestCopyText || document.getElementById('result').innerText || '';
+        if (!text.trim()) { alert('ยังไม่มีผลลัพธ์ให้คัดลอก'); return; }
+        navigator.clipboard.writeText(text).then(() => alert('คัดลอกผลลัพธ์เรียบร้อยแล้ว!')).catch(() => alert('ไม่สามารถคัดลอกได้'));
+      });
+    }
+
+    function runSelfTest() {
+      console.assert(MODELS.vinistar.table['0.10-1.00']['1.00-1.50']['Vinistar 0.75 mm'] === 11100, 'Vinistar first cell');
+      console.assert(MODELS['pvc-nova-prima'].table['3.51-4.00']['4.51-5.00']['Prima'] === 43900, 'Prima last cell');
+      console.assert(MODELS['screen-text'].table['3.51-4.00']['4.51-5.00']['Sun Text'] === 39600, 'Sun Text last cell');
+      console.log('ST1000E calculator self-test passed');
+    }
+
+    initModelSelect();
+    bindEvents();
+    updateAccessoryVisibility();
+    runSelfTest();
+  </script>
+</body>
+</html>

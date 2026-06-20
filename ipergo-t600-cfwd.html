@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>iPergo PERGO-T600 C-FWD Calculator</title>
+<style>
+:root{
+  --primary:#003366; --primary2:#062449; --accent:#0ea5e9; --bg:#f8fafc; --panel:#fff;
+  --text:#111827; --muted:#64748b; --line:#e5e7eb; --soft:#eff6ff; --danger:#b91c1c;
+  --shadow:0 14px 34px rgba(15,23,42,.10); --radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top left,rgba(14,165,233,.13),transparent 28rem),linear-gradient(180deg,#f8fafc,#eef2f7)}
+.header,.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.header{max-width:1180px;margin:0 auto 18px;padding:24px}
+.brand{font-size:13px;letter-spacing:.12em;font-weight:900;color:#8b6f47;text-transform:uppercase}.tag{display:inline-block;font-size:12px;font-weight:900;color:#075985;background:#e0f2fe;border-radius:999px;padding:5px 10px;margin-left:8px}
+h1{margin:6px 0 8px;color:var(--primary);font-size:clamp(28px,4vw,42px);line-height:1.08}.subtitle{color:var(--muted);line-height:1.55;margin:0}.source{margin-top:10px;color:#64748b;font-size:13px}
+.app{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:18px}.card{padding:20px}.card h2{margin:0 0 14px;color:var(--primary);font-size:20px}
+label{display:block;font-weight:800;font-size:14px;margin:14px 0 7px;color:#1f2937}select,input,textarea{width:100%;border:1px solid #d1d5db;border-radius:14px;padding:12px 14px;font-size:15px;background:white;color:var(--text)}textarea{min-height:86px;resize:vertical;line-height:1.5}.hint{color:var(--muted);font-size:13px;margin-top:7px;line-height:1.45}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.resultBox{background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:16px;min-height:360px}.quoteTitle{font-weight:950;color:var(--primary);font-size:18px;margin-bottom:10px}.priceBig{font-size:30px;line-height:1.1;color:var(--primary);font-weight:950;margin:10px 0 14px}.lines{font-size:15px;line-height:1.75;white-space:pre-wrap}.warn{color:var(--danger);font-weight:900}.button{width:100%;border:0;border-radius:14px;background:var(--primary);color:white;font-weight:900;font-size:16px;padding:13px 16px;margin-top:14px;cursor:pointer}.button:hover{background:var(--primary2)}.secondary{background:#e0f2fe;color:#075985}.standardNotes{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;color:#475569;font-size:13px;line-height:1.55}.standardNotes ul{margin:8px 0 0 18px;padding:0}.standardNotes li{margin:4px 0}.pill{display:inline-block;background:var(--soft);color:var(--primary);padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800}
+.resultHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.resultHeader h2{margin:0}.languageToggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:#fff;padding:3px;box-shadow:0 6px 16px rgba(15,23,42,.06)}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px}.languageToggle button.active{background:var(--primary);color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+@media(max-width:820px){body{padding:14px}.app{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+@media(max-width:520px){.resultHeader{align-items:flex-start;flex-direction:column}.languageToggle{width:100%}.languageToggle button{flex:1}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand">Sangthong Creation <span class="tag">Pergola</span></div>
+  <h1>iPergo PERGO-T600 -<span class="subtitle"> Freestanding & Wall Mounted Double</span> Calculator<a href="index.html">Back to Index</a></h1>
+  <p class="subtitle">Aluminium Louver Pergola - Freestanding & Wall Mounted Double<img src="img/cfwd.png" width="291" height="120"></p>
+  <div class="source">Price source: iPergo Pricelist June 2026 - Page 2</div>
+</header>
+<main class="app">
+  <section class="card">
+    <h2>ข้อมูลสำหรับคำนวณ</h2>
+    <label for="sizeSelect">ขนาดจากตารางราคา</label>
+    <select id="sizeSelect"></select>
+    <div class="hint">เลือกขนาดตามใบราคาเท่านั้น เพื่อป้องกันราคาผิดจากตาราง</div>
+
+    <div id="systemWrap">
+      <label for="systemSelect">ระบบ</label>
+      <select id="systemSelect"></select>
+    </div>
+
+    <label for="frameColor">สีโครง / Frame Color</label>
+    <select id="frameColor"></select>
+
+    <div id="fabricWrap">
+      <label for="fabricOption">ผ้า / Fabric</label>
+      <select id="fabricOption"></select>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="qty">จำนวน</label>
+        <input id="qty" type="number" min="1" step="1" value="1" />
+      </div> <div> 
+  <label for="specialDiscount">ส่วนลดพิเศษ (บาท)</label>
+    <input id="specialDiscount" type="number" min="0" step="1" value="0" />
+        <label for="discountPercent">ส่วนลด (%)</label>
+        <input id="discountPercent" type="number" min="0" max="100" step="0.01" value="0" />
+      </div>
+    </div>
+
+ 
+
+    <label for="customNote">หมายเหตุ</label>
+    <textarea id="customNote" placeholder="ใส่หมายเหตุเพิ่มเติมสำหรับลูกค้า เช่น สี, เงื่อนไขหน้างาน, ระยะเวลาสั่งสินค้า..."></textarea>
+
+    <button class="button" type="button" onclick="copyQuotation()">Copy Quotation</button>
+    <button class="button secondary" type="button" onclick="resetForm()">Reset</button>
+  </section>
+
+  <section class="card">
+    <div class="resultHeader">
+      <h2 id="resultHeading">ผลลัพธ์สำหรับส่งลูกค้า</h2>
+      <div class="languageToggle" aria-label="Result language">
+        <button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button>
+        <button type="button" data-result-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+    <div class="resultBox">
+      <div class="quoteTitle" id="quoteTitle"></div>
+      <div class="priceBig" id="finalPrice"></div>
+      <div class="lines" id="resultLines"></div>
+      <div class="standardNotes" id="standardNotes"></div>
+    </div>
+    <textarea id="copyText" hidden></textarea>
+
+  </section>
+</main>
+<script>
+const PRODUCT = {"filename": "ipergo-t600-cfwd.html", "title": "iPergo PERGO-T600 C-FWD", "subtitle": "Aluminium Louver Pergola - Freestanding & Wall Mounted Double", "source": "iPergo Pricelist June 2026 - Page 2", "tag": "Pergola", "systemText": "Motorized + LED Light", "items": [{"id": "5-2-5", "label": "Length 5 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 2.5 ม.", "price": 561500, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-5-2-5", "label": "Length 5.5 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 2.5 ม.", "price": 572800, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-2-5", "label": "Length 6 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 2.5 ม.", "price": 584000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-5-2-5", "label": "Length 6.5 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 2.5 ม.", "price": 616900, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-2-5", "label": "Length 7 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 2.5 ม.", "price": 636600, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-5-2-5", "label": "Length 7.5 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 2.5 ม.", "price": 657000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-2-5", "label": "Length 8 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 2.5 ม.", "price": 672100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-5-2-5", "label": "Length 8.5 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 2.5 ม.", "price": 697200, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "9-2-5", "label": "Length 9 m. x Projection 2.5 m.", "dimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 2.5 ม.", "copyDimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 2.5 ม.", "price": 713100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-3", "label": "Length 5 m. x Projection 3 m.", "dimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 3 ม.", "price": 639600, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-5-3", "label": "Length 5.5 m. x Projection 3 m.", "dimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 3 ม.", "price": 646800, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-3", "label": "Length 6 m. x Projection 3 m.", "dimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 3 ม.", "price": 652600, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-5-3", "label": "Length 6.5 m. x Projection 3 m.", "dimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 3 ม.", "price": 686700, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-3", "label": "Length 7 m. x Projection 3 m.", "dimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 3 ม.", "price": 702800, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-5-3", "label": "Length 7.5 m. x Projection 3 m.", "dimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 3 ม.", "price": 734600, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-3", "label": "Length 8 m. x Projection 3 m.", "dimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 3 ม.", "price": 751700, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-5-3", "label": "Length 8.5 m. x Projection 3 m.", "dimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 3 ม.", "price": 783100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "9-3", "label": "Length 9 m. x Projection 3 m.", "dimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 3 ม.", "copyDimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 3 ม.", "price": 800900, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-3-5", "label": "Length 5 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 3.5 ม.", "price": 679500, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-5-3-5", "label": "Length 5.5 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 3.5 ม.", "price": 691500, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-3-5", "label": "Length 6 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 3.5 ม.", "price": 710200, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-5-3-5", "label": "Length 6.5 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 3.5 ม.", "price": 758100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-3-5", "label": "Length 7 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 3.5 ม.", "price": 783100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-5-3-5", "label": "Length 7.5 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 3.5 ม.", "price": 797500, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-3-5", "label": "Length 8 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 3.5 ม.", "price": 816200, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-5-3-5", "label": "Length 8.5 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 3.5 ม.", "price": 867800, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "9-3-5", "label": "Length 9 m. x Projection 3.5 m.", "dimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 3.5 ม.", "copyDimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 3.5 ม.", "price": 895900, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-4", "label": "Length 5 m. x Projection 4 m.", "dimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 4 ม.", "price": 747600, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-5-4", "label": "Length 5.5 m. x Projection 4 m.", "dimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 4 ม.", "price": 760000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-4", "label": "Length 6 m. x Projection 4 m.", "dimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 4 ม.", "price": 770500, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-5-4", "label": "Length 6.5 m. x Projection 4 m.", "dimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 4 ม.", "price": 824900, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-4", "label": "Length 7 m. x Projection 4 m.", "dimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 4 ม.", "price": 828500, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-5-4", "label": "Length 7.5 m. x Projection 4 m.", "dimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 4 ม.", "price": 888100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-4", "label": "Length 8 m. x Projection 4 m.", "dimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 4 ม.", "price": 917100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-5-4", "label": "Length 8.5 m. x Projection 4 m.", "dimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 4 ม.", "price": 951000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "9-4", "label": "Length 9 m. x Projection 4 m.", "dimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 4 ม.", "copyDimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 4 ม.", "price": 982000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-4-5", "label": "Length 5 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 4.5 ม.", "price": 802300, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-5-4-5", "label": "Length 5.5 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 4.5 ม.", "price": 815000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-4-5", "label": "Length 6 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 4.5 ม.", "price": 834800, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-5-4-5", "label": "Length 6.5 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 4.5 ม.", "price": 896100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-4-5", "label": "Length 7 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 4.5 ม.", "price": 922200, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-5-4-5", "label": "Length 7.5 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 4.5 ม.", "price": 967100, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-4-5", "label": "Length 8 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 4.5 ม.", "price": 989300, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-5-4-5", "label": "Length 8.5 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 4.5 ม.", "price": 1038000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "9-4-5", "label": "Length 9 m. x Projection 4.5 m.", "dimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 4.5 ม.", "copyDimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 4.5 ม.", "price": 1062000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-5", "label": "Length 5 m. x Projection 5 m.", "dimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 5 ม.", "price": 882800, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-5-5", "label": "Length 5.5 m. x Projection 5 m.", "dimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 5 ม.", "price": 900400, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-5", "label": "Length 6 m. x Projection 5 m.", "dimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 5 ม.", "price": 918700, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "6-5-5", "label": "Length 6.5 m. x Projection 5 m.", "dimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 5 ม.", "price": 966300, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-5", "label": "Length 7 m. x Projection 5 m.", "dimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 5 ม.", "price": 992700, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "7-5-5", "label": "Length 7.5 m. x Projection 5 m.", "dimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 5 ม.", "price": 1068000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-5", "label": "Length 8 m. x Projection 5 m.", "dimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 5 ม.", "price": 1092000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "8-5-5", "label": "Length 8.5 m. x Projection 5 m.", "dimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 5 ม.", "price": 1151000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "9-5", "label": "Length 9 m. x Projection 5 m.", "dimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 5 ม.", "copyDimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 5 ม.", "price": 1173000, "heightText": "Standard post height maximum 3 m.", "postText": "6 Posts"}, {"id": "5-5-5", "label": "Length 5 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 5.5 ม.", "price": 932800, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "5-5-5-5", "label": "Length 5.5 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 5.5 ม.", "price": 955000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "6-5-5", "label": "Length 6 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 5.5 ม.", "price": 975500, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "6-5-5-5", "label": "Length 6.5 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 5.5 ม.", "price": 1043000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "7-5-5", "label": "Length 7 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 5.5 ม.", "price": 1131000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "7-5-5-5", "label": "Length 7.5 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 5.5 ม.", "price": 1209000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "8-5-5", "label": "Length 8 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 5.5 ม.", "price": 1220000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "8-5-5-5", "label": "Length 8.5 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 5.5 ม.", "price": 1264000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "9-5-5", "label": "Length 9 m. x Projection 5.5 m.", "dimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 5.5 ม.", "copyDimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 5.5 ม.", "price": 1319000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "5-6", "label": "Length 5 m. x Projection 6 m.", "dimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 5 ม. | ระยะยื่น: 6 ม.", "price": 989300, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "5-5-6", "label": "Length 5.5 m. x Projection 6 m.", "dimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 5.5 ม. | ระยะยื่น: 6 ม.", "price": 1006000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "6-6", "label": "Length 6 m. x Projection 6 m.", "dimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 6 ม. | ระยะยื่น: 6 ม.", "price": 1037000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "6-5-6", "label": "Length 6.5 m. x Projection 6 m.", "dimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 6.5 ม. | ระยะยื่น: 6 ม.", "price": 1164000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "7-6", "label": "Length 7 m. x Projection 6 m.", "dimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 7 ม. | ระยะยื่น: 6 ม.", "price": 1222000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "7-5-6", "label": "Length 7.5 m. x Projection 6 m.", "dimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 7.5 ม. | ระยะยื่น: 6 ม.", "price": 1285000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "8-6", "label": "Length 8 m. x Projection 6 m.", "dimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 8 ม. | ระยะยื่น: 6 ม.", "price": 1304000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "8-5-6", "label": "Length 8.5 m. x Projection 6 m.", "dimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 8.5 ม. | ระยะยื่น: 6 ม.", "price": 1352000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}, {"id": "9-6", "label": "Length 9 m. x Projection 6 m.", "dimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 6 ม.", "copyDimensionsText": "ความยาว: 9 ม. | ระยะยื่น: 6 ม.", "price": 1412000, "heightText": "Standard post height maximum 3 m.", "postText": "8 Posts (2 Units)"}], "frameColors": ["RAL 7016 Anthracite Grey", "RAL 9016 Traffic White"], "notes": ["Price included VAT 7%.", "Freestanding & Wall Mounted Double design. Price includes aluminum frame, 3 pcs columns (height 2.7-3 m.), 1 pc electric motor, 1 pc remote control, and LED lights.", "Standard post height is 3 meters maximum. If over 3 meters height, extra charge applies.", "Pre-order product: approximately 90-120 days lead time."]};
+const SIZES = PRODUCT.items || [];
+const SYSTEMS = PRODUCT.systemOptions || [{id:'single', label:PRODUCT.systemText || 'Motorized', labelTh:PRODUCT.systemText || 'ระบบมอเตอร์'}];
+let resultLanguage = 'th';
+const RESULT_TEXT = {
+  th: {
+    heading: 'ผลลัพธ์สำหรับส่งลูกค้า',
+    missingItem: 'ไม่พบราคาสำหรับขนาดนี้ กรุณาตรวจสอบตารางราคา',
+    missingPrice: 'ไม่พบราคาสำหรับระบบหรือขนาดนี้ กรุณาตรวจสอบตารางราคา',
+    product: 'สินค้า',
+    model: 'รุ่น/แบบ',
+    system: 'ระบบ',
+    size: 'ขนาด',
+    height: 'ความสูง',
+    posts: 'จำนวนเสา',
+    extra: 'รายละเอียดเพิ่มเติม',
+    frameColor: 'สีโครง',
+    fabric: 'ผ้า',
+    quantity: 'จำนวน',
+    unitPrice: 'ราคาต่อชุด',
+    beforeDiscount: 'ราคาก่อนส่วนลด',
+    specialDiscount: 'ส่วนลดพิเศษ',
+    discount: 'ส่วนลด',
+    netTotal: 'ราคารวมสุทธิ',
+    total: 'ราคารวม',
+    note: 'หมายเหตุ',
+    priceNotes: 'หมายเหตุจากใบราคา',
+    currency: 'บาท',
+    setUnit: 'ชุด',
+    locale: 'th-TH'
+  },
+  en: {
+    heading: 'Results for Customer',
+    missingItem: 'No price found for this size. Please check the price table.',
+    missingPrice: 'No price found for this system or size. Please check the price table.',
+    product: 'Product',
+    model: 'Model',
+    system: 'System',
+    size: 'Size',
+    height: 'Height',
+    posts: 'Posts',
+    extra: 'Additional Details',
+    frameColor: 'Frame Color',
+    fabric: 'Fabric',
+    quantity: 'Quantity',
+    unitPrice: 'Unit Price',
+    beforeDiscount: 'Before Discount',
+    specialDiscount: 'Special Discount',
+    discount: 'Discount',
+    netTotal: 'Net Total',
+    total: 'Total',
+    note: 'Note',
+    priceNotes: 'Pricelist Notes',
+    currency: 'THB',
+    setUnit: 'set',
+    locale: 'en-US'
+  }
+};
+
+function money(value, lang = 'th'){
+  const number = Number(value || 0);
+  const text = RESULT_TEXT[lang] || RESULT_TEXT.th;
+  return Math.round(number).toLocaleString(text.locale) + ' ' + text.currency;
+}
+function getEl(id){ return document.getElementById(id); }
+function getResultText(){
+  return RESULT_TEXT[resultLanguage] || RESULT_TEXT.th;
+}
+function getSystemLabel(system){
+  return resultLanguage === 'en' ? (system.label || system.labelTh) : (system.labelTh || system.label);
+}
+function getDimensionText(item){
+  return resultLanguage === 'en' ? (item.label || item.copyDimensionsText || item.dimensionsText) : (item.copyDimensionsText || item.dimensionsText || item.label);
+}
+function getPostText(item){
+  if (!item.postText) return '';
+  if (resultLanguage !== 'en') return item.postText;
+  const match = String(item.postText).match(/\d+/);
+  return match ? match[0] + ' posts' : item.postText;
+}
+function getLocalizedNote(note){
+  if (resultLanguage !== 'en') return note;
+  return String(note || '')
+    .split('\u0e1a\u0e32\u0e17').join('THB')
+    .split('\u0e23\u0e35\u0e42\u0e21\u0e17').join('remote')
+    .split('\u0e27\u0e31\u0e19').join('days');
+}
+function setResultLanguage(lang){
+  resultLanguage = lang === 'en' ? 'en' : 'th';
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  calculate();
+}
+function fillSelect(el, options, valueKey='value', labelKey='label'){
+  el.innerHTML = '';
+  options.forEach(option => {
+    const node = document.createElement('option');
+    node.value = option[valueKey];
+    node.textContent = option[labelKey];
+    el.appendChild(node);
+  });
+}
+function init(){
+  fillSelect(getEl('sizeSelect'), SIZES.map((item, index)=>({value:String(index), label:item.label + ' - ' + money(item.price || (item.prices && item.prices[PRODUCT.defaultSystem || SYSTEMS[0].id]) || 0)})));
+  fillSelect(getEl('systemSelect'), SYSTEMS.map(s=>({value:s.id,label:(s.labelTh || s.label)})));
+  if (PRODUCT.defaultSystem) getEl('systemSelect').value = PRODUCT.defaultSystem;
+  if (SYSTEMS.length <= 1) getEl('systemWrap').style.display = 'none';
+  fillSelect(getEl('frameColor'), (PRODUCT.frameColors || ['Standard']).map(x=>({value:x,label:x})));
+  const fabricOptions = PRODUCT.fabricOptions || [];
+  if (fabricOptions.length){
+    fillSelect(getEl('fabricOption'), fabricOptions.map(x=>({value:x,label:x})));
+  } else {
+    getEl('fabricWrap').style.display = 'none';
+  }
+  document.querySelectorAll('input,select,textarea').forEach(el=>{
+    el.addEventListener('input', calculate);
+    el.addEventListener('change', calculate);
+  });
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    button.addEventListener('click', () => setResultLanguage(button.dataset.resultLang));
+  });
+  calculate();
+}
+function getSelectedSystem(){
+  const systemId = getEl('systemSelect').value || SYSTEMS[0].id;
+  return SYSTEMS.find(s=>s.id === systemId) || SYSTEMS[0];
+}
+function getSelectedItem(){
+  const index = Number(getEl('sizeSelect').value || 0);
+  return SIZES[index];
+}
+function calculate(){
+  const text = getResultText();
+  const item = getSelectedItem();
+  const system = getSelectedSystem();
+  const qty = Math.max(1, Math.floor(Number(getEl('qty').value || 1)));
+  const discountPercent = Math.min(100, Math.max(0, Number(getEl('discountPercent').value || 0)));
+  const specialDiscount = Math.max(0, Number(getEl('specialDiscount').value || 0));
+  const frameColor = getEl('frameColor').value;
+  const fabric = PRODUCT.fabricOptions && PRODUCT.fabricOptions.length ? getEl('fabricOption').value : '';
+  const customNote = getEl('customNote').value.trim();
+  getEl('resultHeading').textContent = text.heading;
+
+  if (!item){
+    getEl('quoteTitle').textContent = PRODUCT.title;
+    getEl('finalPrice').textContent = '';
+    getEl('resultLines').innerHTML = '<span class="warn">' + escapeHtml(text.missingItem) + '</span>';
+    getEl('standardNotes').innerHTML = '';
+    getEl('copyText').value = '';
+    return;
+  }
+
+  const unitPrice = Number(item.price || (item.prices && item.prices[system.id]) || 0);
+  if (!unitPrice){
+    getEl('quoteTitle').textContent = PRODUCT.title;
+    getEl('finalPrice').textContent = '';
+    getEl('resultLines').innerHTML = '<span class="warn">' + escapeHtml(text.missingPrice) + '</span>';
+    getEl('standardNotes').innerHTML = '';
+    getEl('copyText').value = '';
+    return;
+  }
+
+  const subtotal = unitPrice * qty;
+  const subtotalAfterSpecial = Math.max(0, subtotal - specialDiscount);
+  const discountAmount = subtotalAfterSpecial * discountPercent / 100;
+  const finalTotal = Math.max(0, subtotalAfterSpecial - discountAmount);
+  getEl('quoteTitle').textContent = PRODUCT.title;
+  getEl('finalPrice').textContent = money(finalTotal, resultLanguage);
+
+  const lines = [];
+  lines.push(text.product + ': ' + PRODUCT.title);
+  lines.push(text.model + ': ' + PRODUCT.subtitle);
+  lines.push(text.system + ': ' + getSystemLabel(system));
+  lines.push(text.size + ': ' + getDimensionText(item));
+  if (item.heightText) lines.push(text.height + ': ' + item.heightText);
+  if (item.postText) lines.push(text.posts + ': ' + getPostText(item));
+  if (item.bayText) lines.push('Bay: ' + item.bayText);
+  if (item.extraText) lines.push(text.extra + ': ' + item.extraText);
+  lines.push(text.frameColor + ': ' + frameColor);
+  if (fabric) lines.push(text.fabric + ': ' + fabric);
+  lines.push(text.quantity + ': ' + qty.toLocaleString(text.locale) + ' ' + text.setUnit);
+  lines.push(text.unitPrice + ': ' + money(unitPrice, resultLanguage));
+  if (qty > 1 || discountPercent > 0 || specialDiscount > 0) {
+    lines.push(text.beforeDiscount + ': ' + money(subtotal, resultLanguage));
+  }
+  if (specialDiscount > 0) {
+    lines.push(text.specialDiscount + ': ' + money(specialDiscount, resultLanguage));
+  }
+  if (discountPercent > 0) {
+    lines.push(text.discount + ' (' + discountPercent.toLocaleString(text.locale) + '%): ' + money(discountAmount, resultLanguage));
+  }
+  if (discountPercent > 0 || specialDiscount > 0) {
+    lines.push(text.netTotal + ': ' + money(finalTotal, resultLanguage));
+  } else {
+    lines.push(text.total + ': ' + money(finalTotal, resultLanguage));
+  }
+  if (customNote) {
+    lines.push('');
+    lines.push(text.note + ': ' + customNote);
+  }
+
+  const noteLines = [text.priceNotes + ':'].concat((PRODUCT.notes || []).map(note => '- ' + getLocalizedNote(note)));
+  getEl('resultLines').textContent = lines.join('\n');
+  getEl('standardNotes').innerHTML = '<span class="pill">' + escapeHtml(text.priceNotes) + '</span><ul>' + (PRODUCT.notes || []).map(note => '<li>' + escapeHtml(getLocalizedNote(note)) + '</li>').join('') + '</ul>';
+  getEl('copyText').value = lines.concat([''], noteLines).join('\n').trim();
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s]));
+}
+async function copyQuotation(){
+  const text = getEl('copyText').value;
+  if (!text) return alert('ไม่มีข้อความสำหรับคัดลอก');
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('คัดลอกข้อความแล้ว');
+  }catch(error){
+    getEl('copyText').hidden = false;
+    getEl('copyText').select();
+    alert('Copy อัตโนมัติไม่สำเร็จ กรุณาคัดลอกจากกล่องข้อความด้านล่าง');
+  }
+}
+function resetForm(){
+  getEl('sizeSelect').selectedIndex = 0;
+  getEl('systemSelect').value = PRODUCT.defaultSystem || SYSTEMS[0].id;
+  getEl('frameColor').selectedIndex = 0;
+  if (PRODUCT.fabricOptions && PRODUCT.fabricOptions.length) getEl('fabricOption').selectedIndex = 0;
+  getEl('qty').value = 1;
+  getEl('discountPercent').value = 0;
+  getEl('specialDiscount').value = 0;
+  getEl('customNote').value = '';
+  calculate();
+}
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

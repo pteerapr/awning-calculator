@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZIPGUIDE Expert Outdoor Blind Calculator</title>
+<style>
+:root {
+  --primary:#003366;
+  --accent:#f59e0b;
+  --deep:#0f2747;
+  --bg:#f6f8fb;
+  --panel:#ffffff;
+  --line:#dbe3ee;
+  --muted:#64748b;
+  --text:#0f172a;
+  --green:#198754;
+  --shadow:0 18px 44px rgba(15,23,42,.09);
+  --radius:18px;
+}
+* { box-sizing:border-box; }
+html, body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+body { padding:22px; }
+.wrap { max-width:1180px; margin:0 auto; }
+.header {
+  display:grid;
+  gap:12px;
+  margin-bottom:22px;
+}
+.brand {
+  color:#b36a22;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+h1 {
+  margin:0;
+  color:#071a3d;
+  font-size:clamp(34px,5vw,56px);
+  line-height:1.02;
+  letter-spacing:0;
+}
+h1 a { color:#4c1d95; }
+.subtitle {
+  margin:0;
+  color:var(--muted);
+  font-size:15px;
+}
+.badge {
+  display:inline-flex;
+  width:max-content;
+  max-width:100%;
+  align-items:center;
+  border-radius:999px;
+  background:#fff0d5;
+  color:#b45309;
+  font-weight:900;
+  padding:12px 16px;
+}
+.grid {
+  display:grid;
+  grid-template-columns:minmax(320px,1fr) minmax(360px,.98fr);
+  gap:20px;
+  align-items:start;
+}
+.card {
+  background:var(--panel);
+  border:1px solid #e8eef6;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:22px;
+}
+h2 {
+  margin:0 0 18px;
+  color:var(--primary);
+  font-size:24px;
+}
+h3 {
+  margin:20px 0 12px;
+  color:var(--primary);
+  font-size:17px;
+}
+.input-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px 16px;
+}
+label {
+  display:block;
+  margin-bottom:6px;
+  color:#10233f;
+  font-size:14px;
+  font-weight:800;
+}
+input, select {
+  width:100%;
+  min-height:42px;
+  border:1px solid #cfd8e6;
+  border-radius:12px;
+  background:#fff;
+  color:#111827;
+  padding:9px 11px;
+  font-size:15px;
+}
+input:focus, select:focus {
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,.14);
+  outline:none;
+}
+.segmented {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+.segmented label {
+  margin:0;
+  cursor:pointer;
+}
+.segmented input {
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.segment-body {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-height:58px;
+  justify-content:center;
+  border:1px solid #cfd8e6;
+  border-radius:12px;
+  background:#f8fafc;
+  padding:10px 12px;
+  transition:.15s ease;
+}
+.segment-body strong { color:#0b2c55; }
+.segment-body span {
+  color:var(--muted);
+  font-size:12px;
+}
+.segmented input:checked + .segment-body {
+  border-color:var(--primary);
+  background:#eaf3ff;
+  box-shadow:inset 0 0 0 1px var(--primary);
+}
+.swatch-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.swatch-option {
+  margin:0;
+  cursor:pointer;
+}
+.swatch-option input {
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.swatch-body {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid #cfd8e6;
+  border-radius:12px;
+  background:#fff;
+  padding:10px;
+  font-size:13px;
+  font-weight:800;
+  transition:.15s ease;
+}
+.swatch {
+  display:inline-block;
+  width:22px;
+  height:22px;
+  flex:0 0 auto;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,.2);
+}
+.swatch.black { background:#111111; }
+.swatch.dark-grey { background:#3f3f46; }
+.swatch.white { background:#f8fafc; }
+.swatch-option input:checked + .swatch-body {
+  border-color:var(--primary);
+  background:#eaf3ff;
+  box-shadow:inset 0 0 0 1px var(--primary);
+}
+.note-box {
+  margin-top:18px;
+  border-radius:14px;
+  background:#fff7ed;
+  color:#475569;
+  padding:14px;
+  font-size:14px;
+  line-height:1.65;
+}
+.note-box strong { color:#c2410c; }
+.result-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:18px;
+}
+.result-head h2 { margin:0; }
+button {
+  border:0;
+  border-radius:12px;
+  background:var(--primary);
+  color:#fff;
+  cursor:pointer;
+  font-weight:900;
+  padding:11px 15px;
+}
+button:hover { background:#0b4f8f; }
+.copy-button {
+  background:#f97316;
+  white-space:nowrap;
+}
+.copy-button:hover { background:#ea580c; }
+.preview {
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fbfdff;
+  padding:14px;
+}
+.preview h3 {
+  margin:0;
+  color:#10233f;
+  font-size:16px;
+}
+.languageToggle {
+  display:inline-flex;
+  border:1px solid #d1d5db;
+  border-radius:999px;
+  background:#fff;
+  padding:3px;
+  gap:0;
+  margin:.8rem 0 1rem;
+}
+.languageToggle button {
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:#475569;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:900;
+  line-height:1;
+  padding:8px 13px;
+}
+.languageToggle button.active {
+  background:var(--primary);
+  color:#fff;
+}
+.languageToggle button:focus-visible {
+  outline:3px solid rgba(14,165,233,.35);
+  outline-offset:2px;
+}
+pre {
+  min-height:330px;
+  margin:0;
+  border-left:4px solid var(--green);
+  border-radius:0 14px 14px 0;
+  background:#eef9f1;
+  color:#111827;
+  padding:16px;
+  overflow:auto;
+  white-space:pre-wrap;
+  font-family:Consolas,Menlo,Monaco,monospace;
+  font-size:13px;
+  line-height:1.65;
+}
+.summary {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+.metric {
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  background:#f8fafc;
+  padding:10px 12px;
+}
+.metric span {
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.metric strong {
+  display:block;
+  margin-top:2px;
+  color:#0f2747;
+  font-size:17px;
+}
+@media (max-width:900px) {
+  body { padding:14px; }
+  .grid { grid-template-columns:1fr; }
+}
+@media (max-width:560px) {
+  .input-grid, .summary { grid-template-columns:1fr; }
+  .segmented, .swatch-grid { grid-template-columns:1fr; }
+  .result-head { align-items:stretch; flex-direction:column; }
+  .copy-button { width:100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="header">
+    <div class="brand">Sangthong Creation</div>
+    <h1>ZIPGUIDE Expert Outdoor Blind (<a href="index.html">Back to Index</a>)</h1>
+    <p class="subtitle">ม่านม้วนแนวดิ่ง ระบบซิป รุ่น Expert Series</p>
+    <div class="badge">PROSENSE / Somfy Motor System · VAT 7% Included</div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2>Input / รายละเอียดงาน</h2>
+
+      <h3>Motor System / ระบบมอเตอร์</h3>
+      <div class="segmented" id="motorGroup">
+        <label>
+          <input type="radio" name="motorType" value="prosense" checked>
+          <span class="segment-body">
+            <strong>PROSENSE</strong>
+            <span>Motor System</span>
+          </span>
+        </label>
+        <label>
+          <input type="radio" name="motorType" value="somfy">
+          <span class="segment-body">
+            <strong>Somfy</strong>
+            <span>Motor System</span>
+          </span>
+        </label>
+      </div>
+
+      <h3>Size / ขนาด</h3>
+      <div class="input-grid">
+        <div>
+          <label for="widthRange">Width / ความกว้าง</label>
+          <select id="widthRange"></select>
+        </div>
+        <div>
+          <label for="dropRange">Drop / ความสูง</label>
+          <select id="dropRange"></select>
+        </div>
+        <div>
+          <label for="fabric">Fabric Openness / ชนิดผ้า</label>
+          <select id="fabric">
+            <option value="5">5%</option>
+            <option value="1">1%</option>
+            <option value="0">0%</option>
+          </select>
+        </div>
+        <div>
+          <label for="qty">Quantity / จำนวน</label>
+          <input id="qty" type="number" min="1" step="1" value="1">
+        </div>
+      </div>
+
+      <h3>Frame Color / สีโครงอลูมิเนียม</h3>
+      <div class="swatch-grid" id="frameColorGroup">
+        <label class="swatch-option">
+          <input type="radio" name="frameColor" value="Black" checked>
+          <span class="swatch-body"><span class="swatch black"></span>Black</span>
+        </label>
+        <label class="swatch-option">
+          <input type="radio" name="frameColor" value="Dark Grey">
+          <span class="swatch-body"><span class="swatch dark-grey"></span>Dark Grey</span>
+        </label>
+        <label class="swatch-option">
+          <input type="radio" name="frameColor" value="White">
+          <span class="swatch-body"><span class="swatch white"></span>White</span>
+        </label>
+      </div>
+
+      <h3>Discount / ส่วนลด</h3>
+      <div class="input-grid">
+        <div>
+          <label for="specialDiscount">Special Discount / ส่วนลดพิเศษ</label>
+          <input id="specialDiscount" type="number" min="0" step="1" value="0">
+        </div>
+        <div>
+          <label for="discount">Discount % / ส่วนลด</label>
+          <input id="discount" type="number" min="0" max="100" step="0.1" value="0">
+        </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        <label for="jobNote">Note / หมายเหตุ</label>
+        <input id="jobNote" type="text" placeholder="Optional note">
+      </div>
+
+      <div class="note-box">
+        <strong>หมายเหตุจากใบราคา</strong>
+        <div>* ราคารวม VAT 7%</div>
+        <div>* สินค้า Pre-order ระยะเวลาประมาณ 30-45 วัน</div>
+        <div>* สีโครงอลูมิเนียม: White, Dark Grey, Black</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="result-head">
+        <h2 id="resultTitle">Quotation Preview / ข้อความส่งลูกค้า</h2>
+        <button class="copy-button" id="copyBtn" type="button">Copy All</button>
+      </div>
+
+      <div class="preview">
+        <h3 id="copyTitle">Customer copy text / ข้อความสำหรับส่งลูกค้า</h3>
+        <div class="languageToggle" aria-label="Result language">
+          <button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button>
+          <button type="button" data-result-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <pre id="copyPreview"></pre>
+      </div>
+
+      <div class="summary">
+        <div class="metric">
+          <span id="unitPriceLabel">ราคาต่อชุด</span>
+          <strong id="unitPriceDisplay">0 บาท</strong>
+        </div>
+        <div class="metric">
+          <span id="totalPriceLabel">ราคารวมสุทธิ</span>
+          <strong id="totalPriceDisplay">0 บาท</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+let resultLanguage = "th";
+
+const WIDTH_RANGES = [
+  "0.80-1.00",
+  "1.01-1.50",
+  "1.51-2.00",
+  "2.01-2.50",
+  "2.51-3.00",
+  "3.01-3.50",
+  "3.51-4.00",
+  "4.01-4.50",
+  "4.51-5.00",
+  "5.01-5.50"
+];
+
+const DROP_RANGES = [
+  "0.50-1.00",
+  "1.01-1.50",
+  "1.51-2.00",
+  "2.01-2.50",
+  "2.51-3.00",
+  "3.01-3.50",
+  "3.51-4.00",
+  "4.01-4.50"
+];
+
+const MOTOR_LABELS = {
+  prosense: "PROSENSE Motor System",
+  somfy: "Somfy Motor System"
+};
+
+const PRICE_TABLES = {
+  prosense: [
+    [[41470,46250],[47850,51040],[51040,55820],[57420,62200],[60600,65390],[63790,68580],[66980,71770],[76550,84530],[86120,90900],[92500,97280]],
+    [[44660,47850],[51040,52630],[54230,59010],[60600,65390],[63790,68580],[66980,74960],[70170,78150],[82930,87720],[89310,97280],[95690,103700]],
+    [[47850,49440],[52630,55820],[57420,62200],[63790,68580],[66980,71770],[70170,78150],[76550,84530],[86120,94090],[95690,103700],[98880,110100]],
+    [[51040,52630],[54230,59010],[60600,65390],[66980,71770],[70170,78150],[73360,84530],[79740,87720],[89310,100500],[98880,110100],[105300,116500]],
+    [[54230,55820],[57420,62200],[63790,68580],[70170,78150],[73360,81340],[79740,87720],[82930,94090],[92500,106900],[102100,116500],[108500,122800]],
+    [[57420,59010],[60600,68580],[66980,74960],[73360,81340],[76550,87720],[82930,94090],[86120,100500],[98880,113300],[108500,122800],[111700,129200]],
+    [[60600,62200],[63790,70170],[70170,78150],[76550,84530],[79740,90900],[86120,97280],[89310,103700],[102100,116500],[111700,129200],[118100,135600]],
+    [[63790,65390],[66980,71770],[73360,81340],[79740,90900],[82930,97280],[89310,103700],[95690,110100],[105300,122800],[114900,135600],[121200,142000]]
+  ],
+  somfy: [
+    [[78270,83050],[84650,87840],[87840,92620],[94220,99000],[97400,102200],[100600,105400],[103800,108600],[113400,121400],[123000,127700],[129300,134100]],
+    [[81460,84650],[87840,89430],[91030,95810],[97400,102200],[100600,105400],[103800,111800],[107000,115000],[119800,124600],[126200,134100],[132500,140500]],
+    [[84650,86240],[89430,92620],[94220,99000],[100600,105400],[103800,108600],[107000,115000],[113400,121400],[123000,130900],[132500,140500],[135700,146900]],
+    [[87840,89430],[91030,95810],[97400,102200],[103800,108600],[107000,115000],[110200,121400],[116600,124600],[126200,137300],[135700,146900],[142100,153300]],
+    [[91030,92620],[94220,99000],[100600,105400],[107000,115000],[110200,118200],[116600,124600],[119800,130900],[129300,143700],[138900,153300],[145300,159600]],
+    [[94220,95810],[97400,105400],[103800,111800],[110200,118200],[113400,124600],[119800,130900],[123000,137300],[135700,150100],[145300,159600],[148500,166000]],
+    [[97400,99000],[100600,107000],[107000,115000],[113400,121400],[116600,127700],[123000,134100],[126200,140500],[138900,153300],[148500,166000],[154900,172400]],
+    [[100600,102200],[103800,108600],[110200,118200],[116600,127700],[119800,134100],[126200,140500],[132500,146900],[142100,159600],[151700,172400],[158000,178800]]
+  ]
+};
+
+function populateSelects() {
+  const widthSelect = document.getElementById("widthRange");
+  const dropSelect = document.getElementById("dropRange");
+
+  WIDTH_RANGES.forEach((range, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = range + " m";
+    widthSelect.appendChild(option);
+  });
+
+  DROP_RANGES.forEach((range, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = range + " m";
+    dropSelect.appendChild(option);
+  });
+}
+
+function selectedRadioValue(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  return checked ? checked.value : "";
+}
+
+function cleanNumber(value) {
+  const number = Number(String(value || "0").replace(/,/g, ""));
+  return Number.isFinite(number) ? number : 0;
+}
+
+function formatMoney(value, language) {
+  const rounded = Math.round(value || 0);
+  if (language === "en") return rounded.toLocaleString("en-US") + " THB";
+  return rounded.toLocaleString("th-TH") + " บาท";
+}
+
+function getFabricPriceColumn(fabric) {
+  return fabric === "5" ? 0 : 1;
+}
+
+function getCurrentState() {
+  const motorType = selectedRadioValue("motorType") || "prosense";
+  const widthIndex = cleanNumber(document.getElementById("widthRange").value);
+  const dropIndex = cleanNumber(document.getElementById("dropRange").value);
+  const fabric = document.getElementById("fabric").value;
+  const fabricColumn = getFabricPriceColumn(fabric);
+  const unitPrice = PRICE_TABLES[motorType][dropIndex][widthIndex][fabricColumn];
+  const qty = Math.max(1, Math.floor(cleanNumber(document.getElementById("qty").value)));
+  const subtotal = unitPrice * qty;
+  const specialDiscountInput = Math.max(0, cleanNumber(document.getElementById("specialDiscount").value));
+  const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
+  const discountPercent = Math.min(100, Math.max(0, cleanNumber(document.getElementById("discount").value)));
+  const discountBase = Math.max(subtotal - specialDiscountAmount, 0);
+  const discountAmount = discountBase * (discountPercent / 100);
+  const grandTotal = Math.max(discountBase - discountAmount, 0);
+
+  return {
+    motorType,
+    motorLabel: MOTOR_LABELS[motorType],
+    widthRange: WIDTH_RANGES[widthIndex],
+    dropRange: DROP_RANGES[dropIndex],
+    fabric,
+    frameColor: selectedRadioValue("frameColor") || "Black",
+    qty,
+    unitPrice,
+    subtotal,
+    specialDiscountAmount,
+    discountPercent,
+    discountAmount,
+    grandTotal,
+    jobNote: document.getElementById("jobNote").value.trim()
+  };
+}
+
+function buildThaiLines(state) {
+  const lines = [];
+  lines.push("ZIPGUIDE Expert Series Outdoor Blind");
+  lines.push("ระบบมอเตอร์: " + state.motorLabel);
+  lines.push("ขนาด: กว้าง " + state.widthRange + " m x สูง " + state.dropRange + " m");
+  lines.push("ชนิดผ้า: " + state.fabric + "%");
+  lines.push("สีโครงอลูมิเนียม: " + state.frameColor);
+  lines.push("จำนวน: " + state.qty + " ชุด");
+  lines.push("");
+  lines.push("ราคาต่อชุด: " + formatMoney(state.unitPrice, "th"));
+  lines.push("ราคาก่อนส่วนลด: " + formatMoney(state.subtotal, "th"));
+  if (state.specialDiscountAmount > 0) {
+    lines.push("ส่วนลดพิเศษ: -" + formatMoney(state.specialDiscountAmount, "th"));
+  }
+  lines.push("ส่วนลด: " + state.discountPercent + "% = " + formatMoney(state.discountAmount, "th"));
+  lines.push("ราคารวมสุทธิ: " + formatMoney(state.grandTotal, "th"));
+  if (state.jobNote) lines.push("หมายเหตุ: " + state.jobNote);
+  lines.push("");
+  lines.push("รวม VAT 7% แล้ว");
+  lines.push("สินค้า Pre-order ระยะเวลาประมาณ 30-45 วัน");
+  lines.push("สีโครงอลูมิเนียมมาตรฐาน: White, Dark Grey, Black");
+  return lines;
+}
+
+function buildEnglishLines(state) {
+  const lines = [];
+  lines.push("ZIPGUIDE Expert Series Outdoor Blind");
+  lines.push("Motor System: " + state.motorLabel);
+  lines.push("Size: Width " + state.widthRange + " m x Drop " + state.dropRange + " m");
+  lines.push("Fabric Openness: " + state.fabric + "%");
+  lines.push("Aluminium Frame Color: " + state.frameColor);
+  lines.push("Quantity: " + state.qty + " set");
+  lines.push("");
+  lines.push("Unit Price: " + formatMoney(state.unitPrice, "en"));
+  lines.push("Before Discount: " + formatMoney(state.subtotal, "en"));
+  if (state.specialDiscountAmount > 0) {
+    lines.push("Special Discount: -" + formatMoney(state.specialDiscountAmount, "en"));
+  }
+  lines.push("Discount: " + state.discountPercent + "% = " + formatMoney(state.discountAmount, "en"));
+  lines.push("Net Total: " + formatMoney(state.grandTotal, "en"));
+  if (state.jobNote) lines.push("Note: " + state.jobNote);
+  lines.push("");
+  lines.push("VAT 7% included");
+  lines.push("Pre-order product, approximate lead time 30-45 days");
+  lines.push("Standard aluminium frame colors: White, Dark Grey, Black");
+  return lines;
+}
+
+function updateResultLanguageLabels() {
+  const english = resultLanguage === "en";
+  document.getElementById("resultTitle").textContent = english ? "Quotation Preview" : "Quotation Preview / ข้อความส่งลูกค้า";
+  document.getElementById("copyTitle").textContent = english ? "Customer copy text" : "Customer copy text / ข้อความสำหรับส่งลูกค้า";
+  document.getElementById("copyBtn").textContent = english ? "Copy All" : "คัดลอกทั้งหมด";
+  document.getElementById("unitPriceLabel").textContent = english ? "Unit Price" : "ราคาต่อชุด";
+  document.getElementById("totalPriceLabel").textContent = english ? "Net Total" : "ราคารวมสุทธิ";
+
+  document.querySelectorAll("[data-result-lang]").forEach(button => {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function calculate() {
+  const state = getCurrentState();
+  const lines = resultLanguage === "en" ? buildEnglishLines(state) : buildThaiLines(state);
+  document.getElementById("copyPreview").textContent = lines.join("\n");
+  document.getElementById("unitPriceDisplay").textContent = formatMoney(state.unitPrice, resultLanguage);
+  document.getElementById("totalPriceDisplay").textContent = formatMoney(state.grandTotal, resultLanguage);
+  updateResultLanguageLabels();
+}
+
+function setResultLanguage(language) {
+  resultLanguage = language === "en" ? "en" : "th";
+  calculate();
+}
+
+function copyAll() {
+  const text = document.getElementById("copyPreview").textContent;
+  const button = document.getElementById("copyBtn");
+  const copiedLabel = resultLanguage === "en" ? "Copied" : "คัดลอกแล้ว";
+  const defaultLabel = resultLanguage === "en" ? "Copy All" : "คัดลอกทั้งหมด";
+
+  function showCopied() {
+    button.textContent = copiedLabel;
+    setTimeout(() => {
+      button.textContent = defaultLabel;
+    }, 1500);
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(showCopied);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  showCopied();
+}
+
+function bindEvents() {
+  document.querySelectorAll("select, input").forEach(element => {
+    const eventName = element.type === "text" || element.type === "number" ? "input" : "change";
+    element.addEventListener(eventName, calculate);
+  });
+
+  document.querySelectorAll("[data-result-lang]").forEach(button => {
+    button.addEventListener("click", () => setResultLanguage(button.dataset.resultLang));
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", copyAll);
+}
+
+populateSelects();
+bindEvents();
+calculate();
+</script>
+</body>
+</html>
