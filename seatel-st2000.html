@@ -76,13 +76,17 @@ th{background:#f3f4f6;}
   .quote-price { font-size:18px; font-weight:700; color:#0f5132; }
   .customer-copy-label { font-size:13px; font-weight:700; color:#003366; margin-bottom:8px; }
   .customer-copy-text { margin:0; padding:12px; background:#f1f3f5; border:1px solid #d8dee4; border-radius:8px; white-space:pre-wrap; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#111827; }
+@media (max-width: 768px) {
+  .main-wrapper { flex-direction: column; padding: 10px; }
+  .container, .result-panel { width: 100%; box-sizing: border-box; }
+}
 </style><title>SEATEL ST2000 Calculator</title></head><body><div class="main-wrapper">
 <div class="container">
 <h2>เครื่องคำนวณราคากันสาด SEATEL ST2000 (<a href="index.html">Back to Index</a>)</h2>
 <label>ความกว้าง (เมตร)</label>
-<input id="width" placeholder="เช่น 2.4" type="number"/>
+<input id="width" placeholder="เช่น 2.4" type="number" value="3.00"/>
 <label>ความสูง (เมตร)</label>
-<input id="drop" placeholder="เช่น 2.0" type="number"/>
+<input id="drop" placeholder="เช่น 2.0" type="number" value="2.00"/>
 <label>ชนิดผ้า</label>
 <select id="fabric">
 <option>Solar View</option>
@@ -103,6 +107,8 @@ th{background:#f3f4f6;}
 <option value="25800">มอเตอร์ Somfy Altus 40/17 (25,800 บาท)</option>
 <option value="26800">มอเตอร์ Somfy Altus 50/12 (26,800 บาท)</option>
 <option value="32800">มอเตอร์ Somfy Altus 85/17 (32,800 บาท)</option>
+<option value="25000">มอเตอร์ Somfy MAESTRIA+50 RTS 15/17 + Remote 1 ช่อง (Telis situo 1 RTS) (25,000 บาท)</option>
+<option value="31000">มอเตอร์ Somfy MAESTRIA+50 RTS 35/17 + Remote 1 ช่อง (Telis situo 1 RTS) (31,000 บาท)</option>
 </select>
 <div id="strongUpAccessoryBox" class="accessory-box">
   <h4>Strong Up Accessories / อุปกรณ์เสริม Strong Up</h4>

@@ -81,6 +81,12 @@ label input[type="checkbox"] {
   line-height:1.6;
 }
 
+@media (max-width: 768px) {
+  .app { flex-direction: column; }
+  .left { flex: none; width: 100%; box-sizing: border-box; }
+  .right { width: 100%; box-sizing: border-box; }
+  #copyPreview { min-height: 200px; }
+}
   </style><title>Spettmann Star Calculator</title></head><body><div class="app">
 <div class="panel left">
 <h2>เครื่องคำนวณกันสาด Spettmann Star (<a href="index.html">Back to Index</a>)</h2>

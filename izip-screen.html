@@ -61,14 +61,18 @@ th{background:#f3f4f6;}
   .discountBox { background:#e6ffe6; border:2px solid #009933; border-radius:8px; padding:8px; color:#006600; font-size:18px; font-weight:bold; text-align:center; margin-top:10px; }
   .note { margin-top:18px; background:#f8fafc; color:#475569; border-radius:14px; padding:14px; font-size:14px; line-height:1.65; }
   .note strong { color:#003366; }
+@media (max-width: 768px) {
+  .container { flex-direction: column; margin: 0 10px; }
+  .card, #resultPanel { width: 100%; box-sizing: border-box; min-height: unset; }
+}
 </style><title>Izip Screen Calculator</title></head><body>
 <h1>Izip Screen Price Calculator  (<a href="index.html">Back to Index</a>)</h1>
 <div class="container">
 <div class="card">
 <label>กว้าง (m)</label>
-<input id="width" max="6.0" min="0.7" oninput="updateArea()" step="0.01" type="number"/>
+<input id="width" max="6.0" min="0.7" oninput="updateArea()" step="0.01" type="number" value="1.50"/>
 <label>สูง(m)</label>
-<input id="height" max="2.9" min="0.85" oninput="updateArea()" step="0.01" type="number"/>
+<input id="height" max="2.9" min="0.85" oninput="updateArea()" step="0.01" type="number" value="1.50"/>
 <div id="areaDisplay">ตรม: 0.00 m²</div>
 <label>ชนิดผ้าใบ</label>
 <select id="fabric" onchange="calculate(false)">
@@ -94,6 +98,8 @@ th{background:#f3f4f6;}
 <option value="23800">Somfy Altus 50 RTS 20/17 + Remote 1 ช่อง = 23,800 บาท</option>
 <option value="24800">Somfy Altus 50 RTS 30/17 + Remote 1 ช่อง = 24,800 บาท</option>
 <option value="25800">Somfy Altus 50 RTS 40/17 + Remote 1 ช่อง = 25,800 บาท</option>
+<option value="25000">Somfy MAESTRIA+50 RTS 15/17 + Remote 1 ช่อง (Telis situo 1 RTS) = 25,000 บาท</option>
+<option value="31000">Somfy MAESTRIA+50 RTS 35/17 + Remote 1 ช่อง (Telis situo 1 RTS) = 31,000 บาท</option>
 </select>
 </div>
 
