@@ -140,8 +140,8 @@ label input[type="checkbox"] {
 
 <div id="somfyMotorOptionBox" class="accessory-box">
   <h4>Somfy Motor Option สำหรับระบบมือหมุน</h4>
-  <label><input id="chkSomfy50" type="checkbox" onchange="handleSomfyMotorOption('chkSomfy50')"/> Somfy Altus 50/12 (+26,500 บาท)</label>
-  <label><input id="chkSomfy85" type="checkbox" onchange="handleSomfyMotorOption('chkSomfy85')"/> Somfy Altus 85/17 (+32,500 บาท)</label>
+  <label><input id="chkSomfy50" type="checkbox" onchange="handleSomfyMotorOption('chkSomfy50')"/> Somfy Altus 50/12 (+26,800 บาท)</label>
+  <label><input id="chkSomfy85" type="checkbox" onchange="handleSomfyMotorOption('chkSomfy85')"/> Somfy Altus 85/17 (+32,800 บาท)</label>
   <div class="note">หมายเหตุ: ราคา Somfy จะแสดงและคำนวณเฉพาะในกล่องผลลัพธ์ระบบมือหมุนเท่านั้น เพื่อไม่ให้รวมกับราคามอเตอร์ Strong Up</div>
 </div>
 
@@ -946,8 +946,8 @@ function getManualOverrideExtra(width, projection, manualOverrideChecked) {
       ].filter(item => item.value > 0);
 
       const somfyMotorItems = [
-        { label: 'Somfy Altus 50/12', value: chkSomfy50 && chkSomfy50.checked ? 26500 : 0 },
-        { label: 'Somfy Altus 85/17', value: chkSomfy85 && chkSomfy85.checked ? 32500 : 0 }
+        { label: 'Somfy Altus 50/12', value: chkSomfy50 && chkSomfy50.checked ? 26800 : 0 },
+        { label: 'Somfy Altus 85/17', value: chkSomfy85 && chkSomfy85.checked ? 32800 : 0 }
       ].filter(item => item.value > 0);
 
       const selectedSomfyAccessoryItems = isSomfySelected() ? getCheckedItems(getSomfyAccessoryItems()) : [];
