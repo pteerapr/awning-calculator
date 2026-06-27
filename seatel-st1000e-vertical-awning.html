@@ -63,6 +63,16 @@
       <label for="width">ความกว้าง Width (เมตร)</label>
       <input id="width" placeholder="เช่น 2.40" type="number" min="0" step="0.01" value="3.00" />
 
+      <div id="splitFabricBox" class="split-box" style="display:none; margin-top:10px; padding:12px; background:#eef5ff; border-radius:10px; border:1px solid #cfe2ff;">
+        <strong>ระบบแบ่งผ้า / Split Fabric</strong>
+        <p style="margin:6px 0 8px; font-size:13px; color:#374151;">ถ้าความกว้างเกิน 5.00 เมตร ระบบจะคิดราคาผ้าเป็น 2 ชิ้น แต่ใช้มอเตอร์ 1 ตัวเท่านั้น</p>
+        <label for="piece1">ความกว้างผ้าชิ้นที่ 1 (เมตร)</label>
+        <input id="piece1" placeholder="เช่น 3.00" type="number" min="0" step="0.01" />
+        <label for="piece2">ความกว้างผ้าชิ้นที่ 2 (เมตร)</label>
+        <input id="piece2" placeholder="เช่น 3.00" type="number" min="0" step="0.01" />
+        <button type="button" id="autoSplit" style="margin-top:8px;">แบ่งเท่ากันอัตโนมัติ</button>
+      </div>
+
       <label for="drop">ความสูง Drop (เมตร)</label>
       <input id="drop" placeholder="เช่น 2.00" type="number" min="0" step="0.01" value="3.00" />
 
@@ -73,6 +83,8 @@
       <select id="motor">
         <option value="0">ไม่มีมอเตอร์</option>
         <option value="9900" data-brand="strongup" selected>Strong Up Motor 50/12 + Remote 1 ช่อง (9,900 บาท)</option>
+        <option value="11900" data-brand="strongup">Strong Up Motor 50/12 with crank handle + Remote 1 ช่อง (11,900 บาท)</option>
+        <option value="15900" data-brand="strongup">Strong Up Motor 80/15 + Remote 1 ช่อง (15,900 บาท)</option>
         <option value="24500" data-brand="somfy">Somfy Altus 30/17 + Remote 1 ช่อง (24,500 บาท)</option>
         <option value="26500" data-brand="somfy">Somfy Altus 40/17 + Remote 1 ช่อง (26,500 บาท)</option>
         <option value="36500" data-brand="somfy">Somfy Altus 85/17 + Remote 1 ช่อง (36,500 บาท)</option>
@@ -268,12 +280,61 @@
         return;
       }
 
-      const lookup = getBasePrice(modelId, fabric, width, drop);
-      if (!lookup) {
-        error.innerText = 'ไม่พบราคาสำหรับขนาดนี้ ตาราง ST1000E รองรับกว้าง 1.00-5.00 ม. และสูง 0.10-4.00 ม.';
-        error.style.display = 'block';
-        window.latestCopyText = '';
-        return;
+      // When width exceeds 5.00 m the fabric is split into 2 pieces (each priced
+      // separately from the table) but driven by a single motor.
+      const splitBox = document.getElementById('splitFabricBox');
+      const mustSplit = width > 5.00;
+      if (splitBox) splitBox.style.display = mustSplit ? 'block' : 'none';
+
+      let basePrice = 0;
+      let sizeText = 'ขนาด: กว้าง ' + width.toFixed(2) + ' x สูง ' + drop.toFixed(2) + ' m';
+      let splitDetailLines = [];
+
+      if (mustSplit) {
+        const piece1 = parseFloat(document.getElementById('piece1').value);
+        const piece2 = parseFloat(document.getElementById('piece2').value);
+        if (isNaN(piece1) || isNaN(piece2) || piece1 <= 0 || piece2 <= 0) {
+          error.innerText = 'ความกว้างเกิน 5.00 เมตร ต้องกรอกความกว้างผ้าชิ้นที่ 1 และชิ้นที่ 2';
+          error.style.display = 'block';
+          window.latestCopyText = '';
+          return;
+        }
+        const sumPieces = Math.round((piece1 + piece2) * 100) / 100;
+        if (Math.abs(sumPieces - width) > 0.01) {
+          error.innerText = 'ความกว้างผ้าสองชิ้นรวมกันต้องเท่ากับความกว้างรวม (' + width.toFixed(2) + ' ม.) ตอนนี้รวมได้ ' + sumPieces.toFixed(2) + ' ม.';
+          error.style.display = 'block';
+          window.latestCopyText = '';
+          return;
+        }
+        if (piece1 > 5 || piece2 > 5) {
+          error.innerText = 'ผ้าแต่ละชิ้นต้องไม่เกิน 5.00 เมตร ตามตารางราคา';
+          error.style.display = 'block';
+          window.latestCopyText = '';
+          return;
+        }
+        const lookup1 = getBasePrice(modelId, fabric, piece1, drop);
+        const lookup2 = getBasePrice(modelId, fabric, piece2, drop);
+        if (!lookup1 || !lookup2) {
+          error.innerText = 'ไม่พบราคาสำหรับขนาดผ้าชิ้นที่ 1 หรือชิ้นที่ 2 (รองรับกว้าง 1.00-5.00 ม. สูง 0.10-4.00 ม.)';
+          error.style.display = 'block';
+          window.latestCopyText = '';
+          return;
+        }
+        basePrice = lookup1.price + lookup2.price;
+        sizeText = 'ขนาด: กว้างรวม ' + width.toFixed(2) + ' x สูง ' + drop.toFixed(2) + ' m (แบ่งผ้า 2 ชิ้น ใช้มอเตอร์ 1 ตัว)';
+        splitDetailLines = [
+          'ผ้าชิ้นที่ 1: กว้าง ' + piece1.toFixed(2) + ' ม. (' + lookup1.widthBand + ') = ' + baht(lookup1.price),
+          'ผ้าชิ้นที่ 2: กว้าง ' + piece2.toFixed(2) + ' ม. (' + lookup2.widthBand + ') = ' + baht(lookup2.price)
+        ];
+      } else {
+        const lookup = getBasePrice(modelId, fabric, width, drop);
+        if (!lookup) {
+          error.innerText = 'ไม่พบราคาสำหรับขนาดนี้ ตาราง ST1000E รองรับกว้าง 1.00-5.00 ม. และสูง 0.10-4.00 ม.';
+          error.style.display = 'block';
+          window.latestCopyText = '';
+          return;
+        }
+        basePrice = lookup.price;
       }
 
       const coverSelect = document.getElementById('cover');
@@ -295,11 +356,11 @@
         ? ((accessoryLabel || 'อุปกรณ์เสริมเพิ่มเติม') + ' = ' + baht(accessories))
         : 'ไม่มี';
 
-      const unitManual = lookup.price + coverPrice + accessories;
+      const unitManual = basePrice + coverPrice + accessories;
       const subtotalManual = unitManual * qty;
       const calcManual = applyDiscounts(subtotalManual, specialDiscount, discountPercent);
 
-      const unitMotor = lookup.price + motorPrice + motorAccessoryTotal + coverPrice + accessories;
+      const unitMotor = basePrice + motorPrice + motorAccessoryTotal + coverPrice + accessories;
       const subtotalMotor = unitMotor * qty;
       const calcMotor = applyDiscounts(subtotalMotor, specialDiscount, discountPercent);
 
@@ -322,9 +383,8 @@
         'SEATEL ST1000E',
         'กลุ่มราคา: ' + model.description,
         'ชนิดผ้า: ' + fabric,
-        'ขนาด: กว้าง ' + width.toFixed(2) + ' x สูง ' + drop.toFixed(2) + ' m',
-        //'ช่วงราคาที่ใช้: กว้าง ' + lookup.widthBand + ' m / สูง ' + lookup.dropBand + ' m',
-        //'ราคาพื้นฐานระบบมือหมุนตามตาราง: ' + baht(lookup.price),
+        sizeText,
+        ...splitDetailLines,
         'ฝาครอบ: ' + coverLine,
         'อุปกรณ์เสริมเพิ่มเติม: ' + extraAccessoryLine,
         'จำนวน: ' + qty + ' ชุด',
@@ -357,6 +417,9 @@
 
     function clearAll() {
       document.getElementById('width').value = '';
+      document.getElementById('piece1').value = '';
+      document.getElementById('piece2').value = '';
+      document.getElementById('splitFabricBox').style.display = 'none';
       document.getElementById('drop').value = '';
       document.getElementById('modelGroup').value = 'vinistar';
       updateFabricOptions();
@@ -376,13 +439,23 @@
     }
 
     function bindEvents() {
-      ['modelGroup','width','drop','fabric','motor','cover','accessoryLabel','accessories','qty','specialDiscount','discount','jobNote', ...STRONG_UP_ACCESSORY_IDS, ...SOMFY_ACCESSORY_IDS]
+      ['modelGroup','width','piece1','piece2','drop','fabric','motor','cover','accessoryLabel','accessories','qty','specialDiscount','discount','jobNote', ...STRONG_UP_ACCESSORY_IDS, ...SOMFY_ACCESSORY_IDS]
         .forEach(id => {
           const el = document.getElementById(id);
           if (!el) return;
           el.addEventListener('input', id === 'modelGroup' ? updateFabricOptions : calculatePrice);
           el.addEventListener('change', id === 'modelGroup' ? updateFabricOptions : calculatePrice);
         });
+      const autoSplitBtn = document.getElementById('autoSplit');
+      if (autoSplitBtn) autoSplitBtn.addEventListener('click', () => {
+        const w = parseFloat(document.getElementById('width').value);
+        if (!w || w <= 0) return;
+        const half = Math.round((w / 2) * 100) / 100;
+        const other = Math.round((w - half) * 100) / 100;
+        document.getElementById('piece1').value = half.toFixed(2);
+        document.getElementById('piece2').value = other.toFixed(2);
+        calculatePrice();
+      });
       document.getElementById('copyResult').addEventListener('click', () => {
         const text = window.latestCopyText || document.getElementById('result').innerText || '';
         if (!text.trim()) { alert('ยังไม่มีผลลัพธ์ให้คัดลอก'); return; }

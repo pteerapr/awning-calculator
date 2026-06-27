@@ -66,6 +66,9 @@ th{background:#f3f4f6;}
   .clear-btn { background: #6c757d; }
   .clear-btn:hover { background: #5a6268; }
   .result { background: #e9f7ef; border-left: 4px solid #28a745; padding: 10px; display: none; }
+  .quote-box { background:#f7f9fc; border:1px solid #d9e2ef; border-radius:10px; padding:12px; line-height:1.65; }
+  .customer-copy-label { font-size:13px; font-weight:700; color:#003366; margin-bottom:8px; }
+  .customer-copy-text { margin:0; padding:12px; background:#f1f3f5; border:1px solid #d8dee4; border-radius:8px; white-space:pre-wrap; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#111827; }
   .error { margin-top: 10px; background: #f8d7da; border-left: 4px solid #dc3545; padding: 10px; display: none; }
   .motor-text { color: #007bff; font-weight: bold; }
   .cover-text { color: #ff6600; font-weight: bold; }
@@ -1259,10 +1262,14 @@ function calculatePrice(){
 
   if(isNaN(w)||isNaN(d)||qty<1){err.innerText='กรุณากรอกค่าความกว้าง ความสูง และจำนวนให้ถูกต้อง';err.style.display='block';res.style.display='none';return;}
 
+  const bahtText = n => (Number(n) || 0).toLocaleString('th-TH') + ' บาท';
+
   const mustSplit = w > 5.00;
   let fabricTotal = 0;
   let sizeDetail = '';
   let priceDetail = '';
+  let sizeText = '';            // plain-text size line for the customer copy block
+  let splitDetailLines = [];    // plain-text fabric price breakdown lines
 
   if(mustSplit){
     if(isNaN(p1)||isNaN(p2)||p1<=0||p2<=0){err.innerText='ขนาดกว้างเกิน 5.00 เมตร ต้องกรอกความกว้างผ้าชิ้นที่ 1 และชิ้นที่ 2';err.style.display='block';res.style.display='none';return;}
@@ -1276,40 +1283,111 @@ function calculatePrice(){
     fabricTotal = price1.price + price2.price;
     sizeDetail = `กว้างรวม ${w.toFixed(2)} × ยาว ${d.toFixed(2)} เมตร<br>แบ่งผ้า: ชิ้นที่ 1 = ${p1.toFixed(2)} ม. + ชิ้นที่ 2 = ${p2.toFixed(2)} ม.`;
     priceDetail = `ราคาผ้าชิ้นที่ 1 (${price1.widthBand}): ${price1.price.toLocaleString()} บาท<br>ราคาผ้าชิ้นที่ 2 (${price2.widthBand}): ${price2.price.toLocaleString()} บาท<br><b>รวมราคาผ้า 2 ชิ้น:</b> ${fabricTotal.toLocaleString()} บาท`;
+    sizeText = `กว้างรวม ${w.toFixed(2)} x สูง ${d.toFixed(2)} m (แบ่งผ้า 2 ชิ้น ใช้มอเตอร์ 1 ตัว)`;
+    splitDetailLines = [
+      'ผ้าชิ้นที่ 1: กว้าง ' + p1.toFixed(2) + ' ม. (' + price1.widthBand + ') = ' + bahtText(price1.price),
+      'ผ้าชิ้นที่ 2: กว้าง ' + p2.toFixed(2) + ' ม. (' + price2.widthBand + ') = ' + bahtText(price2.price)
+    ];
   }else{
     const single=getFabricPrice(w,d,fabric);
     if(!single.ok){err.innerText='ไม่พบราคาสำหรับขนาดนี้';err.style.display='block';res.style.display='none';return;}
     fabricTotal = single.price;
     sizeDetail = `กว้าง ${w.toFixed(2)}× ยาว ${d.toFixed(2)} เมตร`;
     priceDetail = `ราคาผ้า/โครงต่อชุด (${single.widthBand}): ${fabricTotal.toLocaleString()} บาท`;
+    sizeText = `กว้าง ${w.toFixed(2)} x สูง ${d.toFixed(2)} m`;
+    splitDetailLines = [ 'ราคาผ้า/โครงต่อชุด (' + single.widthBand + '): ' + bahtText(fabricTotal) ];
   }
 
   const cover=coverRate*w; // cover profile is calculated by TOTAL width only
-  const subtotal=(fabricTotal+motor+motorAccessoryTotal+cover+accessories)*qty; // one motor and selected motor accessories per system only
-  const specialDiscountAmount=Math.min(specialDiscountInput, subtotal);
-  const discountBase=Math.max(subtotal-specialDiscountAmount,0);
-  const discountAmount=discountBase*(discount/100);
-  const total=discountBase-discountAmount;
 
-  res.innerHTML=`<b>ชนิดผ้า:</b> ${fabric}<br>
-  <b>รูปแบบ:</b> ${mustSplit?'แบ่งผ้า 2 ชิ้นในระบบเดียว':'ผ้าชิ้นเดียว'}<br>
-  <b class='motor-text'>ระบบ:</b> ${motor>0?motorName+' (คิดมอเตอร์ 1 ตัวต่อระบบ)':'การใช้งานแบบมือหมุน'}<br>
-  <b>อุปกรณ์เสริมมอเตอร์:</b><br>${motorAccessoryDetail}<br>
-  <b class='cover-text'>ฝาครอบ:</b> ${coverRate>0?coverName+' คิดจากกว้างรวม '+w.toFixed(2)+' ม. = '+thb(cover):'ไม่มี'}<br>
-  <b>อุปกรณ์เสริมเพิ่มเติม:</b> ${accessories>0?accessories.toLocaleString()+' บาท':'ไม่มี'} <br>
-  <b>ขนาด:</b> ${sizeDetail}<br>
-  <b>รายละเอียดราคา:</b><br>${priceDetail}<br>
-  <b>จำนวน:</b> ${qty} ชุด<br>
-  <b>ราคารวมก่อนส่วนลด:</b> ${(subtotal.toLocaleString())} บาท<br>
-  <b>ส่วนลดพิเศษ:</b> -${specialDiscountAmount.toLocaleString()} THB<br>
-  ${jobNote ? `<b>Note/หมายเหตุ:</b> ${jobNote}<br>` : ``}
-  <b>ส่วนลด:</b> ${discount}% (-${(discountAmount.toLocaleString())})บาท<br>
-  <b>ราคารวมสุทธิก่อนสํารวจหน้างาน:</b> ${(Math.round(total).toLocaleString())} บาท<br>
-  หมายเหตุ*-
-<p>* ราคาที่แจ้งเป็นการประมาณการ ราคาอาจเปลี่ยนแปลงได้เมื่อสำรวจหน้างานจริง</p>
-<p>* ราคาที่แจ้งสินค้ารวมภาษีมูลค่าเพิ่มแล้ว</p>
-* รับประกันโครงสร้างและการติดตั้ง แต่ไม่ครอบคลุมตัวผ้าใบ1 ปี,รับประกันการทำงานของมอเตอร์ 2 ปี  (เป็นไปตามเงื่อนไขของทางบริษัท)
-`;
+  // Manual-operation total: fabric/frame + cover + extra accessories (no motor)
+  const manualSubtotal=(fabricTotal+cover+accessories)*qty;
+  const manualSpecialDiscountAmount=Math.min(specialDiscountInput, manualSubtotal);
+  const manualDiscountBase=Math.max(manualSubtotal-manualSpecialDiscountAmount,0);
+  const manualDiscountAmount=manualDiscountBase*(discount/100);
+  const manualTotal=manualDiscountBase-manualDiscountAmount;
+
+  // Motorized total: same base plus ONE motor + motor accessories per system
+  const motorizedSubtotal=(fabricTotal+motor+motorAccessoryTotal+cover+accessories)*qty;
+  const motorizedSpecialDiscountAmount=Math.min(specialDiscountInput, motorizedSubtotal);
+  const motorizedDiscountBase=Math.max(motorizedSubtotal-motorizedSpecialDiscountAmount,0);
+  const motorizedDiscountAmount=motorizedDiscountBase*(discount/100);
+  const motorizedTotal=motorizedDiscountBase-motorizedDiscountAmount;
+
+  const cleanMotorName = motorName.replace(/^มอเตอร์\s*/,'').replace(/\s*\([^)]*\)\s*$/,'').trim();
+  const cleanCoverName = coverName.replace(/\s*\([^)]*\)\s*$/,'').trim();
+
+  const coverLine = coverRate > 0
+    ? cleanCoverName + ' คิดจากกว้างรวม ' + w.toFixed(2) + ' ม. = ' + bahtText(cover)
+    : 'ไม่มี';
+  const extraAccessoryLine = accessories > 0 ? bahtText(accessories) : 'ไม่มี';
+
+  const manualDiscountLines = [];
+  if (manualSpecialDiscountAmount > 0) manualDiscountLines.push('ส่วนลดพิเศษ: -' + bahtText(manualSpecialDiscountAmount));
+  if (discount > 0) manualDiscountLines.push('ส่วนลด: ' + discount + '% = -' + bahtText(manualDiscountAmount));
+
+  const motorizedDiscountLines = [];
+  if (motorizedSpecialDiscountAmount > 0) motorizedDiscountLines.push('ส่วนลดพิเศษ: -' + bahtText(motorizedSpecialDiscountAmount));
+  if (discount > 0) motorizedDiscountLines.push('ส่วนลด: ' + discount + '% = -' + bahtText(motorizedDiscountAmount));
+
+  const motorAccessoryText = selectedMotorAccessories.length
+    ? selectedMotorAccessories.map(item => '- ' + item.label + ' = ' + bahtText(item.value)).join('\n')
+    : 'ไม่มี';
+
+  const motorizedLines = motor > 0
+    ? [
+        '',
+        'Motorized System / ระบบมอเตอร์ (คิดมอเตอร์ 1 ตัวต่อระบบ)',
+        'มอเตอร์: ' + cleanMotorName + ' = ' + bahtText(motor),
+        'อุปกรณ์เสริมมอเตอร์:',
+        motorAccessoryText,
+        'ราคาก่อนส่วนลด: ' + bahtText(motorizedSubtotal),
+        ...motorizedDiscountLines,
+        'ราคาสรุประบบมอเตอร์: ' + bahtText(motorizedTotal)
+      ]
+    : [
+        '',
+        'Motorized System / ระบบมอเตอร์',
+        'ยังไม่ได้เลือกมอเตอร์'
+      ];
+
+  const customerLines = [
+    'SEATEL ST2000 Split Fabric',
+    'ชนิดผ้า: ' + fabric,
+    'รูปแบบ: ' + (mustSplit ? 'แบ่งผ้า 2 ชิ้นในระบบเดียว' : 'ผ้าชิ้นเดียว'),
+    'ขนาด: ' + sizeText,
+    ...splitDetailLines,
+    'ฝาครอบ: ' + coverLine,
+    'อุปกรณ์เสริมเพิ่มเติม: ' + extraAccessoryLine,
+    'จำนวน: ' + qty + ' ชุด',
+    '',
+    'Manual Operation / ระบบมือหมุน',
+    'ราคาก่อนส่วนลด: ' + bahtText(manualSubtotal),
+    ...manualDiscountLines,
+    'ราคาสรุประบบมือหมุน: ' + bahtText(manualTotal),
+    ...motorizedLines,
+    ...(jobNote ? ['', 'หมายเหตุเพิ่มเติม: ' + jobNote] : []),
+    '',
+    'หมายเหตุ*-',
+    '* ราคาที่แจ้งเป็นการประมาณการ ราคาอาจเปลี่ยนแปลงได้เมื่อสำรวจหน้างานจริง',
+    '* ราคาที่แจ้งสินค้ารวมภาษีมูลค่าเพิ่มแล้ว',
+    '* รับประกันโครงสร้างและการติดตั้ง แต่ไม่ครอบคลุมตัวผ้าใบ 1 ปี, รับประกันการทำงานของมอเตอร์ 2 ปี (เป็นไปตามเงื่อนไขของทางบริษัท)'
+  ];
+
+  const customerText = customerLines.join('\n');
+  window.latestCopyText = customerText;
+
+  const escapeHtml = value => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+  res.innerHTML = '<div class="quote-box">' +
+    '<div class="customer-copy-label">Customer copy text / ข้อความสำหรับส่งลูกค้า</div>' +
+    '<pre class="customer-copy-text">' + escapeHtml(customerText) + '</pre>' +
+    '</div>';
   res.style.display='block';
 }
 
