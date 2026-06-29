@@ -103,9 +103,9 @@
 
       <div id="somfyAccessoryBox" class="accessory-box">
         <h4>Somfy Accessories / อุปกรณ์เสริม Somfy</h4>
-        <label><input id="chkSomfyRemote1" type="checkbox" data-label="รีโมท Somfy 1 ช่อง" data-price="2498" /> รีโมท 1 ช่อง เพิ่ม 2,498 บาท</label>
-        <label><input id="chkSomfyRemote2" type="checkbox" data-label="รีโมท Somfy 2 ช่อง" data-price="2636" /> รีโมท 2 ช่อง เพิ่ม 2,636 บาท</label>
-        <label><input id="chkSomfyRemote5" type="checkbox" data-label="รีโมท Somfy 5 ช่อง" data-price="4163" /> รีโมท 5 ช่อง เพิ่ม 4,163 บาท</label>
+        <label><input id="chkSomfyRemote1" type="checkbox" data-label="รีโมท Somfy 1 ช่อง" data-price="3017" /> รีโมท 1 ช่อง เพิ่ม 3,017 บาท</label>
+        <label><input id="chkSomfyRemote2" type="checkbox" data-label="รีโมท Somfy 2 ช่อง" data-price="3862" /> รีโมท 2 ช่อง เพิ่ม 3,862 บาท</label>
+        <label><input id="chkSomfyRemote5" type="checkbox" data-label="รีโมท Somfy 5 ช่อง" data-price="6035" /> รีโมท 5 ช่อง เพิ่ม 6,035 บาท</label>
       </div>
 
       <label for="cover">ฝาครอบกันน้ำ / Cover Profile</label>
@@ -142,6 +142,7 @@
       <button type="button" id="copyResult" class="copy-btn">คัดลอกผลลัพธ์ทั้งหมด</button>
     </div>
   </div>
+  <script src="prices.js"></script>
   <script>
     const WIDTH_BANDS = ["1.00-1.50", "1.51-2.00", "2.01-2.50", "2.51-3.00", "3.01-3.50", "3.51-4.00", "4.01-4.50", "4.51-5.00"];
     const DROP_BANDS = ["0.10-1.00", "1.01-1.50", "1.51-2.00", "2.01-2.50", "2.51-3.00", "3.01-3.50", "3.51-4.00"];
@@ -217,12 +218,29 @@
       return brand;
     }
 
+    // Maps each accessory checkbox to its price in the shared catalog (prices.js).
+    const ACCESSORY_PRICE_KEYS = {
+      chkStrongRemote1: ['strongUp','remote1'],
+      chkStrongRemote15: ['strongUp','remote15'],
+      chkStrongWindSun: ['strongUp','windSun'],
+      chkSomfyRemote1: ['somfy','remote1'],
+      chkSomfyRemote2: ['somfy','remote2'],
+      chkSomfyRemote5: ['somfy','remote5']
+    };
+
+    function accessoryPrice(el) {
+      const P = window.SANGTHONG_PRICES;
+      const key = ACCESSORY_PRICE_KEYS[el.id];
+      if (P && key) return P[key[0]][key[1]];
+      return Number(el.dataset.price) || 0; // fallback if catalog missing
+    }
+
     function selectedMotorAccessories() {
       const brand = getSelectedMotorBrand();
       const ids = brand === 'strongup' ? STRONG_UP_ACCESSORY_IDS : brand === 'somfy' ? SOMFY_ACCESSORY_IDS : [];
       return ids.map(id => document.getElementById(id)).filter(el => el && el.checked).map(el => ({
         label: el.dataset.label,
-        price: Number(el.dataset.price) || 0
+        price: accessoryPrice(el)
       }));
     }
 

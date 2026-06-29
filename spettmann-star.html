@@ -193,6 +193,7 @@ label input[type="checkbox"] {
 </div>
 </div>
 
+<script src="prices.js"></script>
 <script>
 let resultLanguage = 'th';
 const RESULT_EN_REPLACEMENTS = [
@@ -818,14 +819,16 @@ function getManualOverrideExtra(width, projection, manualOverrideChecked) {
 }
 
 function getStrongUpAccessoryItems() {
+  // Accessory prices come from the shared catalog in prices.js (window.SANGTHONG_PRICES)
+  const P = window.SANGTHONG_PRICES;
   return [
-    { label: 'Transmitter 1 Channel / รีโมท 1 ช่อง', value: 950, id: 'chkStrongRemote1' },
-    { label: 'Transmitter 15 Channel / รีโมท 15 ช่อง', value: 1800, id: 'chkStrongRemote15' },
-    { label: 'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value: 6600, id: 'chkStrongWindSun' },
-    { label: 'Wifi Smart Bridge with Adapter', value: 7500, id: 'chkStrongWifiAdapter' },
-    { label: 'Wifi Smart Bridge only', value: 6600, id: 'chkStrongWifiBridge' },
-    { label: 'USB Charger', value: 900, id: 'chkStrongUsbCharger' },
-    { label: 'Lan Smart Bridge 1.20 m', value: 9000, id: 'chkStrongLanBridge' }
+    { label: 'Transmitter 1 Channel / รีโมท 1 ช่อง', value: P.strongUp.remote1, id: 'chkStrongRemote1' },
+    { label: 'Transmitter 15 Channel / รีโมท 15 ช่อง', value: P.strongUp.remote15, id: 'chkStrongRemote15' },
+    { label: 'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value: P.strongUp.windSun, id: 'chkStrongWindSun' },
+    { label: 'Wifi Smart Bridge with Adapter', value: P.strongUp.wifiAdapter, id: 'chkStrongWifiAdapter' },
+    { label: 'Wifi Smart Bridge only', value: P.strongUp.wifiBridge, id: 'chkStrongWifiBridge' },
+    { label: 'USB Charger', value: P.strongUp.usbCharger, id: 'chkStrongUsbCharger' },
+    { label: 'Lan Smart Bridge 1.20 m', value: P.strongUp.lanBridge, id: 'chkStrongLanBridge' }
   ];
 }
 
@@ -919,16 +922,16 @@ function getStrongUpAccessoryDetailHtml() {
       const somfyManualOnlyItems = [
         { label: 'Somfy Altus 50/12', value: chkSomfy50 && chkSomfy50.checked ? 26800 : 0 },
         { label: 'Somfy Altus 85/17', value: chkSomfy85 && chkSomfy85.checked ? 32800 : 0 },
-        { label: 'Ondeis Rain Sensor', value: somfyIsSelected && chkSomfyOndeisRain && chkSomfyOndeisRain.checked ? 13675 : 0 },
-        { label: 'Dry Contact Transmitter RTS', value: somfyIsSelected && chkSomfyDryContact && chkSomfyDryContact.checked ? 14918 : 0 },
-        { label: 'Sunis Sensor RTS Wirefree', value: somfyIsSelected && chkSomfySunis && chkSomfySunis.checked ? 23315 : 0 },
-        { label: 'Eolis Sensor RTS', value: somfyIsSelected && chkSomfyEolis && chkSomfyEolis.checked ? 11663 : 0 },
-        { label: 'Eolis 3D Sensor RTS', value: somfyIsSelected && chkSomfyEolis3D && chkSomfyEolis3D.checked ? 11663 : 0 },
-        { label: 'Soliris RTS Sensor', value: somfyIsSelected && chkSomfySoliris && chkSomfySoliris.checked ? 21756 : 0 },
-        { label: 'TaHoma', value: somfyIsSelected && chkSomfyTaHoma && chkSomfyTaHoma.checked ? 11005 : 0 },
-        { label: 'Somfy Remote 1 Channel / รีโมท 1 ช่อง', value: somfyIsSelected && chkSomfyRemote1 && chkSomfyRemote1.checked ? 3017 : 0 },
-        { label: 'Somfy Remote 2 Channel / รีโมท 2 ช่อง', value: somfyIsSelected && chkSomfyRemote2 && chkSomfyRemote2.checked ? 3862 : 0 },
-        { label: 'Somfy Remote 5 Channel / รีโมท 5 ช่อง', value: somfyIsSelected && chkSomfyRemote5 && chkSomfyRemote5.checked ? 6035 : 0 }
+        { label: 'Ondeis Rain Sensor', value: somfyIsSelected && chkSomfyOndeisRain && chkSomfyOndeisRain.checked ? window.SANGTHONG_PRICES.somfy.ondeisRain : 0 },
+        { label: 'Dry Contact Transmitter RTS', value: somfyIsSelected && chkSomfyDryContact && chkSomfyDryContact.checked ? window.SANGTHONG_PRICES.somfy.dryContact : 0 },
+        { label: 'Sunis Sensor RTS Wirefree', value: somfyIsSelected && chkSomfySunis && chkSomfySunis.checked ? window.SANGTHONG_PRICES.somfy.sunis : 0 },
+        { label: 'Eolis Sensor RTS', value: somfyIsSelected && chkSomfyEolis && chkSomfyEolis.checked ? window.SANGTHONG_PRICES.somfy.eolis : 0 },
+        { label: 'Eolis 3D Sensor RTS', value: somfyIsSelected && chkSomfyEolis3D && chkSomfyEolis3D.checked ? window.SANGTHONG_PRICES.somfy.eolis3D : 0 },
+        { label: 'Soliris RTS Sensor', value: somfyIsSelected && chkSomfySoliris && chkSomfySoliris.checked ? window.SANGTHONG_PRICES.somfy.soliris : 0 },
+        { label: 'TaHoma', value: somfyIsSelected && chkSomfyTaHoma && chkSomfyTaHoma.checked ? window.SANGTHONG_PRICES.somfy.taHoma : 0 },
+        { label: 'Somfy Remote 1 Channel / รีโมท 1 ช่อง', value: somfyIsSelected && chkSomfyRemote1 && chkSomfyRemote1.checked ? window.SANGTHONG_PRICES.somfy.remote1 : 0 },
+        { label: 'Somfy Remote 2 Channel / รีโมท 2 ช่อง', value: somfyIsSelected && chkSomfyRemote2 && chkSomfyRemote2.checked ? window.SANGTHONG_PRICES.somfy.remote2 : 0 },
+        { label: 'Somfy Remote 5 Channel / รีโมท 5 ช่อง', value: somfyIsSelected && chkSomfyRemote5 && chkSomfyRemote5.checked ? window.SANGTHONG_PRICES.somfy.remote5 : 0 }
       ].filter(item => item.value > 0);
 
       const selectedStrongUpItems = includeMotor

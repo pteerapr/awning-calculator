@@ -85,6 +85,15 @@ th{background:#f3f4f6;}
 <h2>เครื่องคำนวณราคากันสาด SEATEL ST2000 (<a href="index.html">Back to Index</a>)</h2>
 <label>ความกว้าง (เมตร)</label>
 <input id="width" placeholder="เช่น 2.4" type="number" value="3.00"/>
+<div id="splitFabricBox" class="split-box" style="display:none; margin-top:12px; padding:12px; background:#eef5ff; border-radius:10px; border:1px solid #cfe2ff;">
+  <strong>ระบบแบ่งผ้า / Split Fabric</strong>
+  <p style="margin:6px 0 8px; font-size:13px; color:#374151;">ถ้าความกว้างเกิน 5.00 เมตร ระบบจะคิดราคาผ้าเป็น 2 ชิ้น แต่ใช้มอเตอร์ 1 ตัวเท่านั้น</p>
+  <label for="piece1">ความกว้างผ้าชิ้นที่ 1 (เมตร)</label>
+  <input id="piece1" placeholder="เช่น 3.00" type="number" min="0" step="0.01"/>
+  <label for="piece2">ความกว้างผ้าชิ้นที่ 2 (เมตร)</label>
+  <input id="piece2" placeholder="เช่น 3.00" type="number" min="0" step="0.01"/>
+  <button type="button" id="autoSplit" style="margin-top:8px;">แบ่งเท่ากันอัตโนมัติ</button>
+</div>
 <label>ความสูง (เมตร)</label>
 <input id="drop" placeholder="เช่น 2.0" type="number" value="2.00"/>
 <label>ชนิดผ้า</label>
@@ -165,6 +174,7 @@ th{background:#f3f4f6;}
 </button>
 </div>
 </div>
+<script src="prices.js"></script>
 <script>
 let resultLanguage = 'th';
 
@@ -1119,6 +1129,18 @@ function findBand(value,bands){
   return null;
 }
 
+// Look up the table fabric price for a given width/drop/fabric.
+// Returns { ok, price, widthBand }. Used for both single panels and split pieces.
+function lookupFabricPrice(wVal, dVal, fab){
+  const wb=findBand(wVal,[...new Set(PRICE_ROWS.map(r=>r.width_band))]);
+  const db=findBand(dVal,[...new Set(PRICE_ROWS.map(r=>r.drop_band))]);
+  const row=PRICE_ROWS.find(r=>r.width_band===wb&&r.drop_band===db);
+  if(!row) return {ok:false};
+  const price=row[fab];
+  if(price==null) return {ok:false};
+  return {ok:true, price, widthBand:wb};
+}
+
 
 function getMotorBrandFromSelectedText(text) {
   if (/Strong Up/i.test(text)) return "strongup";
@@ -1127,24 +1149,26 @@ function getMotorBrandFromSelectedText(text) {
 }
 
 function getAccessoryItemsByBrand(brand) {
+  // Accessory prices come from the shared catalog in prices.js (window.SANGTHONG_PRICES)
+  const P = window.SANGTHONG_PRICES;
   const strongUpItems = [
-    { id: "chkStrongRemote1", label: "Transmitter 1 Channel / รีโมท 1 ช่อง", value: 950 },
-    { id: "chkStrongRemote15", label: "Transmitter 15 Channel / รีโมท 15 ช่อง", value: 1800 },
-    { id: "chkStrongWindSun", label: "Wind-Sun Sensor / เซ็นเซอร์ลม-แดด", value: 6600 },
-    { id: "chkStrongWifiAdapter", label: "Wifi Smart Bridge with Adapter", value: 7500 },
-    { id: "chkStrongWifiBridge", label: "Wifi Smart Bridge only", value: 6600 },
-    { id: "chkStrongUsbCharger", label: "USB Charger", value: 900 },
-    { id: "chkStrongLanBridge", label: "Lan Smart Bridge 1.20 m", value: 9000 }
+    { id: "chkStrongRemote1", label: "Transmitter 1 Channel / รีโมท 1 ช่อง", value: P.strongUp.remote1 },
+    { id: "chkStrongRemote15", label: "Transmitter 15 Channel / รีโมท 15 ช่อง", value: P.strongUp.remote15 },
+    { id: "chkStrongWindSun", label: "Wind-Sun Sensor / เซ็นเซอร์ลม-แดด", value: P.strongUp.windSun },
+    { id: "chkStrongWifiAdapter", label: "Wifi Smart Bridge with Adapter", value: P.strongUp.wifiAdapter },
+    { id: "chkStrongWifiBridge", label: "Wifi Smart Bridge only", value: P.strongUp.wifiBridge },
+    { id: "chkStrongUsbCharger", label: "USB Charger", value: P.strongUp.usbCharger },
+    { id: "chkStrongLanBridge", label: "Lan Smart Bridge 1.20 m", value: P.strongUp.lanBridge }
   ];
 
   const somfyItems = [
-    { id: "chkSomfyOndeisRain", label: "Ondeis Rain Sensor", value: 13675 },
-    { id: "chkSomfyDryContact", label: "Dry Contact Transmitter RTS", value: 14918 },
-    { id: "chkSomfySunis", label: "Sunis Sensor RTS Wirefree", value: 23315 },
-    { id: "chkSomfyEolis", label: "Eolis Sensor RTS", value: 11663 },
-    { id: "chkSomfyEolis3D", label: "Eolis 3D Sensor RTS", value: 11663 },
-    { id: "chkSomfySoliris", label: "Soliris RTS Sensor", value: 21756 },
-    { id: "chkSomfyTaHoma", label: "TaHoma", value: 11005 }
+    { id: "chkSomfyOndeisRain", label: "Ondeis Rain Sensor", value: P.somfy.ondeisRain },
+    { id: "chkSomfyDryContact", label: "Dry Contact Transmitter RTS", value: P.somfy.dryContact },
+    { id: "chkSomfySunis", label: "Sunis Sensor RTS Wirefree", value: P.somfy.sunis },
+    { id: "chkSomfyEolis", label: "Eolis Sensor RTS", value: P.somfy.eolis },
+    { id: "chkSomfyEolis3D", label: "Eolis 3D Sensor RTS", value: P.somfy.eolis3D },
+    { id: "chkSomfySoliris", label: "Soliris RTS Sensor", value: P.somfy.soliris },
+    { id: "chkSomfyTaHoma", label: "TaHoma", value: P.somfy.taHoma }
   ];
 
   if (brand === "strongup") return strongUpItems;
@@ -1218,12 +1242,34 @@ function calculatePrice(){
 
   if(isNaN(w)||isNaN(d)||qty<1){err.innerText='กรุณากรอกค่าความกว้าง ความสูง และจำนวนให้ถูกต้อง';err.style.display='block';res.style.display='none';return;}
 
-  const wb=findBand(w,[...new Set(PRICE_ROWS.map(r=>r.width_band))]);
-  const db=findBand(d,[...new Set(PRICE_ROWS.map(r=>r.drop_band))]);
-  const row=PRICE_ROWS.find(r=>r.width_band===wb&&r.drop_band===db);
-  if(!row){err.innerText='ไม่พบราคาสำหรับขนาดนี้';err.style.display='block';res.style.display='none';return;}
+  // Split fabric: when total width exceeds 5.00 m the fabric is built as 2 pieces
+  // (each priced from the table) but driven by a single motor.
+  const splitBox=document.getElementById('splitFabricBox');
+  const mustSplit = w > 5.00;
+  if(splitBox) splitBox.style.display = mustSplit ? 'block' : 'none';
 
-  const price=row[fabric];
+  let price=0;            // fabric/frame base price (single panel or sum of 2 pieces)
+  let sizeText='กว้าง '+w.toFixed(2)+' x สูง '+d.toFixed(2)+' m';
+  let splitPieces=null;   // {p1,p2,price1,price2,band1,band2} when split
+
+  if(mustSplit){
+    const p1=parseFloat(document.getElementById('piece1').value);
+    const p2=parseFloat(document.getElementById('piece2').value);
+    if(isNaN(p1)||isNaN(p2)||p1<=0||p2<=0){err.innerText='ความกว้างเกิน 5.00 เมตร ต้องกรอกความกว้างผ้าชิ้นที่ 1 และชิ้นที่ 2';err.style.display='block';res.style.display='none';return;}
+    const sumPieces=Math.round((p1+p2)*100)/100;
+    if(Math.abs(sumPieces-w)>0.01){err.innerText='ความกว้างผ้าสองชิ้นรวมกันต้องเท่ากับความกว้างรวม ('+w.toFixed(2)+' ม.) ตอนนี้รวมได้ '+sumPieces.toFixed(2)+' ม.';err.style.display='block';res.style.display='none';return;}
+    if(p1>5||p2>5){err.innerText='ผ้าแต่ละชิ้นต้องไม่เกิน 5.00 เมตร ตามตารางราคา';err.style.display='block';res.style.display='none';return;}
+    const lk1=lookupFabricPrice(p1,d,fabric);
+    const lk2=lookupFabricPrice(p2,d,fabric);
+    if(!lk1.ok||!lk2.ok){err.innerText='ไม่พบราคาสำหรับขนาดผ้าชิ้นที่ 1 หรือชิ้นที่ 2';err.style.display='block';res.style.display='none';return;}
+    price=lk1.price+lk2.price;
+    sizeText='กว้างรวม '+w.toFixed(2)+' x สูง '+d.toFixed(2)+' m (แบ่งผ้า 2 ชิ้น ใช้มอเตอร์ 1 ตัว)';
+    splitPieces={p1,p2,price1:lk1.price,price2:lk2.price,band1:lk1.widthBand,band2:lk2.widthBand};
+  }else{
+    const lk=lookupFabricPrice(w,d,fabric);
+    if(!lk.ok){err.innerText='ไม่พบราคาสำหรับขนาดนี้';err.style.display='block';res.style.display='none';return;}
+    price=lk.price;
+  }
   const cover=coverRate*w;
 
   // The PRICE_ROWS table is the manual-operation base price.
@@ -1241,6 +1287,13 @@ function calculatePrice(){
   const motorizedTotal=motorizedDiscountBase-motorizedDiscountAmount;
 
   const bahtText = n => (Number(n) || 0).toLocaleString('th-TH') + ' บาท';
+
+  // Per-piece price breakdown lines, shown only when the fabric is split.
+  const splitDetailLines = splitPieces ? [
+    'ผ้าชิ้นที่ 1: กว้าง ' + splitPieces.p1.toFixed(2) + ' ม. (' + splitPieces.band1 + ') = ' + bahtText(splitPieces.price1),
+    'ผ้าชิ้นที่ 2: กว้าง ' + splitPieces.p2.toFixed(2) + ' ม. (' + splitPieces.band2 + ') = ' + bahtText(splitPieces.price2)
+  ] : [];
+
   const cleanMotorName = motorName
     .replace(/^มอเตอร์\s*/,'')
     .replace(/\s*\([^)]*\)\s*$/,'')
@@ -1289,7 +1342,8 @@ function calculatePrice(){
   const customerLines = [
     'SEATEL ST2000',
     'ชนิดผ้า: ' + fabric,
-    'ขนาด: กว้าง ' + w.toFixed(2) + ' x สูง ' + d.toFixed(2) + ' m',
+    'ขนาด: ' + sizeText,
+    ...splitDetailLines,
     'ฝาครอบ: ' + coverLine,
     'อุปกรณ์เสริมเพิ่มเติม: ' + extraAccessoryLine,
     'จำนวน: ' + qty + ' ชุด',
@@ -1327,6 +1381,9 @@ function calculatePrice(){
 
 function clearAll(){
   document.getElementById('width').value='';
+  document.getElementById('piece1').value='';
+  document.getElementById('piece2').value='';
+  document.getElementById('splitFabricBox').style.display='none';
   document.getElementById('drop').value='';
   document.getElementById('fabric').selectedIndex=0;
   document.getElementById('motor').selectedIndex=1;
@@ -1342,6 +1399,8 @@ function clearAll(){
 // --- auto calculate after user input ---
 [
   'width',
+  'piece1',
+  'piece2',
   'drop',
   'fabric',
   'motor',
@@ -1370,6 +1429,18 @@ function clearAll(){
   if (!el) return;
   el.addEventListener('input', calculatePrice);
   el.addEventListener('change', calculatePrice);
+});
+
+// Auto-split: divide the total width into two equal fabric pieces
+const autoSplitBtn = document.getElementById('autoSplit');
+if (autoSplitBtn) autoSplitBtn.addEventListener('click', () => {
+  const w = parseFloat(document.getElementById('width').value);
+  if (!w || w <= 0) return;
+  const half = Math.round((w / 2) * 100) / 100;
+  const other = Math.round((w - half) * 100) / 100;
+  document.getElementById('piece1').value = half.toFixed(2);
+  document.getElementById('piece2').value = other.toFixed(2);
+  calculatePrice();
 });
 
 // Show the starting message / calculate immediately if default values are enough

@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- PWA: installable + offline support -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
+<link rel="apple-touch-icon" href="icon.svg">
 <title>Sangthong Price Calculator Hub</title>
 <style>
 :root {
@@ -186,12 +190,8 @@ input:focus,select:focus {outline:none;border-color:var(--accent);box-shadow:0 0
   <section class="group" data-category="vertical / screen">
     <div class="group-head"><span class="group-title">Vertical / Screen</span><span class="group-count"></span></div>
     <div class="rows">
-      <a class="row" href="seatel-st2000.html" data-title="seatel st2000" data-category="vertical / screen">
-        <div class="row-main"><span class="row-name">SEATEL ST2000</span><span class="row-desc">Standard ST2000 with motor &amp; accessory logic.</span></div>
-        <div class="row-end"><span class="row-chevron">›</span></div>
-      </a>
-      <a class="row" href="seatel-st2000-split-fabric.html" data-title="seatel st2000 split fabric" data-category="vertical / screen">
-        <div class="row-main"><span class="row-name">SEATEL ST2000 Split Fabric</span><span class="row-desc">Split-fabric for wider systems, one motor per system.</span></div>
+      <a class="row" href="seatel-st2000.html" data-title="seatel st2000 split fabric" data-category="vertical / screen">
+        <div class="row-main"><span class="row-name">SEATEL ST2000</span><span class="row-desc">Standard ST2000 with motor &amp; accessory logic; auto split-fabric for widths over 5 m.</span></div>
         <div class="row-end"><span class="row-chevron">›</span></div>
       </a>
       <a class="row" href="seatel-st1000e-vertical-awning.html" data-title="seatel st1000e vertical awning vinistar pvc nova prima view sand solar screen sun text" data-category="vertical / screen">
@@ -397,6 +397,17 @@ function filterCards() {
 searchBox.addEventListener('input', filterCards);
 categoryFilter.addEventListener('change', filterCards);
 filterCards();
+</script>
+<!-- PWA: register the service worker so the calculators work offline.
+     Only runs over HTTPS (e.g. GitHub Pages), not file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
 </script>
 </body>
 </html>

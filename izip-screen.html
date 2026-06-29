@@ -165,6 +165,7 @@ th{background:#f3f4f6;}
 </div>
 </div>
 </div>
+<script src="prices.js"></script>
 <script>
 let resultLanguage = 'th';
 const RESULT_EN_REPLACEMENTS = [
@@ -469,17 +470,19 @@ function calculate(showAlert = true){
   const transmitter=parseFloat(document.getElementById("transmitter").value)||0;
   const area=w*h;
   const custom=document.getElementById("customColour").checked?500*area:0;
+  // Accessory prices come from the shared catalog in prices.js (window.SANGTHONG_PRICES)
+  const P = window.SANGTHONG_PRICES;
   const somfyAccessoryItems = [
-    { label: "Ondeis Rain Sensor", value: 13675, id: "chkSomfyOndeisRain" },
-    { label: "Dry Contact Transmitter RTS", value: 14918, id: "chkSomfyDryContact" },
-    { label: "Sunis Sensor RTS Wirefree", value: 23315, id: "chkSomfySunis" },
-    { label: "Eolis Sensor RTS", value: 11663, id: "chkSomfyEolis" },
-    { label: "Eolis 3D Sensor RTS", value: 11663, id: "chkSomfyEolis3D" },
-    { label: "Soliris RTS Sensor", value: 21756, id: "chkSomfySoliris" },
-    { label: "TaHoma", value: 11005, id: "chkSomfyTaHoma" },
-    { label: "Somfy Remote 1 Channel / รีโมท 1 ช่อง", value: 3017, id: "chkSomfyRemote1" },
-    { label: "Somfy Remote 2 Channel / รีโมท 2 ช่อง", value: 3862, id: "chkSomfyRemote2" },
-    { label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: 6035, id: "chkSomfyRemote5" }
+    { label: "Ondeis Rain Sensor", value: P.somfy.ondeisRain, id: "chkSomfyOndeisRain" },
+    { label: "Dry Contact Transmitter RTS", value: P.somfy.dryContact, id: "chkSomfyDryContact" },
+    { label: "Sunis Sensor RTS Wirefree", value: P.somfy.sunis, id: "chkSomfySunis" },
+    { label: "Eolis Sensor RTS", value: P.somfy.eolis, id: "chkSomfyEolis" },
+    { label: "Eolis 3D Sensor RTS", value: P.somfy.eolis3D, id: "chkSomfyEolis3D" },
+    { label: "Soliris RTS Sensor", value: P.somfy.soliris, id: "chkSomfySoliris" },
+    { label: "TaHoma", value: P.somfy.taHoma, id: "chkSomfyTaHoma" },
+    { label: "Somfy Remote 1 Channel / รีโมท 1 ช่อง", value: P.somfy.remote1, id: "chkSomfyRemote1" },
+    { label: "Somfy Remote 2 Channel / รีโมท 2 ช่อง", value: P.somfy.remote2, id: "chkSomfyRemote2" },
+    { label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: P.somfy.remote5, id: "chkSomfyRemote5" }
   ];
   const discount=parseFloat(document.getElementById("discount").value)||0;
   const specialDiscountInput=parseFloat(document.getElementById("specialDiscount").value)||0;
