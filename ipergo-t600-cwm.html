@@ -266,8 +266,7 @@ function calculate(){
   lines.push(text.model + ': ' + PRODUCT.subtitle);
   lines.push(text.system + ': ' + getSystemLabel(system));
   lines.push(text.size + ': ' + getDimensionText(item));
-  if (item.heightText) lines.push(text.height + ': ' + item.heightText);
-  if (item.postText) lines.push(text.posts + ': ' + getPostText(item));
+  // Wall-mounted: no posts, so post height and number of posts are not shown.
   if (item.bayText) lines.push('Bay: ' + item.bayText);
   if (item.extraText) lines.push(text.extra + ': ' + item.extraText);
   lines.push(text.frameColor + ': ' + frameColor);
