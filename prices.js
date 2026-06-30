@@ -5,18 +5,16 @@
   several calculators. Change a number here once and every calculator that
   reads from this file updates automatically.
 
-  ไฟล์ HTML ที่อ่านค่าจากไฟล์นี้ / HTML files that read from this catalog (6):
+  ไฟล์ HTML ที่อ่านค่าจากไฟล์นี้ / HTML files that read from this catalog (7):
     - seatel-st2000.html  (มีระบบแบ่งผ้า split fabric ในตัวแล้ว)
     - seatel-st1000e-vertical-awning.html
     - chill-d1.html
     - izip-screen.html
     - terra-ma3.html
     - spettmann-star.html
+    - ma4-calculator.html  (Strong Up accessories only)
   แต่ละไฟล์โหลดด้วย <script src="prices.js"></script> ก่อน <script> หลัก
   (each file loads it with <script src="prices.js"></script> before its main inline <script>)
-
-  ยังไม่ได้เชื่อม / NOT yet wired:
-    - ma4-calculator.html (ยังมีราคา Strong Up แบบ hardcode อยู่ / still has hardcoded Strong Up prices)
 
   หมายเหตุ / NOTES:
     * SEATEL ST1000E เคยใช้ราคารีโมท Somfy ของตัวเอง (1ch 2,498 / 2ch 2,636 /

@@ -137,6 +137,7 @@ pre.copy-preview{margin:0; white-space:pre-wrap; background:#f8fafc; border-radi
   </div>
 </div>
 
+<script src="prices.js"></script>
 <script>
 let resultLanguage = 'th';
 const RESULT_EN_REPLACEMENTS = [
@@ -436,10 +437,12 @@ function getCoverCost(width,type){
 }
 
 function getStrongUpAccessoryItems(){
+  // Accessory prices come from the shared catalog in prices.js (window.SANGTHONG_PRICES)
+  const P = window.SANGTHONG_PRICES;
   return [
-    { label:'Transmitter 1 Channel / รีโมท 1 ช่อง', value:950, id:'chkStrongRemote1' },
-    { label:'Transmitter 15 Channel / รีโมท 15 ช่อง', value:1800, id:'chkStrongRemote15' },
-    { label:'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value:6600, id:'chkStrongWindSun' }
+    { label:'Transmitter 1 Channel / รีโมท 1 ช่อง', value:P.strongUp.remote1, id:'chkStrongRemote1' },
+    { label:'Transmitter 15 Channel / รีโมท 15 ช่อง', value:P.strongUp.remote15, id:'chkStrongRemote15' },
+    { label:'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value:P.strongUp.windSun, id:'chkStrongWindSun' }
   ];
 }
 
