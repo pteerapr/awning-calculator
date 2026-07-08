@@ -10,7 +10,7 @@
   IMPORTANT: bump CACHE_NAME (v1 -> v2 ...) whenever you change any cached file,
   so visitors get the new version instead of the old cached copy.
 */
-const CACHE_NAME = 'sangthong-awning-v5';
+const CACHE_NAME = 'sangthong-awning-v6';
 
 const ASSETS = [
   './',
@@ -47,6 +47,7 @@ const ASSETS = [
   './ipergo-t600-cwmd.html',
   './izip-screen.html',
   './ma4-calculator.html',
+  './rv-awning.html',
   './maintenance-guide.html',
   './seatel-st1000e-vertical-awning.html',
   './seatel-st2000.html',

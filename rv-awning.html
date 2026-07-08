@@ -1,0 +1,612 @@
+<!-- Sangthong Calculator Package Version: clean-v1 | Packaged: 2026-07-08 | Source file: rv-awning.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RV Awning Price Calculator</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 24px;
+    }
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .brand {
+      color: #c2410c;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    h1 {
+      font-size: 38px;
+      line-height: 1.05;
+      margin: 6px 0;
+      font-weight: 900;
+    }
+    .subtitle {
+      margin: 0;
+      color: #64748b;
+      font-size: 15px;
+    }
+    .badge {
+      background: #ffedd5;
+      color: #c2410c;
+      border-radius: 18px;
+      padding: 12px 16px;
+      font-weight: 800;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+    }
+    h2 {
+      margin: 0 0 18px;
+      font-size: 22px;
+    }
+    h3 {
+      margin: 0;
+      font-size: 17px;
+    }
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    input, select {
+      width: 100%;
+      border: 1px solid #d6d3d1;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+      background: white;
+    }
+    input:focus, select:focus {
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.14);
+    }
+	.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: #fff7ed;
+}
+
+.check-row input {
+  width: auto;
+  transform: scale(1.15);
+}
+
+.check-row label {
+  margin: 0;
+  color: #334155;
+}
+    .warning {
+      margin-top: 14px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      border-radius: 14px;
+      padding: 12px;
+      font-weight: 700;
+      display: none;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .btn-orange {
+      background: #f97316;
+      color: white;
+    }
+    .result-box {
+      background: #0f172a;
+      color: white;
+      border-radius: 22px;
+      padding: 20px;
+    }
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding: 10px 0;
+    }
+    .result-line span {
+      color: #cbd5e1;
+    }
+    .result-line strong {
+      text-align: right;
+    }
+    .grand {
+      padding-top: 10px;
+    }
+    .grand-label {
+      color: #fed7aa;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .grand-total {
+      font-size: 38px;
+      font-weight: 950;
+      letter-spacing: -1px;
+    }
+    .quote-summary {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .quote-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 7px 0;
+      border-bottom: 1px solid #fed7aa;
+      color: #475569;
+      font-size: 14px;
+    }
+    .quote-line:last-child {
+      border-bottom: 0;
+    }
+    .quote-line strong {
+      color: #0f172a;
+      text-align: right;
+    }
+    .quote-total {
+      margin-top: 10px;
+      padding-top: 12px;
+      border-top: 2px solid #fb923c;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: baseline;
+    }
+    .quote-total span {
+      color: #c2410c;
+      font-weight: 800;
+    }
+    .quote-total strong {
+      color: #c2410c;
+      font-size: 30px;
+      font-weight: 950;
+      text-align: right;
+    }
+    .preview-large pre {
+      max-height: 520px;
+    }
+    .preview {
+      margin-top: 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px;
+    }
+    pre {
+      margin: 8px 0 0;
+      white-space: pre-wrap;
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 12px;
+      max-height: 310px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .note {
+      margin-top: 18px;
+      background: #fff7ed;
+      color: #475569;
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    .note strong {
+      color: #c2410c;
+    }
+    .mt {
+      margin-top: 18px;
+    }
+    @media (max-width: 520px) {
+      body { padding: 14px; }
+      h1 { font-size: 30px; }
+    }
+  .languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <div class="brand">SANGTHONG CREATION</div>
+        <h1>RV Awning — Full Cassette + Motor RTS + LED (<a href="index.html">Back to Index</a>)</h1>
+        <p class="subtitle">ราคารวมโครงสร้างและผ้า + มอเตอร์ RTS + รีโมท + LED (มาตรฐานอเมริกา)</p>
+      </div>
+      <div class="badge">Motor RTS + LED · Acrylic Fabric · VAT 7% Included</div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Input / รายละเอียดงาน</h2>
+
+        <div class="input-grid">
+          <div>
+            <label for="width">Width / ขนาดกว้าง</label>
+            <select id="width">
+              <option value="4.50">4.50 m</option>
+              <option value="5.00" selected>5.00 m</option>
+              <option value="5.50">5.50 m</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="projection">Projection / ระยะแขนยื่น</label>
+            <select id="projection">
+              <option value="2.50" selected>2.50 m</option>
+              <option value="3.00">3.00 m</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="awningQty">Awning Quantity / จำนวนกันสาด</label>
+            <input id="awningQty" type="number" min="1" value="1" />
+          </div>
+          <div>
+            <label for="specialDiscount">ส่วนลดพิเศษ</label>
+            <input id="specialDiscount" type="number" min="0" value="0" step="1" oninput="calculate()" />
+          </div>
+
+          <div>
+            <label for="discount">Discount % / ส่วนลด</label>
+            <input id="discount" type="number" min="0" max="100" value="0" />
+          </div>
+        </div>
+        <div id="warning" class="warning">
+          ขนาดนี้ไม่มีในตารางราคา / This size is not available in the price table.
+        </div>
+
+        <div class="mt">
+          <label for="jobNote">Note / หมายเหตุ</label>
+          <input id="jobNote" placeholder="Optional note" />
+        </div>
+      </section>
+
+      <section class="card">
+        <div style="display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:18px;">
+          <h2 style="margin:0;">Quotation Preview / ข้อความส่งลูกค้า</h2>
+          <button class="btn-orange" type="button" onclick="copyAll()" id="copyBtn">Copy All</button>
+        </div>
+
+
+
+        <div class="preview preview-large">
+          <h3>Customer copy text / ข้อความสำหรับส่งลูกค้า</h3>
+          <div class="languageToggle" aria-label="Result language"><button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button><button type="button" data-result-lang="en" aria-pressed="false">EN</button></div>
+<pre id="copyPreview"></pre>
+        </div>
+
+        <div class="note">
+          <strong>หมายเหตุ</strong>
+          <div>* ราคารวม VAT 7%</div>
+          <div>* ราคานี้ติดตั้งภายในกทมเท่านั้น</div>
+          <div>* กันสาดมาพร้อมฝาครอบกันน้ำในตัว</div>
+          <div>* สินค้านำเข้าทั้งโครงสร้าง ราคาขายเป็นชุดเท่านั้น</div>
+          <div>* ราคาสั่งตัดพิเศษ ซื้อแล้วไม่รับคืนทุกกรณี</div>
+          <div>* Pre-order รอสินค้า 60-90 วัน</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+let resultLanguage = 'th';
+const RESULT_EN_REPLACEMENTS = [
+  ['ในกรณีใช้', 'when using'],
+  ['ใช้', 'using'],
+
+  ['ชนิดผ้าใบ', 'Fabric'],
+
+  ['ระบบมือดึง', 'Manual Pull System'],
+  ['มือดึง', 'Manual pull'],
+  ['ราคาต่อตรม', 'Rate per sqm'],
+  ['ตรม', 'sqm'],
+  ['ผ้าใบโซล่าแซนด์', 'Solar Sand Fabric'],
+  ['ผ้า Acrylic', 'Acrylic Fabric'],
+  ['ผ้าใบ', 'Fabric'],
+  ['ผ้า', 'Fabric'],
+  ['ราคาต่อชุดก่อนส่วนลด', 'Unit Price Before Discount'],
+  ['//ราคาต่อชุดก่อนส่วนลด', 'Unit Price Before Discount'],
+  ['ราคาต่อ', 'Unit Price'],
+  ['ก่อน', 'Before'],
+  ['ช่อง', 'channel'],
+  ['ในกรณี', 'for'],
+  ['รับประกัน', 'Warranty'],
+  ['ปี', 'years'],
+  ['ระบบ', 'System'],
+  ['รวม', 'Total'],
+  ['สำหรับระบบมือหมุน', 'for manual system'],
+  ['แขนพร้อมไฟ', 'arms with LED'],
+  ['อุปกรณ์เสริม', 'Accessories'],
+  ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
+  ['Quotation Preview / ข้อความส่งลูกค้า', 'Quotation Preview'],
+  ['ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
+  ['ข้อความส่งลูกค้า', 'Customer copy text'],
+  ['ผลการคำนวณราคา', 'Price Calculation Result'],
+  ['ผลการคำนวณ', 'Calculation Result'],
+  ['ระบบมอเตอร์ RTS + รีโมท + LED Lighting', 'RTS motor system + remote + LED lighting'],
+  ['ระบบมอเตอร์ RTS + รีโมท', 'RTS motor system + remote'],
+  ['ระบบมอเตอร์: 50/12 เท่านั้น', 'Motor system: 50/12 only'],
+  ['รุ่นมาตรฐาน + มอเตอร์ RTS ไม่มีไฟ LED', 'Standard model + RTS motor without LED'],
+  ['รุ่นพรีเมี่ยม + มอเตอร์ RTS ไม่มีไฟ LED', 'Premium model + RTS motor without LED'],
+  ['โครงสร้างสีดํา/เทา หรือขาว , Waterproof Cover', 'Black/gray or white frame, waterproof cover'],
+  ['โครงสร้างสีดำ/เทา หรือขาว , Waterproof Cover', 'Black/gray or white frame, waterproof cover'],
+  ['โครงสร้างสีดํา/เทา มีฝาครอบกันนํ้า', 'Black/gray frame with waterproof cover'],
+  ['โครงสร้างสีดำ/เทา มีฝาครอบกันน้ำ', 'Black/gray frame with waterproof cover'],
+  ['โครงสร้างสีดํา/เทา หรือขาว', 'Black/gray or white frame'],
+  ['โครงสร้างสีดำ/เทา หรือขาว', 'Black/gray or white frame'],
+  ['โครงสร้างอลูมิเนียม เคลือบ Powder Coated', 'Powder-coated aluminum structure'],
+  ['โครงสร้างมาตรฐานตามรุ่น MA4', 'Standard frame structure for MA4 model'],
+  ['โครงสร้างสีมาตรฐานตามรุ่นสินค้า', 'Standard frame color for this model'],
+  ['ราคานี้ยังไม่รวมงานโครงสร้างเสริมพิเศษ หากมี', 'This price excludes additional structural work, if any'],
+  ['มอเตอร์พร้อมมือหมุน + 1 ก้านหมุน / ฝาครอบกันนํ้า', 'Motor with manual override + 1 crank handle / waterproof cover'],
+  ['มอเตอร์พร้อมมือหมุน + 1 ก้านหมุน', 'Motor with manual override + 1 crank handle'],
+  ['มอเตอร์พร้อมมือหมุน', 'Motor with manual override'],
+  ['Crank Size: ก้านหมุนเลือกได้', 'Crank size: selectable'],
+  ['ก้านหมุนเลือกได้', 'selectable crank handle'],
+  ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
+  ['รอสินค้า', 'lead time'],
+  ['รีโมท', 'Remote'],
+  ['ไม่มีราคาสำหรับระบบมือหมุนในขนาดนี้', 'No price found for manual system at this size'],
+  ['ยังไม่มีราคามอเตอร์สำหรับขนาดนี้', 'No motorized price found for this size'],
+  ['กรุณาเลือกระบบมือหมุนหรือระบบมอเตอร์อย่างน้อย 1 ระบบ', 'Please select at least one system: manual or motorized'],
+  ['กรุณาเลือกอย่างน้อย 1 ระบบ: ระบบมือหมุน หรือ ระบบมอเตอร์', 'Please select at least one system: manual or motorized'],
+  ['ไม่มีราคาสำหรับขนาดนี้', 'No price found for this size'],
+  ['ฝาครอบอลูมิเนียม', 'Aluminum cover'],
+  ['ฝาครอบสีขาว', 'White cover'],
+  ['ไม่มีฝาครอบ', 'No cover'],
+  ['คิดจากกว้างรวม', 'calculated from total width'],
+  ['กว้างรวม', 'Total width'],
+  ['แบ่งผ้า', 'Fabric split'],
+  ['ชิ้นที่ 1', 'Panel 1'],
+  ['ชิ้นที่ 2', 'Panel 2'],
+  ['ราคาผ้าชิ้นที่ 1', 'Panel 1 fabric price'],
+  ['ราคาผ้าชิ้นที่ 2', 'Panel 2 fabric price'],
+  ['รวมราคาผ้า 2 ชิ้น', 'Total fabric price for 2 panels'],
+  ['ราคาผ้า/โครงต่อชุด', 'Fabric/frame price per set'],
+  ['รายละเอียดราคา', 'Price details'],
+  ['รูปแบบ', 'Format'],
+  ['ผ้าชิ้นเดียว', 'Single fabric panel'],
+  ['แบ่งผ้า 2 ชิ้นในระบบเดียว', 'Split into 2 fabric panels in one system'],
+  ['การใช้งานแบบมือหมุน', 'Manual operation'],
+  ['คิดมอเตอร์ 1 ตัวต่อระบบ', 'one motor per system'],
+  ['หมายเหตุ*-', 'Notes:'],
+  ['กันสาดพับเก็บได้', 'Retractable Awning'],
+  ['ชนิดผ้า', 'Fabric'],
+  ['ขนาด', 'Size'],
+  ['กว้าง', 'Width'],
+  ['ยื่น', 'Projection'],
+  ['ระยะยื่น', 'Projection'],
+  ['ระบบมอเตอร์', 'Motor System'],
+  ['ระบบมือหมุน', 'Manual System'],
+  ['ราคาเริ่มต้นต่อชุด', 'Starting Price / Set'],
+  ['ราคาต่อชุดรวมอุปกรณ์', 'Unit Price with Accessories'],
+  ['ราคาก่อนส่วนลด', 'Before Discount'],
+  ['ราคารวมก่อนส่วนลด', 'Total Before Discount'],
+  ['ส่วนลดพิเศษ', 'Special Discount'],
+  ['ส่วนลด', 'Discount'],
+  ['ราคาสุทธิ', 'Net Total'],
+  ['ราคาสรุป', 'Final Price'],
+  ['ราคารวม', 'Total'],
+  ['จำนวน', 'Quantity'],
+  ['ฝาครอบกันน้ำ', 'Waterproof Cover'],
+  ['เพิ่มมือหมุน', 'Add Manual Override'],
+  ['เพิ่มเครื่องหมุนในตัว', 'Add Manual Override'],
+  ['ตัวเลือกที่', 'Option'],
+  ['ไม่มีราคาสำหรับ', 'No price found for'],
+  ['กรุณาเลือก', 'Please select'],
+  ['กรุณากรอก', 'Please enter'],
+  ['รวม VAT 7% แล้ว', 'VAT 7% included'],
+  ['ราคาติดตั้งภายในกทมเท่านั้น', 'Installation in Bangkok only'],
+  ['ราคานี้ยังไม่รวมค่าขนส่งและติดตั้ง', 'This price excludes delivery and installation'],
+  ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
+  ['หมายเหตุ', 'Note'],
+  ['Note/หมายเหตุ', 'Note'],
+  ['บาท', 'THB'],
+  ['ชุด', 'set'],
+  ['ม.', 'm.']
+];
+function localizeResultText(text){
+  if (resultLanguage !== 'en') return String(text || '');
+  let output = String(text || '');
+  RESULT_EN_REPLACEMENTS
+    .slice()
+    .sort((a, b) => b[0].length - a[0].length)
+    .forEach(([from, to]) => { output = output.split(from).join(to); });
+  return output
+    .split(')THB').join(') THB')
+    .replace(new RegExp('([0-9,])THB', 'g'), '$1 THB')
+    .replace(new RegExp('\\bB\\.', 'g'), 'THB')
+    .replace(new RegExp('\\s+THB', 'g'), ' THB')
+    .replace(new RegExp('Pre-order product, lead time\\s+([0-9-]+)\\s+days', 'g'), 'Pre-order product, lead time $1 days')
+    .replace(new RegExp('MotorWarranty', 'g'), 'Motor warranty')
+    .replace(new RegExp(':\\s*None', 'g'), ': None')
+    .replace(new RegExp('/\\s*None', 'g'), '/ None')
+    .trim();
+}
+
+
+
+function updateResultLanguageLabels(){
+  const resultSignal = 'ผลการ';
+  const customerSignal = 'ข้อความ';
+  document.querySelectorAll('h2,h3,h4,.panel-title,.customer-copy-title,.customer-copy-label').forEach(el => {
+    const original = el.getAttribute('data-result-label-th') || el.textContent.trim();
+    if (!original.includes(resultSignal) && !original.includes(customerSignal)) return;
+    if (!el.getAttribute('data-result-label-th')) el.setAttribute('data-result-label-th', original);
+    el.textContent = resultLanguage === 'en' ? localizeResultText(original) : original;
+  });
+}
+
+function setLocalizedCopyPreview(text){
+  const preview = document.getElementById('copyPreview');
+  if (preview) preview.textContent = localizeResultText(text);
+  updateResultLanguageLabels();
+}
+
+function setResultLanguage(lang){
+  resultLanguage = lang === 'en' ? 'en' : 'th';
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  if (typeof calculate === 'function') calculate(false);
+  else if (typeof calc === 'function') calc();
+  else if (typeof calculatePrice === 'function') calculatePrice();
+  updateResultLanguageLabels();
+}
+function initResultLanguageToggle(){
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    button.addEventListener('click', () => setResultLanguage(button.dataset.resultLang));
+  });
+  updateResultLanguageLabels();
+}
+
+initResultLanguageToggle();
+
+
+    // ===== ตารางราคา RV Awning (จาก price sheet) =====
+    // ระบบมอเตอร์ RTS + LED, ผ้า Acrylic, ราคารวมโครงสร้าง + ผ้า
+    const PRICE_ROWS = [
+      { width: 4.5, projection: 2.5, price: 83200 },
+      { width: 5.0, projection: 2.5, price: 88400 },
+      { width: 5.5, projection: 2.5, price: 101700 },
+
+      { width: 4.5, projection: 3.0, price: 88800 },
+      { width: 5.0, projection: 3.0, price: 94300 },
+      { width: 5.5, projection: 3.0, price: 109000 }
+    ];
+
+    function cleanNumber(value) {
+      const n = Number(String(value || "0").replace(/,/g, ""));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function money(value) {
+  return Number(value || 0).toLocaleString("th-TH") + " บาท";
+}
+
+    function getBasePrice() {
+      const width = cleanNumber(document.getElementById("width").value);
+      const projection = cleanNumber(document.getElementById("projection").value);
+      const found = PRICE_ROWS.find(row => row.width === width && row.projection === projection);
+      return found ? found.price : 0;
+    }
+
+    function calculate() {
+      const width = cleanNumber(document.getElementById("width").value);
+      const projection = cleanNumber(document.getElementById("projection").value);
+      const discountPercent = cleanNumber(document.getElementById("discount").value);
+      const specialDiscountInput = cleanNumber(document.getElementById("specialDiscount").value);
+      const jobNote = document.getElementById("jobNote").value.trim();
+      const awningQty = Math.max(cleanNumber(document.getElementById("awningQty").value), 1);
+
+const basePrice = getBasePrice();
+const unitSubtotal = basePrice;
+const subtotal = unitSubtotal * awningQty;
+const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
+      const discountBase = Math.max(subtotal - specialDiscountAmount, 0);
+      const discountAmount = discountBase * (discountPercent / 100);
+      const grandTotal = Math.max(discountBase - discountAmount, 0);
+      document.getElementById("warning").style.display = basePrice === 0 ? "block" : "none";
+      const lines = [];
+      lines.push("RV Awning – Full Cassette (มาตรฐานอเมริกา)");
+      lines.push("ระบบมอเตอร์ RTS + รีโมท + LED Lighting");
+      lines.push("ชนิดผ้า: Acrylic Fabric");
+      lines.push(`กว้าง: ${width.toFixed(2)} m`);
+      lines.push(`ยื่น: ${projection.toFixed(2)} m`);
+      lines.push(`จำนวน: ${awningQty}`);
+      lines.push(`ราคาก่อนส่วนลด: ${money(subtotal)}`);
+      if (specialDiscountAmount > 0) lines.push(`ส่วนลดพิเศษ: -${money(specialDiscountAmount)}`);
+      lines.push(`ส่วนลด: ${discountPercent}% = ${money(discountAmount)}`);
+      lines.push(`ราคารวม: ${money(grandTotal)}`);
+      if (jobNote) lines.push(`Note/หมายเหตุ: ${jobNote}`);
+      lines.push("รวม VAT 7% แล้ว");
+      lines.push("ราคาติดตั้งภายในกทมเท่านั้น");
+      lines.push("กันสาดมาพร้อมฝาครอบกันน้ำในตัว (Waterproof Cover)");
+      lines.push("สินค้านำเข้าทั้งโครงสร้าง ราคาขายเป็นชุดเท่านั้น");
+      lines.push("ราคาสั่งตัดพิเศษ ซื้อแล้วไม่รับคืนทุกกรณี");
+      lines.push("สินค้า Pre-Order รอสินค้า 60-90 วัน");
+
+      setLocalizedCopyPreview(lines.join("\n"));
+    }
+
+    function copyAll() {
+      const text = document.getElementById("copyPreview").textContent;
+      const btn = document.getElementById("copyBtn");
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = "Copied";
+          setTimeout(() => btn.textContent = "Copy All", 1500);
+        });
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        btn.textContent = "Copied";
+        setTimeout(() => btn.textContent = "Copy All", 1500);
+      }
+    }
+
+    document.getElementById("width").addEventListener("change", calculate);
+    document.getElementById("projection").addEventListener("change", calculate);
+    document.getElementById("awningQty").addEventListener("input", calculate);
+    document.getElementById("specialDiscount").addEventListener("input", calculate);
+      document.getElementById("discount").addEventListener("input", calculate);
+    document.getElementById("jobNote").addEventListener("input", calculate);
+
+    calculate();
+
+</script>
+</body>
+</html>
