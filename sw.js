@@ -10,7 +10,7 @@
   IMPORTANT: bump CACHE_NAME (v1 -> v2 ...) whenever you change any cached file,
   so visitors get the new version instead of the old cached copy.
 */
-const CACHE_NAME = 'sangthong-awning-v4';
+const CACHE_NAME = 'sangthong-awning-v5';
 
 const ASSETS = [
   './',
@@ -87,16 +87,41 @@ self.addEventListener('activate', event => {
 // Cache-first: serve from cache, fall back to network (and cache the result).
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        const copy = response.clone();
-        if (response.ok) {
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-        }
-        return response;
-      }).catch(() => caches.match('./index.html'));
-    })
-  );
+  event.respondWith(handleFetch(event.request));
 });
+
+async function handleFetch(request) {
+  // 1) ลองใช้จากแคชก่อน (เร็ว + ใช้งานออฟไลน์ได้) / try cache first
+  const cached = await caches.match(request);
+  if (cached) return safeResponse(request, cached);
+
+  // 2) ไม่มีในแคช → ดึงจากเน็ต แล้วเก็บลงแคช / not cached: fetch, then store
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      const copy = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+    }
+    return safeResponse(request, response);
+  } catch (err) {
+    // 3) ออฟไลน์และไม่มีในแคช → คืนหน้าแรกเป็น fallback / offline fallback
+    const fallback = await caches.match('./index.html');
+    return fallback ? safeResponse(request, fallback) : Response.error();
+  }
+}
+
+// เบราว์เซอร์ห้าม Service Worker ตอบ "การเปิดหน้า (navigation)" ด้วย response ที่ผ่าน
+// การ redirect มา (เช่น Cloudflare Pages เปลี่ยน /page.html -> /page) ไม่งั้นจะขึ้น ERR_FAILED
+// จึงสร้าง Response ขึ้นใหม่เพื่อล้างสถานะ "redirected" ทิ้ง
+// (Browsers forbid a redirected response for a navigation; rebuild it to clear the flag.)
+async function safeResponse(request, response) {
+  if (request.mode === 'navigate' && response.redirected) {
+    const body = await response.blob();
+    return new Response(body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers
+    });
+  }
+  return response;
+}

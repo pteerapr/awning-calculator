@@ -238,7 +238,6 @@
 <option selected="" value="2.50">2.50 m</option>
 <option value="3.00">3.00 m</option>
 <option value="3.50">3.50 m</option>
-<option value="4.00">4.00 m</option>
 </select>
 </div>
 <div>
@@ -266,7 +265,7 @@
 </div>
 </div>
 <div class="warning" id="warning">
-          No price found for this size. This size was grey/blank in the original table.
+          ขนาดนี้ไม่มีในตารางราคา / This size is not available in the price table.
         </div>
 <div class="mt">
 <label for="jobNote">Note / หมายเหตุ</label>
@@ -593,7 +592,34 @@ initResultLanguageToggle();
       const discountAmount = discountBase * (discountPercent / 100);
       const grandTotal = Math.max(discountBase - discountAmount, 0);
 
-      document.getElementById("warning").style.display = basePrice === 0 ? "block" : "none";
+      // แสดงคำเตือนเมื่อไม่มีราคาสำหรับขนาดที่เลือก (ช่องสีเทาในตารางเดิม / เกินขีดจำกัดรุ่น)
+      // Show a clear warning when the chosen size has no price (grey cell / beyond model limit)
+      const warningEl = document.getElementById("warning");
+      if (basePrice === 0) {
+        // ระยะยื่นสูงสุดของรุ่นนี้ = ค่ามากสุดในตารางราคา (ดึงจากข้อมูลจริง จึงถูกต้องเสมอ)
+        const maxProjection = Math.max(...PRICE_ROWS.map(r => r.projection));
+        // หน้ากว้างต่ำสุดที่มีราคาสำหรับระยะยื่นที่เลือก
+        const widthsForProjection = PRICE_ROWS
+          .filter(r => r.projection === projection)
+          .map(r => r.width);
+        if (widthsForProjection.length > 0) {
+          // มีราคาที่ระยะยื่นนี้ แต่หน้ากว้างที่เลือกแคบเกินไป
+          const minWidth = Math.min(...widthsForProjection);
+          warningEl.textContent =
+            `ที่ระยะยื่น ${projection.toFixed(2)} ม. ต้องใช้หน้ากว้างตั้งแต่ ${minWidth.toFixed(2)} ม. ขึ้นไป ` +
+            `(รุ่นนี้ระยะยื่นสูงสุด ${maxProjection.toFixed(2)} ม.) — ` +
+            `At ${projection.toFixed(2)} m projection, minimum width is ${minWidth.toFixed(2)} m ` +
+            `(max projection for this model: ${maxProjection.toFixed(2)} m).`;
+        } else {
+          // ระยะยื่นที่เลือกเกินขีดจำกัดของรุ่น
+          warningEl.textContent =
+            `รุ่นนี้รองรับระยะยื่นสูงสุด ${maxProjection.toFixed(2)} ม. — ` +
+            `This model supports a maximum projection of ${maxProjection.toFixed(2)} m.`;
+        }
+        warningEl.style.display = "block";
+      } else {
+        warningEl.style.display = "none";
+      }
 
       const lines = [];
       lines.push("TERRA FS Full Cassette Premium Model");

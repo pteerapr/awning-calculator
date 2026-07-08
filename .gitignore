@@ -16,5 +16,8 @@ Desktop.ini
 *-DESKTOP-*.*
 *-LAPTOP-*.*
 
+# --- Cloudflare Wrangler local state (not for the repo) ---
+.wrangler/
+
 # NOTE: the manual backup files (_backup_before_*, *bak*, *_original*, indexbak.html)
 # are intentionally NOT ignored yet — they stay tracked until we decide to remove them.
