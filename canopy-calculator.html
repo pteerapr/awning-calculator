@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><title>Canopy Calculator - Sangthong Creation</title>
+<style>
+:root {
+  --primary:#003366;
+  --accent:#007bff;
+  --bg:#f8f9fb;
+  --text:#111827;
+  --panel:#ffffff;
+  --muted:#e5e7eb;
+  --shadow:0 12px 30px rgba(15,23,42,.08);
+  --radius:14px;
+  --pink:#ec2c8f;
+  --gold:#a9895f;
+  --yellow:#ffff00;
+  --salmon:#f4cccc;
+  --skyblue:#cfe2f3;
+}
+html,body{background:var(--bg)!important; font-family:'Segoe UI', Tahoma, Arial, sans-serif; color:var(--text); margin:0;}
+h1,h2,h3{color:var(--primary)!important; margin-top:0.4rem;}
+.main-wrapper{ display:flex; justify-content:center; gap:20px; align-items:flex-start; flex-wrap:wrap; padding:0 16px 30px; }
+.container,.result-panel{ background:var(--panel); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; }
+.container{ width:400px; }
+.result-panel{ width:380px; }
+h2{ text-align:center; margin-bottom:16px; font-size:19px; }
+label{ display:block; margin:10px 0 4px; font-weight:700; font-size:.9rem; color:var(--primary); }
+input, select, button{ width:100%; padding:10px; border-radius:10px; border:1px solid #d1d5db; font-size:15px; box-sizing:border-box; }
+button{ margin-top:16px; background:var(--primary); color:#fff; border:none; cursor:pointer; font-weight:700; }
+button:hover{ background:var(--accent); }
+.copy-btn{ background:#198754!important; }
+.copy-btn:hover{ background:#157347!important; }
+.languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px;width:auto;margin-top:0}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+.hint{ font-size:12px; color:#6b7280; margin-top:2px; }
+.result{ background:#e9f7ef; border-left:4px solid #28a745; border-radius:8px; padding:14px; }
+.quote-box{ background:#f7f9fc; border:1px solid #d9e2ef; border-radius:10px; padding:12px; line-height:1.65; }
+.quote-title{ font-weight:800; color:var(--primary); font-size:17px; margin-bottom:8px; }
+.customer-copy-label{ font-size:13px; font-weight:700; color:var(--primary); margin-bottom:6px; }
+.customer-copy-text{ margin:0; padding:12px; background:#f1f3f5; border:1px solid #d8dee4; border-radius:8px; white-space:pre-wrap; font-family:inherit; font-size:13.5px; line-height:1.6; color:#111827; }
+.price-lg{ color:#0f5132; background:#e9f7ef; border:2px solid #198754; border-radius:12px; padding:10px 14px; display:inline-block; font-size:20px; font-weight:800; }
+.ref-table-wrap{ max-width:1000px; margin:0 auto 24px; padding:0 16px; }
+table.ref{ width:100%; border-collapse:collapse; background:#fff; box-shadow:var(--shadow); border-radius:10px; overflow:hidden; }
+table.ref th, table.ref td{ border:1px solid #e5e7eb; padding:8px 10px; text-align:center; font-size:13.5px; }
+table.ref th{ background:#f3f4f6; color:var(--primary); }
+table.ref td.fabric-name{ text-align:left; font-weight:600; }
+.col-yellow{ background:var(--yellow); font-weight:700; }
+.col-salmon{ background:var(--salmon); font-weight:700; }
+.col-sky{ background:var(--skyblue); font-weight:700; }
+.ref-title{ text-align:center; color:var(--primary); text-decoration:underline; font-weight:800; margin:6px 0 14px; }
+.terms{ max-width:1000px; margin:0 auto 30px; padding:0 16px; font-size:13px; color:#374151; line-height:1.7; }
+.terms strong{ color:var(--primary); }
+.small-note{ font-size:12px; color:#b91c1c; margin-top:6px; }
+.error{ margin-top:10px; background:#f8d7da; border-left:4px solid #dc3545; padding:10px; border-radius:8px; display:none; }
+@media (max-width: 768px){
+  .main-wrapper{ flex-direction:column; align-items:center; padding:0 10px 20px; }
+  .container,.result-panel{ width:100%; box-sizing:border-box; }
+}
+</style></head>
+<body>
+
+<h1 style="text-align:center;font-size:20px;">เครื่องคำนวณราคาโครงสร้างถาวร ผ้าใบกันสาด (Canopy)</h1>
+
+<div class="main-wrapper">
+  <div class="container">
+    <h2>ข้อมูลขนาด &amp; สเปค (<a href="index.html">Back to Index</a>)</h2>
+
+    <label>โครงสร้าง (Structure)</label>
+    <select id="structure">
+      <option value="steel">โครงสร้างเหล็ก</option>
+      <option value="stainless">โครงสร้างสแตนเลส</option>
+      <option value="aluminum">โครงอลูมิเนียม</option>
+    </select>
+
+    <label>รูปแบบโครง (Frame Style)</label>
+    <select id="style">
+      <option value="normal">โครงธรรมดา</option>
+      <option value="euro">โครงยุโรป</option>
+    </select>
+
+    <label>ชนิดผ้า (Fabric)</label>
+    <select id="fabric">
+      <option value="pvc">ผ้า PVC, ผ้า Solar View, ผ้า Solar Sand</option>
+      <option value="solarmax">ผ้า Solar Max</option>
+      <option value="acrylic">ผ้า Acrylic</option>
+      <option value="sunbrella">ผ้า Sunbrella</option>
+    </select>
+
+    <label>ความกว้าง / Width (เมตร)</label>
+    <input id="width" type="number" step="0.01" min="0" value="4.00"/>
+
+    <label>ความสูงด้านหลัง / Back Height (เมตร)</label>
+    <input id="backHeight" type="number" step="0.01" min="0" value="0.30"/>
+
+    <label>ระยะยื่น / Projection (เมตร)</label>
+    <input id="projection" type="number" step="0.01" min="0" value="2.50"/>
+
+    <label>จำนวน (ชุด)</label>
+    <input id="qty" type="number" min="1" value="1"/>
+
+    <label>อุปกรณ์เสริมเพิ่มเติม (บาท)</label>
+    <input id="accessories" type="number" min="0" value="0"/>
+
+    <label>ส่วนลดพิเศษ (บาท)</label>
+    <input id="specialDiscount" type="number" min="0" value="0"/>
+
+    <label>ส่วนลด (%)</label>
+    <input id="discount" type="number" min="0" max="100" value="0"/>
+
+    <label for="jobNote">หมายเหตุ / Note</label>
+    <input id="jobNote" type="text" placeholder="Optional note"/>
+
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="result-panel"><div class="st-brandbar" style="background:#003366;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;"><div style="font-weight:900;letter-spacing:2px;font-size:15px;">SANGTHONG CREATION</div><div style="font-size:11px;letter-spacing:.4px;opacity:.85;margin-top:3px;">Price presented by Sangthong Creation</div></div>
+    <h3 style="text-align:center;">ผลการคำนวณ</h3>
+    <div class="languageToggle" aria-label="Result language">
+      <button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button>
+      <button type="button" data-result-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <div id="result"></div>
+    <button class="copy-btn" id="copyResult">คัดลอกผลลัพธ์ทั้งหมด</button>
+  </div>
+</div>
+
+<script>
+const PRICE_TABLE = {
+  pvc:       { steel_normal:2900, steel_euro:3300, stainless_normal:3900, stainless_euro:4200, aluminum_fan:4000, label:'ผ้า PVC, ผ้า Solar View, ผ้า Solar Sand' },
+  solarmax:  { steel_normal:3100, steel_euro:3500, stainless_normal:4100, stainless_euro:4500, aluminum_fan:4200, label:'ผ้า Solar Max' },
+  acrylic:   { steel_normal:3700, steel_euro:4000, stainless_normal:4600, stainless_euro:5000, aluminum_fan:4900, label:'ผ้า Acrylic' },
+  sunbrella: { steel_normal:4000, steel_euro:4400, stainless_normal:5000, stainless_euro:5400, aluminum_fan:5500, label:'ผ้า Sunbrella' }
+};
+
+const structureEl = document.getElementById('structure');
+const styleEl = document.getElementById('style');
+
+function refreshStyleOptions(){
+  const structure = structureEl.value;
+  if(structure === 'aluminum'){
+    styleEl.innerHTML = '<option value="fan">โครงรูปพัด</option>';
+    styleEl.disabled = true;
+  } else {
+    styleEl.disabled = false;
+    if(styleEl.innerHTML.indexOf('โครงธรรมดา') === -1){
+      styleEl.innerHTML = '<option value="normal">โครงธรรมดา</option><option value="euro">โครงยุโรป</option>';
+    }
+  }
+}
+
+function bahtText(n){
+  return Number(n).toLocaleString('th-TH', {minimumFractionDigits:0, maximumFractionDigits:2}) + ' บาท';
+}
+
+function getPricePerSqm(){
+  const fabricKey = document.getElementById('fabric').value;
+  const structure = structureEl.value;
+  const style = styleEl.value;
+  const row = PRICE_TABLE[fabricKey];
+  let key;
+  if(structure === 'aluminum'){
+    key = 'aluminum_fan';
+  } else {
+    key = structure + '_' + style;
+  }
+  return { price: row[key], fabricLabel: row.label };
+}
+
+function calculatePrice(){
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+  errorEl.style.display = 'none';
+
+  const width = parseFloat(document.getElementById('width').value) || 0;
+  const backHeight = parseFloat(document.getElementById('backHeight').value) || 0;
+  const projection = parseFloat(document.getElementById('projection').value) || 0;
+  const qty = Math.max(1, parseInt(document.getElementById('qty').value) || 1);
+  const accessories = parseFloat(document.getElementById('accessories').value) || 0;
+  const specialDiscount = parseFloat(document.getElementById('specialDiscount').value) || 0;
+  const discountPct = parseFloat(document.getElementById('discount').value) || 0;
+  const jobNote = document.getElementById('jobNote').value.trim();
+
+  if(width <= 0 || projection <= 0){
+    errorEl.textContent = 'กรุณาระบุความกว้างและระยะยื่นให้ถูกต้อง';
+    errorEl.style.display = 'block';
+    resultEl.innerHTML = '';
+    return;
+  }
+
+  const { price: pricePerSqm, fabricLabel } = getPricePerSqm();
+
+  // Formula: (width + (backHeight x 2)) then x (projection + backHeight)
+  const step1 = width + (backHeight * 2);
+  const areaPerUnit = step1 * (projection + backHeight);
+  const roundedArea = Math.round(areaPerUnit * 100) / 100;
+
+  const basePricePerUnit = roundedArea * pricePerSqm;
+  const pricePerUnit = basePricePerUnit;
+  const totalArea = Math.round(roundedArea * qty * 100) / 100;
+
+  const structureLabelMap = { steel:'โครงสร้างเหล็ก', stainless:'โครงสร้างสแตนเลส', aluminum:'โครงอลูมิเนียม' };
+  const styleLabelMap = { normal:'โครงธรรมดา', euro:'โครงยุโรป', fan:'โครงรูปพัด' };
+  const structureLabel = structureLabelMap[structureEl.value];
+  const styleLabel = styleLabelMap[styleEl.value];
+
+  const subtotal = (pricePerUnit * qty) + accessories;
+  const specialDiscountAmount = Math.min(specialDiscount, subtotal);
+  const afterSpecial = subtotal - specialDiscountAmount;
+  const discountAmount = afterSpecial * (discountPct / 100);
+  const totalExclVat = afterSpecial - discountAmount;
+  const vatAmount = totalExclVat * 0.07;
+  const totalInclVat = totalExclVat + vatAmount;
+
+  const customerLines = [
+    'Sangthong Creation - CANOPY',
+    'ชนิดผ้า: ' + fabricLabel,
+    'โครงสร้าง: ' + structureLabel + ' (' + styleLabel + ')',
+    'ขนาด: กว้าง ' + width.toFixed(2) + ' ม. x สูงด้านหลัง ' + backHeight.toFixed(2) + ' ม. x ระยะยื่น ' + projection.toFixed(2) + ' ม.',
+    'พื้นที่คิดราคา/ชุด: ' + roundedArea.toFixed(2) + ' ตร.ม.',
+    'ราคาต่อตร.ม.: ' + bahtText(pricePerSqm),
+    'ราคาต่อชุด: ' + bahtText(pricePerUnit),
+    'จำนวน: ' + qty + ' ชุด (พื้นที่รวม ' + totalArea.toFixed(2) + ' ตร.ม.)',
+    accessories > 0 ? 'อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(accessories) : '',
+    '',
+    'ราคารวมก่อนส่วนลด: ' + bahtText(subtotal),
+    specialDiscountAmount > 0 ? 'ส่วนลดพิเศษ: -' + bahtText(specialDiscountAmount) : '',
+    discountAmount > 0 ? 'ส่วนลด ' + discountPct + '%: -' + bahtText(discountAmount) : '',
+    'ราคารวม (ไม่รวม VAT): ' + bahtText(totalExclVat),
+    'VAT 7%: ' + bahtText(vatAmount),
+    'ราคารวม VAT: ' + bahtText(totalInclVat),
+    jobNote ? ('หมายเหตุ: ' + jobNote) : '',
+    '',
+    'เงื่อนไข: สั่งซื้อขั้นต่ำ 10 ตร.ม. / ราคานี้สำหรับโครงสร้างเหล็ก 1.5-2 นิ้ว ไม่รวมฐานราก เสาเพิ่ม',
+    'ราคาไม่รวม VAT / บริการติดตั้งในเขตกรุงเทพฯ',
+    'สินค้าสั่งตัด ไม่รับเปลี่ยนหรือคืนสินค้าในทุกกรณี'
+  ].filter(Boolean);
+
+  window.latestCopyText = customerLines.join('\n');
+
+  // Show the exact customer copy text as the result, so what the sales
+  // staff sees is what gets copied and sent to the customer.
+  resultEl.innerHTML =
+    '<div class="customer-copy-label">Customer copy text / ข้อความสำหรับส่งลูกค้า</div>' +
+    '<pre class="customer-copy-text" id="copyPreview"></pre>';
+  document.getElementById('copyPreview').textContent = window.latestCopyText;
+}
+
+/* ---- TH/EN result language toggle (same pattern as the other calculators) ---- */
+let resultLanguage = 'th';
+
+// Thai -> English replacements for the result panel and customer copy text.
+// Longest strings are replaced first (sorted at runtime), so overlapping
+// phrases such as "ราคารวมก่อนส่วนลด" vs "ราคารวม" resolve correctly.
+const RESULT_EN_REPLACEMENTS = [
+  ['เงื่อนไข: สั่งซื้อขั้นต่ำ 10 ตร.ม. / ราคานี้สำหรับโครงสร้างเหล็ก 1.5-2 นิ้ว ไม่รวมฐานราก เสาเพิ่ม', 'Conditions: minimum order 10 sq.m. / Price applies to 1.5-2 inch steel structure, excluding foundation and extra posts'],
+  ['ราคาไม่รวม VAT / บริการติดตั้งในเขตกรุงเทพฯ', 'Price excludes VAT / Installation service within Bangkok'],
+  ['สินค้าสั่งตัด ไม่รับเปลี่ยนหรือคืนสินค้าในทุกกรณี', 'Made-to-order product; no exchange or return in any case'],
+  ['กรุณาระบุความกว้างและระยะยื่นให้ถูกต้อง', 'Please enter a valid width and projection'],
+  ['ผ้า PVC, ผ้า Solar View, ผ้า Solar Sand', 'PVC / Solar View / Solar Sand fabric'],
+  ['ผ้า Solar Max', 'Solar Max fabric'],
+  ['ผ้า Acrylic', 'Acrylic fabric'],
+  ['ผ้า Sunbrella', 'Sunbrella fabric'],
+  ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
+  ['สรุปราคา Canopy', 'Canopy Price Summary'],
+  ['ผลการคำนวณ', 'Result'],
+  ['โครงสร้างเหล็ก', 'Steel structure'],
+  ['โครงสร้างสแตนเลส', 'Stainless steel structure'],
+  ['โครงอลูมิเนียม', 'Aluminum frame'],
+  ['โครงสร้าง', 'Structure'],
+  ['โครงธรรมดา', 'Standard frame'],
+  ['โครงยุโรป', 'European frame'],
+  ['โครงรูปพัด', 'Fan-shaped frame'],
+  ['ชนิดผ้า', 'Fabric'],
+  ['ขนาด: กว้าง', 'Size: Width'],
+  ['สูงด้านหลัง', 'Back Height'],
+  ['ระยะยื่น', 'Projection'],
+  ['ยื่น', 'Projection'],
+  ['พื้นที่คิดราคา/ชุด', 'Priced area / set'],
+  ['พื้นที่รวม', 'total area'],
+  ['ราคาต่อตร.ม.', 'Price per sq.m.'],
+  ['ราคาต่อชุด', 'Price per set'],
+  ['อุปกรณ์เสริมเพิ่มเติม', 'Additional accessories'],
+  ['ราคารวมก่อนส่วนลด', 'Total before discount'],
+  ['ราคารวม (ไม่รวม VAT)', 'Total (excl. VAT)'],
+  ['ราคารวม VAT', 'Total incl. VAT'],
+  ['ส่วนลดพิเศษ', 'Special discount'],
+  ['ส่วนลด', 'Discount'],
+  ['จำนวน', 'Quantity'],
+  ['หมายเหตุ', 'Note'],
+  ['ตร.ม.', 'sq.m.'],
+  ['บาท', 'THB'],
+  ['ชุด', 'set'],
+  ['ม.', 'm.']
+];
+
+function localizeResultText(text){
+  if (resultLanguage !== 'en') return String(text || '');
+  let output = String(text || '');
+  RESULT_EN_REPLACEMENTS
+    .slice()
+    .sort((a, b) => b[0].length - a[0].length)
+    .forEach(([from, to]) => { output = output.split(from).join(to); });
+  return output
+    .replace(new RegExp('([0-9,])THB', 'g'), '$1 THB')
+    .replace(new RegExp('\\s+THB', 'g'), ' THB')
+    .trim();
+}
+
+// Translate the panel headings (e.g. "ผลการคำนวณ") when EN is active.
+function updateResultLanguageLabels(){
+  const resultSignal = 'ผลการ';
+  const customerSignal = 'ข้อความ';
+  document.querySelectorAll('h2,h3,h4,.panel-title,.customer-copy-title,.customer-copy-label').forEach(el => {
+    const original = el.getAttribute('data-result-label-th') || el.textContent.trim();
+    if (!original.includes(resultSignal) && !original.includes(customerSignal)) return;
+    if (!el.getAttribute('data-result-label-th')) el.setAttribute('data-result-label-th', original);
+    el.textContent = resultLanguage === 'en' ? localizeResultText(original) : original;
+  });
+}
+
+// In EN mode, translate the customer copy text shown in the result panel
+// (the copy button copies the same translated text).
+function localizeResultPanel(){
+  const pre = document.getElementById('copyPreview');
+  if (!pre || resultLanguage !== 'en' || !pre.textContent.trim()) return;
+  pre.textContent = localizeResultText(pre.textContent);
+  window.latestCopyText = pre.textContent;
+  updateResultLanguageLabels(); // the label above the text is re-created on every recalculation
+}
+
+function setResultLanguage(lang){
+  resultLanguage = lang === 'en' ? 'en' : 'th';
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  if (typeof calculatePrice === 'function') calculatePrice();
+  updateResultLanguageLabels();
+}
+
+function initResultLanguageToggle(){
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    button.addEventListener('click', () => setResultLanguage(button.dataset.resultLang));
+  });
+  // Wrap calculatePrice so every recalculation re-applies the translation.
+  if (typeof calculatePrice === 'function') {
+    const originalCalculatePrice = calculatePrice;
+    calculatePrice = function(){
+      originalCalculatePrice.apply(this, arguments);
+      localizeResultPanel();
+    };
+  }
+  updateResultLanguageLabels();
+}
+initResultLanguageToggle();
+/* ---- end language toggle ---- */
+
+structureEl.addEventListener('change', () => { refreshStyleOptions(); calculatePrice(); });
+[
+  'style','fabric','width','backHeight','projection','qty',
+  'accessories','specialDiscount','discount','jobNote'
+].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', calculatePrice);
+  el.addEventListener('change', calculatePrice);
+});
+
+document.getElementById('copyResult').onclick = () => {
+  const text = window.latestCopyText || '';
+  if(text.trim() !== ''){
+    navigator.clipboard.writeText(text)
+      .then(() => alert('คัดลอกผลลัพธ์เรียบร้อยแล้ว!'))
+      .catch(() => alert('ไม่สามารถคัดลอกได้'));
+  } else {
+    alert('ยังไม่มีผลลัพธ์ให้คัดลอก');
+  }
+};
+
+refreshStyleOptions();
+calculatePrice();
+</script>
+</body></html>
