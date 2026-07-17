@@ -70,10 +70,15 @@ th{background:#f3f4f6;}
 <div class="container">
 <div class="card">
 <label>กว้าง (m)</label>
-<input id="width" max="6.0" min="0.7" oninput="updateArea()" step="0.01" type="number" value="1.50"/>
+<input id="width" max="5.8" min="0.7" oninput="updateArea()" step="0.01" type="number" value="1.50"/>
 <label>สูง(m)</label>
-<input id="height" max="2.9" min="0.85" oninput="updateArea()" step="0.01" type="number" value="1.50"/>
+<input id="height" max="3.25" min="0.85" oninput="updateArea()" step="0.01" type="number" value="1.50"/>
 <div id="areaDisplay">ตรม: 0.00 m²</div>
+<div class="note">
+<strong>Standard Limitation of size</strong><br>
+Push &amp; Pull System: กว้าง 0.90 - 5.30 ม. / สูง 0.85 - 3.00 ม.<br>
+Motorized System: กว้าง 0.70 - 5.80 ม. / สูง 0.85 - 3.25 ม.
+</div>
 <label>ชนิดผ้าใบ</label>
 <select id="fabric" onchange="calculate(false)">
 <option value="0">ผ้าใบ 0%</option>
@@ -141,7 +146,7 @@ th{background:#f3f4f6;}
 <option value="950">2 ช่อง = 950 บาท</option>
 <option value="1100">6 ช่อง = 1,100 บาท</option>
 </select>
-<label><input id="customColour" type="checkbox" onchange="calculate(false)"/> ทําสีเพิ่ม (+500บาท/ตรม)</label>
+<label><input id="customColour" type="checkbox" onchange="calculate(false)"/> เคลือบสีพิเศษ Powder Coated (+500 บาท/เมตร ตามกรอบอลูมิเนียม 3 ด้าน ซ้าย/ขวา/บน)</label>
 <label for="jobNote">Note / หมายเหตุ</label>
 <input id="jobNote" placeholder="Optional note" type="text" oninput="calculate(false)" />
 <label for="specialDiscount">ส่วนลดพิเศษ</label>
@@ -174,6 +179,11 @@ const RESULT_EN_REPLACEMENTS = [
 
   ['\u0e0a\u0e19\u0e34\u0e14\u0e1c\u0e49\u0e32\u0e43\u0e1a', 'Fabric'],
 
+  ['\u0e40\u0e04\u0e25\u0e37\u0e2d\u0e1a\u0e2a\u0e35\u0e1e\u0e34\u0e40\u0e28\u0e29 Powder Coated', 'Custom Colour Powder Coated Paint'],
+  ['\u0e01\u0e23\u0e2d\u0e1a 3 \u0e14\u0e49\u0e32\u0e19', 'frame length 3 sides (left/right/top)'],
+  ['\u0e02\u0e19\u0e32\u0e14\u0e40\u0e01\u0e34\u0e19\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e14\u0e36\u0e07', 'Size is outside the standard range for the Push & Pull system'],
+  ['\u0e02\u0e19\u0e32\u0e14\u0e40\u0e01\u0e34\u0e19\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Size is outside the standard range for the Motorized system'],
+  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 2 \u0e1b\u0e35 \u0e43\u0e19\u0e01\u0e23\u0e13\u0e35\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c Somfy \u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19 5 \u0e1b\u0e35', 'Motor warranty 2 years; Somfy motors carry a 5-year warranty'],
   ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e14\u0e36\u0e07', 'Manual Pull System'],
   ['\u0e21\u0e37\u0e2d\u0e14\u0e36\u0e07', 'Manual pull'],
   ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d\u0e15\u0e23\u0e21', 'Rate per sqm'],
@@ -469,7 +479,12 @@ function calculate(showAlert = true){
   const crank=parseFloat(document.getElementById("crank").value)||0;
   const transmitter=parseFloat(document.getElementById("transmitter").value)||0;
   const area=w*h;
-  const custom=document.getElementById("customColour").checked?500*area:0;
+  // Custom colour powder coat: 500 THB per meter of aluminum frame — 3 sides only (left, right, top; no bottom frame)
+  const framePerimeter=w+2*h;
+  const custom=document.getElementById("customColour").checked?500*framePerimeter:0;
+  // Standard limitation of size per the spec sheet
+  const manualSizeOk = w>=0.90 && w<=5.30 && h>=0.85 && h<=3.00;
+  const motorSizeOk  = w>=0.70 && w<=5.80 && h>=0.85 && h<=3.25;
   // Accessory prices come from the shared catalog in prices.js (window.SANGTHONG_PRICES)
   const P = window.SANGTHONG_PRICES;
   const somfyAccessoryItems = [
@@ -531,14 +546,18 @@ function calculate(showAlert = true){
   let manualExtras=custom+crank;
   let manualDetails=[];
   if (crank>0) manualDetails.push(`ก้านดึง ${crank.toLocaleString()} บาท`);
-  if (custom>0) manualDetails.push(`ลูกค้าเลือกสีพิเศษ ${Math.round(custom).toLocaleString()} บาท (500 บาท/ตรม)`);
+  if (custom>0) manualDetails.push(`เคลือบสีพิเศษ Powder Coated ${Math.round(custom).toLocaleString()} บาท (500 บาท/เมตร × กรอบ 3 ด้าน ${framePerimeter.toFixed(2)} ม.)`);
   const manualTotals=calcTotals(manualExtras);
   const manualLines=[];
   manualLines.push("Izip Screen Manual");
+  if (!manualSizeOk) {
+    manualLines.push("ขนาดเกินมาตรฐานระบบมือดึง: กว้าง 0.90 - 5.30 ม. / สูง 0.85 - 3.00 ม.");
+  } else {
   manualLines.push("ระบบ: มือดึง");
   manualLines.push(...commonLines());
   manualDetails.forEach(item => manualLines.push(`- ${item}`));
   addPriceLines(manualLines, manualTotals);
+  }
 
   // ===== Motorized section =====
   let motorExtras=custom;
@@ -567,14 +586,18 @@ function calculate(showAlert = true){
     }
   }
 
-  if (custom>0) motorDetails.push(`ลูกค้าเลือกสีพิเศษ ${Math.round(custom).toLocaleString()} บาท (500 บาท/ตรม)`);
+  if (custom>0) motorDetails.push(`เคลือบสีพิเศษ Powder Coated ${Math.round(custom).toLocaleString()} บาท (500 บาท/เมตร × กรอบ 3 ด้าน ${framePerimeter.toFixed(2)} ม.)`);
   const motorTotals=calcTotals(motorExtras);
   const motorLines=[];
   motorLines.push("Izip Screen Motorized");
+  if (!motorSizeOk) {
+    motorLines.push("ขนาดเกินมาตรฐานระบบมอเตอร์: กว้าง 0.70 - 5.80 ม. / สูง 0.85 - 3.25 ม.");
+  } else {
   motorLines.push(`ระบบ: ${motorSystemLabel}`);
   motorLines.push(...commonLines());
   motorDetails.forEach(item => motorLines.push(`- ${String(item).replace(/<[^>]*>/g, "")}`));
   addPriceLines(motorLines, motorTotals);
+  }
 
   const lines = [];
   lines.push(...manualLines);
