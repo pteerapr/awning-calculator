@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><title>TERRA Extent - MA3 - Structure Price Calculator</title>
+<style>
+:root {
+  --primary:#003366;
+  --accent:#007bff;
+  --bg:#f8f9fb;
+  --text:#111827;
+  --panel:#ffffff;
+  --muted:#e5e7eb;
+  --shadow:0 12px 30px rgba(15,23,42,.08);
+  --radius:14px;
+  --pink:#ec2c8f;
+  --gold:#a9895f;
+  --yellow:#ffff00;
+  --salmon:#f4cccc;
+  --skyblue:#cfe2f3;
+}
+html,body{background:var(--bg)!important; font-family:'Segoe UI', Tahoma, Arial, sans-serif; color:var(--text); margin:0;}
+h1,h2,h3{color:var(--primary)!important; margin-top:0.4rem;}
+.main-wrapper{ display:flex; justify-content:center; gap:20px; align-items:flex-start; flex-wrap:wrap; padding:0 16px 30px; }
+.container,.result-panel{ background:var(--panel); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; }
+.container{ width:400px; }
+.result-panel{ width:380px; }
+h2{ text-align:center; margin-bottom:16px; font-size:19px; }
+label{ display:block; margin:10px 0 4px; font-weight:700; font-size:.9rem; color:var(--primary); }
+input, select, button{ width:100%; padding:10px; border-radius:10px; border:1px solid #d1d5db; font-size:15px; box-sizing:border-box; }
+input:disabled, select:disabled{ background:#f1f3f5; color:#9ca3af; }
+button{ margin-top:16px; background:var(--primary); color:#fff; border:none; cursor:pointer; font-weight:700; }
+button:hover{ background:var(--accent); }
+.copy-btn{ background:#198754!important; }
+.copy-btn:hover{ background:#157347!important; }
+.languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px;width:auto;margin-top:0}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+.hint{ font-size:12px; color:#6b7280; margin-top:2px; }
+.result{ background:#e9f7ef; border-left:4px solid #28a745; border-radius:8px; padding:14px; }
+.customer-copy-label{ font-size:13px; font-weight:700; color:var(--primary); margin-bottom:6px; }
+.customer-copy-text{ margin:0; padding:12px; background:#f1f3f5; border:1px solid #d8dee4; border-radius:8px; white-space:pre-wrap; font-family:inherit; font-size:13.5px; line-height:1.6; color:#111827; }
+.price-lg{ color:#0f5132; background:#e9f7ef; border:2px solid #198754; border-radius:12px; padding:10px 14px; display:inline-block; font-size:20px; font-weight:800; }
+.ref-table-wrap{ max-width:1200px; margin:0 auto 24px; padding:0 16px; overflow-x:auto; }
+table.ref{ width:100%; border-collapse:collapse; background:#fff; box-shadow:var(--shadow); border-radius:10px; overflow:hidden; min-width:720px; }
+table.ref th, table.ref td{ border:1px solid #e5e7eb; padding:7px 8px; text-align:center; font-size:12.5px; white-space:nowrap; }
+table.ref th{ background:#f3f4f6; color:var(--primary); }
+table.ref td.row-head{ text-align:left; font-weight:700; background:#fafafa; color:var(--primary); }
+table.ref td.na{ color:#c0c4cc; }
+table.ref td.hit{ background:#fff3cd; font-weight:800; outline:2px solid #f0ad4e; }
+.arms{ font-size:11px; color:#6b7280; }
+.col-yellow{ background:var(--yellow); font-weight:700; }
+.col-salmon{ background:var(--salmon); font-weight:700; }
+.col-sky{ background:var(--skyblue); font-weight:700; }
+.ref-title{ text-align:center; color:var(--primary); text-decoration:underline; font-weight:800; margin:6px 0 14px; }
+.terms{ max-width:1000px; margin:0 auto 30px; padding:0 16px; font-size:13px; color:#374151; line-height:1.7; }
+.terms strong{ color:var(--primary); }
+.small-note{ font-size:12px; color:#b91c1c; margin-top:6px; }
+.motor-h{ color:var(--primary); margin:16px 0 4px; border-top:1px solid var(--muted); padding-top:14px; font-size:15px; }
+.accessory-box{ border:1px solid #d8dee4; border-radius:10px; padding:10px 12px; margin:10px 0; background:#f9fafb; }
+.accessory-box h4{ margin:0 0 6px; font-size:13.5px; color:var(--primary); }
+.accessory-box label{ display:flex; align-items:flex-start; gap:8px; margin:6px 0; font-weight:500; font-size:13px; color:var(--text); }
+.accessory-box input[type=checkbox]{ width:auto; margin-top:2px; }
+.error{ margin-top:10px; background:#f8d7da; border-left:4px solid #dc3545; padding:10px; border-radius:8px; display:none; }
+@media (max-width: 768px){
+  .main-wrapper{ flex-direction:column; align-items:center; padding:0 10px 20px; }
+  .container,.result-panel{ width:100%; box-sizing:border-box; }
+}
+</style></head>
+<body>
+
+<h1 style="text-align:center;font-size:20px;">เครื่องคำนวณราคาเฉพาะโครงสร้าง — TERRA Extent - MA3</h1>
+<p style="text-align:center;margin-top:-6px;color:#b91c1c;font-size:13px;font-weight:700;">ราคาเฉพาะโครงสร้าง ไม่รวมราคาผ้า / Structure price only, fabric not included</p>
+
+<div class="main-wrapper">
+  <div class="container">
+    <h2>ข้อมูลขนาด &amp; สเปค (<a href="index.html">Back to Index</a>)</h2>
+    <div class="hint">เทอร่า รุ่น เอ็มเอ 3 — ระบบมือหมุน (Manual System)</div>
+
+    <label>ความกว้าง / Width (เมตร)</label>
+    <input id="width" type="number" step="0.01" min="0" value="2.00"/>
+    <div class="hint" id="widthHint"></div>
+
+    <label id="projLabel">ระยะแขนยื่น / Arm Projection (เมตร)</label>
+    <select id="projection"><option value="1.5">1.50 เมตร</option><option value="2.0">2.00 เมตร</option><option value="2.5">2.50 เมตร</option><option value="3.0">3.00 เมตร</option><option value="3.5">3.50 เมตร</option></select>
+    <div class="hint" id="projHint"></div>
+
+    <label>จำนวน (ชุด)</label>
+    <input id="qty" type="number" min="1" value="1"/>
+
+    <label>อุปกรณ์เสริมเพิ่มเติม (บาท)</label>
+    <input id="accessories" type="number" min="0" value="0"/>
+
+    <h4 class="motor-h">ระบบมอเตอร์ / Motor System</h4>
+    <label for="motorType">เลือกมอเตอร์ / Select Motor</label>
+    <select id="motorType">
+      <option value="none">ไม่มีมอเตอร์ (เฉพาะโครงสร้างมือหมุน) / No motor</option>
+      <option value="somfy50">Somfy Altus 50/12 (+26,800 บาท)</option>
+      <option value="somfy85">Somfy Altus 85/17 (+32,800 บาท)</option>
+      <option value="strong50">Strong Up 50/12 (+9,900 บาท)</option>
+      <option value="strong50crank">Strong Up 50/12 + มือหมุน / Crank Handle (+11,900 บาท)</option>
+      <option value="strong80">Strong Up 80/15 (+15,900 บาท)</option>
+    </select>
+
+    <div id="motorPriceRow" style="display:none;">
+      <label for="motorPrice">ราคามอเตอร์ / Motor price (บาท)</label>
+      <input id="motorPrice" type="number" min="0" value="0"/>
+      <div class="hint">ราคามอเตอร์เติมอัตโนมัติจากคลังราคา prices.js • แก้ทับได้ / Motor price auto-filled from catalog (prices.js), editable</div>
+    </div>
+
+    <div id="somfyAccBox" class="accessory-box" style="display:none;">
+      <h4>Somfy Accessories / อุปกรณ์เสริม Somfy</h4>
+      <label><input id="chkSomfyOndeisRain" type="checkbox"/> Ondeis Rain Sensor (+13,675 บาท)</label>
+      <label><input id="chkSomfyDryContact" type="checkbox"/> Dry Contact Transmitter RTS (+14,918 บาท)</label>
+      <label><input id="chkSomfySunis" type="checkbox"/> Sunis Sensor RTS Wirefree (+23,315 บาท)</label>
+      <label><input id="chkSomfyEolis" type="checkbox"/> Eolis Sensor RTS (+11,663 บาท)</label>
+      <label><input id="chkSomfyEolis3D" type="checkbox"/> Eolis 3D Sensor RTS (+11,663 บาท)</label>
+      <label><input id="chkSomfySoliris" type="checkbox"/> Soliris RTS Sensor (+21,756 บาท)</label>
+      <label><input id="chkSomfyTaHoma" type="checkbox"/> TaHoma (+11,005 บาท)</label>
+      <label><input id="chkSomfyRemote1" type="checkbox"/> Somfy Remote 1 Channel / รีโมท 1 ช่อง (+3,017 บาท)</label>
+      <label><input id="chkSomfyRemote2" type="checkbox"/> Somfy Remote 2 Channel / รีโมท 2 ช่อง (+3,862 บาท)</label>
+      <label><input id="chkSomfyRemote5" type="checkbox"/> Somfy Remote 5 Channel / รีโมท 5 ช่อง (+6,035 บาท)</label>
+      <label><input id="chkSomfyRemote6" type="checkbox"/> Somfy Remote 6 Channel / รีโมท 6 ช่อง (+13,675 บาท)</label>
+      <label><input id="chkSomfyRemote16" type="checkbox"/> Somfy Remote 16 Channel / รีโมท 16 ช่อง (+12,432 บาท)</label>
+      <label><input id="chkSomfySmoove" type="checkbox"/> Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง (+2,362 บาท)</label>
+      <div class="hint">อุปกรณ์เสริม Somfy จะคำนวณเฉพาะเมื่อเลือกมอเตอร์ Somfy</div>
+    </div>
+
+    <div id="strongAccBox" class="accessory-box" style="display:none;">
+      <h4>Strong Up Accessories / อุปกรณ์เสริม Strong Up</h4>
+      <label><input id="chkStrongRemote1" type="checkbox"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+950 บาท)</label>
+      <label><input id="chkStrongRemote15" type="checkbox"/> Transmitter 15 Channel / รีโมท 15 ช่อง (+1,800 บาท)</label>
+      <label><input id="chkStrongWindSun" type="checkbox"/> Wind-Sun Sensor / เซ็นเซอร์ลม-แดด (+6,600 บาท)</label>
+      <label><input id="chkStrongWifiAdapter" type="checkbox"/> Wifi Smart Bridge with Adapter (+7,500 บาท)</label>
+      <label><input id="chkStrongWifiBridge" type="checkbox"/> Wifi Smart Bridge only (+6,600 บาท)</label>
+      <label><input id="chkStrongUsbCharger" type="checkbox"/> USB Charger (+900 บาท)</label>
+      <label><input id="chkStrongLanBridge" type="checkbox"/> Lan Smart Bridge 1.20 m (+9,000 บาท)</label>
+      <div class="hint">อุปกรณ์เสริม Strong Up จะคำนวณเฉพาะเมื่อเลือกมอเตอร์ Strong Up</div>
+    </div>
+
+    <label>ส่วนลดพิเศษ (บาท)</label>
+    <input id="specialDiscount" type="number" min="0" value="0"/>
+
+    <label>ส่วนลด (%)</label>
+    <input id="discount" type="number" min="0" max="100" value="0"/>
+    <div class="small-note" id="discountNote" style="display:none;">รุ่นนี้เป็นราคาขายสุทธิแล้ว (ไม่มีส่วนลด)</div>
+
+    <label for="jobNote">หมายเหตุ / Note</label>
+    <input id="jobNote" type="text" placeholder="Optional note"/>
+
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="result-panel"><div class="st-brandbar" style="background:#003366;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;"><div style="font-weight:900;letter-spacing:2px;font-size:15px;">SANGTHONG CREATION</div><div style="font-size:11px;letter-spacing:.4px;opacity:.85;margin-top:3px;">Price presented by Sangthong Creation</div></div>
+    <h3 style="text-align:center;">ผลการคำนวณ</h3>
+    <div class="languageToggle" aria-label="Result language">
+      <button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button>
+      <button type="button" data-result-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <div id="result"></div>
+    <button class="copy-btn" id="copyResult">คัดลอกผลลัพธ์ทั้งหมด</button>
+  </div>
+</div>
+
+<div class="terms" id="terms"></div>
+
+<script src="prices.js"></script>
+<script>
+const P = {"label": "TERRA Extent - MA3", "labelTh": "เทอร่า รุ่น เอ็มเอ 3", "system": "ระบบมือหมุน (Manual System)", "mode": "arm", "netPrice": false, "widths": [[2.0, 2.5], [2.51, 3.0], [3.01, 3.5], [3.51, 4.0], [4.01, 4.5], [4.51, 5.0], [5.01, 5.5], [5.51, 6.0], [6.01, 6.5], [6.51, 7.0], [7.01, 7.5], [7.51, 8.0]], "rows": [{"key": 1.5, "label": "1.50 เมตร", "prices": [14870, 15800, 17220, 18540, 20350, 21280, 25810, 30950, 32460, 36800, 37730, 39090]}, {"key": 2.0, "label": "2.00 เมตร", "prices": [null, 16370, 17780, 19110, 20910, 21840, 26370, 31790, 33300, 37930, 38860, 40220]}, {"key": 2.5, "label": "2.50 เมตร", "prices": [null, null, 18220, 19480, 21220, 22150, 26680, 32320, 33830, 35290, 39600, 40970]}, {"key": 3.0, "label": "3.00 เมตร", "prices": [null, null, null, 20040, 21790, 22720, 27240, 29500, 34680, 36140, 40730, 42090]}, {"key": 3.5, "label": "3.50 เมตร", "prices": [null, null, null, null, null, 27420, 30850, 34270, 41670, 43100, 44030, 51380]}], "arms": [[null, null, null, null, null, null, null, 3, 3, 4, 4, 4], [null, null, null, null, null, null, null, 3, 3, 4, 4, 4], [null, null, null, null, null, null, null, 3, 3, 3, 4, 4], [null, null, null, null, null, null, null, 2, 3, 3, 4, 4], [null, null, null, null, null, null, null, 2, 3, 3, 3, 4]], "hasTube": false, "terms": ["ราคาเฉพาะโครงสร้าง ไม่รวมราคาผ้า", "ราคาไม่รวมภาษีมูลค่าเพิ่ม (Price Excluded VAT.)", "ตัวเลขในวงเล็บ ( ) = จำนวนแขน (No. of Arms)"]};
+const isArm = P.mode === 'arm';
+const $ = id => document.getElementById(id);
+
+/* ---- ระบบมอเตอร์ + อุปกรณ์เสริม / Motor system + accessories ----
+   ราคามอเตอร์ Somfy เป็นราคา add-on คงที่ (เหมือนในเครื่องคำนวณระบบมือหมุนตัวเต็ม)
+   Strong Up ไม่มีราคา add-on มาตรฐานสำหรับงานเฉพาะโครงสร้าง จึงให้กรอกราคาเอง
+   ราคาอุปกรณ์เสริมอ่านจาก prices.js (window.SANGTHONG_PRICES) */
+const MC = (window.SANGTHONG_PRICES && window.SANGTHONG_PRICES.motors) || {};
+const MOTOR_TYPES = {
+  none:          { label:'',                               price:0,                               system:null },
+  somfy50:       { label:'Somfy Altus 50/12',              price:MC.somfyAltus50_12     || 26800,  system:'somfy'  },
+  somfy85:       { label:'Somfy Altus 85/17',              price:MC.somfyAltus85_17     || 36500,  system:'somfy'  },
+  strong50:      { label:'Strong Up 50/12',                price:MC.strongUp50_12       || 9900,   system:'strong' },
+  strong50crank: { label:'Strong Up 50/12 + Crank Handle', price:MC.strongUp50_12_crank || 11900,  system:'strong' },
+  strong80:      { label:'Strong Up 80/15',                price:MC.strongUp80_15       || 15900,  system:'strong' }
+};
+const SOMFY_ACCESSORIES = [
+  { id:'chkSomfyOndeisRain', label:'Ondeis Rain Sensor',                    key:'ondeisRain' },
+  { id:'chkSomfyDryContact', label:'Dry Contact Transmitter RTS',           key:'dryContact' },
+  { id:'chkSomfySunis',      label:'Sunis Sensor RTS Wirefree',             key:'sunis' },
+  { id:'chkSomfyEolis',      label:'Eolis Sensor RTS',                      key:'eolis' },
+  { id:'chkSomfyEolis3D',    label:'Eolis 3D Sensor RTS',                   key:'eolis3D' },
+  { id:'chkSomfySoliris',    label:'Soliris RTS Sensor',                    key:'soliris' },
+  { id:'chkSomfyTaHoma',     label:'TaHoma',                                key:'taHoma' },
+  { id:'chkSomfyRemote1',    label:'Somfy Remote 1 Channel / รีโมท 1 ช่อง', key:'remote1' },
+  { id:'chkSomfyRemote2',    label:'Somfy Remote 2 Channel / รีโมท 2 ช่อง', key:'remote2' },
+  { id:'chkSomfyRemote5',    label:'Somfy Remote 5 Channel / รีโมท 5 ช่อง', key:'remote5' },
+  { id:'chkSomfyRemote6',    label:'Somfy Remote 6 Channel / รีโมท 6 ช่อง', key:'remote6' },
+  { id:'chkSomfyRemote16',   label:'Somfy Remote 16 Channel / รีโมท 16 ช่อง', key:'remote16' },
+  { id:'chkSomfySmoove',     label:'Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง', key:'smoove' }
+];
+const STRONG_ACCESSORIES = [
+  { id:'chkStrongRemote1',     label:'Transmitter 1 Channel / รีโมท 1 ช่อง',  key:'remote1' },
+  { id:'chkStrongRemote15',    label:'Transmitter 15 Channel / รีโมท 15 ช่อง', key:'remote15' },
+  { id:'chkStrongWindSun',     label:'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด',     key:'windSun' },
+  { id:'chkStrongWifiAdapter', label:'Wifi Smart Bridge with Adapter',        key:'wifiAdapter' },
+  { id:'chkStrongWifiBridge',  label:'Wifi Smart Bridge only',                key:'wifiBridge' },
+  { id:'chkStrongUsbCharger',  label:'USB Charger',                           key:'usbCharger' },
+  { id:'chkStrongLanBridge',   label:'Lan Smart Bridge 1.20 m',               key:'lanBridge' }
+];
+// ราคาอุปกรณ์เสริมจาก catalog กลาง (คืน 0 หากยังไม่โหลด prices.js)
+function accPrice(group, key){
+  const C = window.SANGTHONG_PRICES;
+  return (C && C[group] && C[group][key]) || 0;
+}
+
+// สรุปมอเตอร์ที่เลือก + อุปกรณ์เสริมที่ติ๊ก / summary of selected motor + checked accessories
+function getMotorSummary(){
+  const type = ($('motorType') || {}).value || 'none';
+  const info = MOTOR_TYPES[type] || MOTOR_TYPES.none;
+  const motorPrice = info.system ? (parseFloat($('motorPrice').value) || 0) : 0;
+  const accItems = [];
+  if(info.system === 'somfy'){
+    SOMFY_ACCESSORIES.forEach(a => { const el = $(a.id); if(el && el.checked) accItems.push({ label:a.label, value:accPrice('somfy', a.key) }); });
+  } else if(info.system === 'strong'){
+    STRONG_ACCESSORIES.forEach(a => { const el = $(a.id); if(el && el.checked) accItems.push({ label:a.label, value:accPrice('strongUp', a.key) }); });
+  }
+  const accTotal = accItems.reduce((s, a) => s + a.value, 0);
+  return { label:info.label, system:info.system, motorPrice:motorPrice, accItems:accItems, total:motorPrice + accTotal };
+}
+
+// เปลี่ยนชนิดมอเตอร์: เติมราคา Somfy อัตโนมัติ, เปิด/ปิดกล่องอุปกรณ์เสริม
+function onMotorTypeChange(){
+  const type = $('motorType').value;
+  const info = MOTOR_TYPES[type] || MOTOR_TYPES.none;
+  $('motorPrice').value = info.system ? info.price : 0;   // เติมราคาจาก catalog อัตโนมัติ (แก้ทับได้)
+  $('motorPriceRow').style.display = info.system ? 'block' : 'none';
+  $('somfyAccBox').style.display   = info.system === 'somfy'  ? 'block' : 'none';
+  $('strongAccBox').style.display  = info.system === 'strong' ? 'block' : 'none';
+  calculatePrice();
+}
+
+// อัปเดตตัวเลขราคาในตัวเลือกมอเตอร์ให้ตรงกับ catalog (prices.js) โดยคงข้อความอธิบายไว้
+function refreshMotorOptionLabels(){
+  const sel = $('motorType'); if(!sel) return;
+  Object.keys(MOTOR_TYPES).forEach(key => {
+    const o = sel.querySelector('option[value="' + key + '"]');
+    const m = MOTOR_TYPES[key];
+    if(!o || !m.system) return;
+    o.textContent = o.textContent.replace(/[\d,]+(\s*บาท)/, m.price.toLocaleString('th-TH') + '$1');
+  });
+}
+
+function bahtText(n){
+  return Number(n).toLocaleString('th-TH', {minimumFractionDigits:0, maximumFractionDigits:2}) + ' บาท';
+}
+function fmtBand(b){ return b[0].toFixed(2) + ' - ' + b[1].toFixed(2); }
+
+function findWidthIndex(w){
+  for(let i=0;i<P.widths.length;i++){
+    if(w >= P.widths[i][0] - 0.0001 && w <= P.widths[i][1] + 0.0001) return i;
+  }
+  return -1;
+}
+function findRowIndex(v){
+  if(isArm){
+    return P.rows.findIndex(r => Math.abs(r.key - v) < 0.0001);
+  }
+  return P.rows.findIndex(r => v >= r.from - 0.0001 && v <= r.to + 0.0001);
+}
+
+function init(){
+  const wMin = P.widths[0][0], wMax = P.widths[P.widths.length-1][1];
+  $('widthHint').textContent = 'ช่วงที่มีในตาราง: ' + wMin.toFixed(2) + ' - ' + wMax.toFixed(2) + ' เมตร';
+  if(isArm){
+    $('projHint').textContent = 'เลือกระยะแขนยื่นตามตารางราคา';
+  } else {
+    const dMin = P.rows[0].from, dMax = P.rows[P.rows.length-1].to;
+    $('projHint').textContent = 'ช่วงที่มีในตาราง: ' + dMin.toFixed(2) + ' - ' + dMax.toFixed(2) + ' เมตร';
+  }
+  $('terms').innerHTML = '<strong>หมายเหตุ / Notes:</strong><br>' + P.terms.map(t => '• ' + t).join('<br>');
+}
+
+function tubeSpec(w){
+  if(!P.hasTube) return null;
+  return w <= 4.50 ? 'ท่อกลมกัลวาไนซ์ 70 mm.' : 'ท่อกลม 78 mm.';
+}
+
+function calculatePrice(){
+  const errorEl = $('error');
+  const resultEl = $('result');
+  errorEl.style.display = 'none';
+
+  const width = parseFloat($('width').value) || 0;
+  const sizeVal = isArm ? parseFloat($('projection').value) : (parseFloat($('drop').value) || 0);
+  const qty = Math.max(1, parseInt($('qty').value) || 1);
+  const accessories = parseFloat($('accessories').value) || 0;
+  const specialDiscount = P.netPrice ? 0 : (parseFloat($('specialDiscount').value) || 0);
+  const discountPct = P.netPrice ? 0 : (parseFloat($('discount').value) || 0);
+  const jobNote = $('jobNote').value.trim();
+
+  const wi = findWidthIndex(width);
+  const ri = findRowIndex(sizeVal);
+
+  if(wi < 0){
+    const wMin = P.widths[0][0], wMax = P.widths[P.widths.length-1][1];
+    errorEl.textContent = 'ความกว้างอยู่นอกช่วงตารางราคา (' + wMin.toFixed(2) + ' - ' + wMax.toFixed(2) + ' เมตร)';
+    errorEl.style.display = 'block';
+    resultEl.innerHTML = ''; window.latestCopyText = '';
+    return;
+  }
+  if(ri < 0){
+    errorEl.textContent = isArm ? 'กรุณาเลือกระยะแขนยื่นจากรายการ' : 'ความสูง (Drop) อยู่นอกช่วงตารางราคา';
+    errorEl.style.display = 'block';
+    resultEl.innerHTML = ''; window.latestCopyText = '';
+    return;
+  }
+
+  const unitPrice = P.rows[ri].prices[wi];
+
+  if(unitPrice === null){
+    errorEl.textContent = 'ขนาดนี้ไม่มีในตารางราคา (ช่อง x) กรุณาติดต่อฝ่ายขาย';
+    errorEl.style.display = 'block';
+    resultEl.innerHTML = ''; window.latestCopyText = '';
+    return;
+  }
+
+  const armCount = (P.arms && P.arms[ri]) ? P.arms[ri][wi] : null;
+
+  const motor = getMotorSummary();
+  const subtotal = (unitPrice * qty) + accessories + motor.total;
+  const specialDiscountAmount = Math.min(specialDiscount, subtotal);
+  const afterSpecial = subtotal - specialDiscountAmount;
+  const discountAmount = afterSpecial * (discountPct / 100);
+  const totalExclVat = afterSpecial - discountAmount;
+  const vatAmount = totalExclVat * 0.07;
+  const totalInclVat = totalExclVat + vatAmount;
+  const tube = tubeSpec(width);
+
+  const customerLines = [
+    'Sangthong Creation - STRUCTURE',
+    'รุ่น: ' + P.label,
+    'ระบบ: ' + P.system,
+    'ความกว้าง: ' + width.toFixed(2) + ' ม. (ช่วง ' + fmtBand(P.widths[wi]) + ' ม.)',
+    isArm
+      ? 'ระยะแขนยื่น: ' + sizeVal.toFixed(2) + ' ม.'
+      : 'ความสูง Drop: ' + sizeVal.toFixed(2) + ' ม. (ช่วง ' + P.rows[ri].from.toFixed(2) + ' - ' + P.rows[ri].to.toFixed(2) + ' ม.)',
+    armCount ? 'จำนวนแขน: ' + armCount + ' แขน' : '',
+    tube ? 'ท่อโครงสร้าง: ' + tube : '',
+    'ราคาต่อชุด: ' + bahtText(unitPrice),
+    'จำนวน: ' + qty + ' ชุด',
+    accessories > 0 ? 'อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(accessories) : '',
+    motor.label ? 'ระบบมอเตอร์: ' + motor.label + ' (+' + bahtText(motor.motorPrice) + ')' : '',
+    motor.accItems.length ? motor.accItems.map(a => 'อุปกรณ์เสริมมอเตอร์: ' + a.label + ' (+' + bahtText(a.value) + ')').join('\n') : '',
+    '',
+    'ราคารวมก่อนส่วนลด: ' + bahtText(subtotal),
+    specialDiscountAmount > 0 ? 'ส่วนลดพิเศษ: -' + bahtText(specialDiscountAmount) : '',
+    discountAmount > 0 ? 'ส่วนลด ' + discountPct + '%: -' + bahtText(discountAmount) : '',
+    'ราคารวม (ไม่รวม VAT): ' + bahtText(totalExclVat),
+    'VAT 7%: ' + bahtText(vatAmount),
+    'ราคารวม VAT: ' + bahtText(totalInclVat),
+    jobNote ? ('หมายเหตุ: ' + jobNote) : '',
+    ''
+  ].concat(P.terms.map(t => 'เงื่อนไข: ' + t)).filter(Boolean);
+
+  window.latestCopyText = customerLines.join('\n');
+
+  resultEl.innerHTML =
+    '<div class="customer-copy-label">Customer copy text / ข้อความสำหรับส่งลูกค้า</div>' +
+    '<pre class="customer-copy-text" id="copyPreview"></pre>';
+  $('copyPreview').textContent = window.latestCopyText;
+}
+
+/* ---- TH/EN result language toggle ---- */
+let resultLanguage = 'th';
+const RESULT_EN_REPLACEMENTS = [["ราคาเฉพาะโครงสร้าง ไม่รวมราคาผ้า", "Structure price only, fabric not included"], ["ราคาไม่รวมภาษีมูลค่าเพิ่ม (Price Excluded VAT.)", "Price excluded VAT"], ["ราคาขายสุทธิแล้ว (ไม่มีส่วนลด)", "Net selling price (no further discount)"], ["ขนาดกว้าง 2 - 4.50 เมตร ใช้ท่อกลมกัลวาไนซ์ 70 mm. / ขนาดกว้าง 4.51 - 5.00 เมตร ใช้ท่อกลม 78 mm.", "Width 2 - 4.50 m uses 70 mm galvanised round tube / Width 4.51 - 5.00 m uses 78 mm round tube"], ["ตัวเลขในวงเล็บ ( ) = จำนวนแขน (No. of Arms)", "Number in brackets ( ) = number of arms"], ["ขนาดนี้ไม่มีในตารางราคา (ช่อง x) กรุณาติดต่อฝ่ายขาย", "This size is not available in the pricelist. Please contact sales."], ["ความกว้างอยู่นอกช่วงตารางราคา", "Width is outside the pricelist range"], ["ความสูง (Drop) อยู่นอกช่วงตารางราคา", "Drop is outside the pricelist range"], ["กรุณาเลือกระยะแขนยื่นจากรายการ", "Please select an arm projection from the list"], ["Customer copy text / ข้อความสำหรับส่งลูกค้า", "Customer copy text"], ["ท่อกลมกัลวาไนซ์ 70 mm.", "70 mm galvanised round tube"], ["ท่อกลม 78 mm.", "78 mm round tube"], ["ระบบมือหมุน (Manual System)", "Manual System"], ["ระบบมอเตอร์", "Motor system"], ["อุปกรณ์เสริมมอเตอร์", "Motor accessory"], ["ราคามอเตอร์", "Motor price"],["กันสาดแนวตั้ง (Vertical Drop Awning)", "Vertical Drop Awning"], ["ราคารวมก่อนส่วนลด", "Total before discount"], ["ราคารวม (ไม่รวม VAT)", "Total (excl. VAT)"], ["ราคารวม VAT", "Total incl. VAT"], ["ระยะแขนยื่น", "Arm projection"], ["ท่อโครงสร้าง", "Structure tube"], ["อุปกรณ์เสริมเพิ่มเติม", "Additional accessories"], ["ความสูง Drop", "Drop height"], ["ผลการคำนวณ", "Result"], ["ส่วนลดพิเศษ", "Special discount"], ["ราคาต่อชุด", "Price per set"], ["จำนวนแขน", "Number of arms"], ["ความกว้าง", "Width"], ["เงื่อนไข", "Condition"], ["ส่วนลด", "Discount"], ["หมายเหตุ", "Note"], ["จำนวน", "Quantity"], ["ระบบ", "System"], ["ช่วง", "range"], ["รุ่น", "Model"], ["แขน", "arms"], ["บาท", "THB"], ["ชุด", "set"], ["ม.", "m."]];
+
+function localizeResultText(text){
+  if (resultLanguage !== 'en') return String(text || '');
+  let output = String(text || '');
+  RESULT_EN_REPLACEMENTS
+    .slice()
+    .sort((a, b) => b[0].length - a[0].length)
+    .forEach(([from, to]) => { output = output.split(from).join(to); });
+  return output
+    .replace(new RegExp('([0-9,])THB', 'g'), '$1 THB')
+    .replace(new RegExp('\\s+THB', 'g'), ' THB')
+    .trim();
+}
+
+function updateResultLanguageLabels(){
+  const resultSignal = 'ผลการ';
+  const customerSignal = 'ข้อความ';
+  document.querySelectorAll('h2,h3,h4,.panel-title,.customer-copy-title,.customer-copy-label').forEach(el => {
+    const original = el.getAttribute('data-result-label-th') || el.textContent.trim();
+    if (!original.includes(resultSignal) && !original.includes(customerSignal)) return;
+    if (!el.getAttribute('data-result-label-th')) el.setAttribute('data-result-label-th', original);
+    el.textContent = resultLanguage === 'en' ? localizeResultText(original) : original;
+  });
+}
+
+function localizeResultPanel(){
+  const pre = $('copyPreview');
+  const err = $('error');
+  if (resultLanguage === 'en' && err && err.style.display === 'block'){
+    err.textContent = localizeResultText(err.textContent);
+  }
+  if (!pre || resultLanguage !== 'en' || !pre.textContent.trim()) { updateResultLanguageLabels(); return; }
+  pre.textContent = localizeResultText(pre.textContent);
+  window.latestCopyText = pre.textContent;
+  updateResultLanguageLabels();
+}
+
+function setResultLanguage(lang){
+  resultLanguage = lang === 'en' ? 'en' : 'th';
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  if (typeof calculatePrice === 'function') calculatePrice();
+  updateResultLanguageLabels();
+}
+
+function initResultLanguageToggle(){
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    button.addEventListener('click', () => setResultLanguage(button.dataset.resultLang));
+  });
+  if (typeof calculatePrice === 'function') {
+    const originalCalculatePrice = calculatePrice;
+    calculatePrice = function(){
+      originalCalculatePrice.apply(this, arguments);
+      localizeResultPanel();
+    };
+  }
+  updateResultLanguageLabels();
+}
+
+init();
+refreshMotorOptionLabels();
+initResultLanguageToggle();
+
+[
+  'width', 'projection', 'qty','accessories','specialDiscount','discount','jobNote'
+].forEach(id => {
+  const el = $(id);
+  el.addEventListener('input', calculatePrice);
+  el.addEventListener('change', calculatePrice);
+});
+
+/* ---- Motor system wiring ---- */
+$('motorType').addEventListener('change', onMotorTypeChange);
+$('motorPrice').addEventListener('input', calculatePrice);
+SOMFY_ACCESSORIES.concat(STRONG_ACCESSORIES).forEach(a => {
+  const el = $(a.id);
+  if(el) el.addEventListener('change', calculatePrice);
+});
+
+$('copyResult').onclick = () => {
+  const text = window.latestCopyText || '';
+  if(text.trim() !== ''){
+    navigator.clipboard.writeText(text)
+      .then(() => alert('คัดลอกผลลัพธ์เรียบร้อยแล้ว!'))
+      .catch(() => alert('ไม่สามารถคัดลอกได้'));
+  } else {
+    alert('ยังไม่มีผลลัพธ์ให้คัดลอก');
+  }
+};
+
+calculatePrice();
+</script>
+</body></html>

@@ -10,7 +10,7 @@
   IMPORTANT: bump CACHE_NAME (v1 -> v2 ...) whenever you change any cached file,
   so visitors get the new version instead of the old cached copy.
 */
-const CACHE_NAME = 'sangthong-awning-v12';
+const CACHE_NAME = 'sangthong-awning-v22';
 
 const ASSETS = [
   './',
@@ -20,6 +20,7 @@ const ASSETS = [
   './aland_retractable_arm_awning.html',
   './canopy-calculator.html',
   './chill-d1.html',
+  './fabric-price-calculator.html',
   './index.html',
   './ipergo-dt-1s.html',
   './ipergo-m6-pro-cf.html',
@@ -48,18 +49,22 @@ const ASSETS = [
   './ipergo-t600-cwmd.html',
   './izip-screen.html',
   './ma4-calculator.html',
+  './ma4-calculator-structure.html',
   './rv-awning.html',
   './maintenance-guide.html',
   './seatel-st1000e-vertical-awning.html',
   './seatel-st2000.html',
+  './seatel-st2000-structure.html',
   './solidux.html',
   './spettmann-star.html',
+  './spettmann-star-structure.html',
   './terra-fs-full-cassette-premium-price-with-LED.html',
   './terra-fs-full-cassette-standard-with-LED.html',
   './terra-fs-premium-without-LED.html',
   './terra-fs-standard-without-LED.html',
   './terra-ma3-LED.html',
   './terra-ma3.html',
+  './terra-ma3-structure.html',
   './veranda-lt06.html',
   './zipguide-expert.html',
   './zipguide-ultra.html'

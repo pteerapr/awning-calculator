@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><title>Fabric Price Calculator - Sangthong Creation</title>
+<style>
+:root {
+  --primary:#003366;
+  --accent:#007bff;
+  --bg:#f8f9fb;
+  --text:#111827;
+  --panel:#ffffff;
+  --muted:#e5e7eb;
+  --shadow:0 12px 30px rgba(15,23,42,.08);
+  --radius:14px;
+  --pink:#ec2c8f;
+  --gold:#a9895f;
+  --yellow:#ffff00;
+  --salmon:#f4cccc;
+  --skyblue:#cfe2f3;
+}
+html,body{background:var(--bg)!important; font-family:'Segoe UI', Tahoma, Arial, sans-serif; color:var(--text); margin:0;}
+h1,h2,h3{color:var(--primary)!important; margin-top:0.4rem;}
+.main-wrapper{ display:flex; justify-content:center; gap:20px; align-items:flex-start; flex-wrap:wrap; padding:0 16px 30px; }
+.container,.result-panel{ background:var(--panel); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; }
+.container{ width:400px; }
+.result-panel{ width:380px; }
+h2{ text-align:center; margin-bottom:16px; font-size:19px; }
+label{ display:block; margin:10px 0 4px; font-weight:700; font-size:.9rem; color:var(--primary); }
+input, select, button{ width:100%; padding:10px; border-radius:10px; border:1px solid #d1d5db; font-size:15px; box-sizing:border-box; }
+button{ margin-top:16px; background:var(--primary); color:#fff; border:none; cursor:pointer; font-weight:700; }
+button:hover{ background:var(--accent); }
+.copy-btn{ background:#198754!important; }
+.copy-btn:hover{ background:#157347!important; }
+.languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px;width:auto;margin-top:0}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+.hint{ font-size:12px; color:#6b7280; margin-top:2px; }
+/* ปุ่มเล็กในบรรทัด hint (เช่น ปุ่มรีเซ็ตหน้ากว้าง) - ต้องเขียนทับ width:100% ของ button */
+.link-btn{ width:auto; margin-top:0; padding:2px 8px; font-size:11px; border-radius:6px; }
+.result{ background:#e9f7ef; border-left:4px solid #28a745; border-radius:8px; padding:14px; }
+.quote-box{ background:#f7f9fc; border:1px solid #d9e2ef; border-radius:10px; padding:12px; line-height:1.65; }
+.quote-title{ font-weight:800; color:var(--primary); font-size:17px; margin-bottom:8px; }
+.customer-copy-label{ font-size:13px; font-weight:700; color:var(--primary); margin-bottom:6px; }
+/* ผังการตัดต่อผ้า (รูป SVG เหนือข้อความส่งลูกค้า) */
+.layout-diagram{ background:#fff; border:1px solid #d8dee4; border-radius:8px; padding:10px 12px; margin-bottom:12px; }
+.layout-diagram-title{ font-size:13px; font-weight:700; color:var(--primary); margin-bottom:6px; }
+.layout-diagram svg{ max-width:100%; height:auto; display:block; }
+.layout-legend{ display:flex; flex-wrap:wrap; gap:4px 12px; font-size:11.5px; color:#374151; margin-top:8px; }
+.layout-legend span{ display:inline-flex; align-items:center; gap:5px; }
+.legend-swatch{ width:13px; height:13px; border-radius:3px; display:inline-block; flex:none; }
+.layout-caption{ font-size:11.5px; color:#6b7280; margin-top:6px; line-height:1.55; }
+.customer-copy-text{ margin:0; padding:12px; background:#f1f3f5; border:1px solid #d8dee4; border-radius:8px; white-space:pre-wrap; font-family:inherit; font-size:13.5px; line-height:1.6; color:#111827; }
+.price-lg{ color:#0f5132; background:#e9f7ef; border:2px solid #198754; border-radius:12px; padding:10px 14px; display:inline-block; font-size:20px; font-weight:800; }
+.ref-table-wrap{ max-width:1000px; margin:0 auto 24px; padding:0 16px; }
+table.ref{ width:100%; border-collapse:collapse; background:#fff; box-shadow:var(--shadow); border-radius:10px; overflow:hidden; }
+table.ref th, table.ref td{ border:1px solid #e5e7eb; padding:8px 10px; text-align:center; font-size:13.5px; }
+table.ref th{ background:#f3f4f6; color:var(--primary); }
+table.ref td.fabric-name{ text-align:left; font-weight:600; }
+.col-yellow{ background:var(--yellow); font-weight:700; }
+.col-salmon{ background:var(--salmon); font-weight:700; }
+.col-sky{ background:var(--skyblue); font-weight:700; }
+.ref-title{ text-align:center; color:var(--primary); text-decoration:underline; font-weight:800; margin:6px 0 14px; }
+.terms{ max-width:1000px; margin:0 auto 30px; padding:0 16px; font-size:13px; color:#374151; line-height:1.7; }
+.terms strong{ color:var(--primary); }
+.small-note{ font-size:12px; color:#b91c1c; margin-top:6px; }
+.error{ margin-top:10px; background:#f8d7da; border-left:4px solid #dc3545; padding:10px; border-radius:8px; display:none; }
+.check-row{ display:flex; align-items:flex-start; gap:8px; margin:12px 0 2px; }
+.check-row input{ width:auto; margin-top:2px; }
+.check-row label{ margin:0; font-weight:700; font-size:.9rem; }
+@media (max-width: 768px){
+  .main-wrapper{ flex-direction:column; align-items:center; padding:0 10px 20px; }
+  .container,.result-panel{ width:100%; box-sizing:border-box; }
+}
+</style></head>
+<body>
+
+<h1 style="text-align:center;font-size:20px;">เครื่องคำนวณราคาผ้าใบ (Fabric Price)</h1>
+<p style="text-align:center;margin-top:-6px;color:#b91c1c;font-size:13px;font-weight:700;">ราคาเฉพาะผ้าและงานตัดเย็บ ไม่รวมโครงสร้าง / Fabric &amp; sewing price only, structure not included</p>
+
+<div class="main-wrapper">
+  <div class="container">
+    <h2>ข้อมูลผ้า &amp; ขนาด (<a href="index.html">Back to Index</a>)</h2>
+
+    <label>รูปแบบราคา (Price Mode)</label>
+    <select id="priceMode">
+      <option value="fabric">ราคาเฉพาะผ้า (ยังไม่ตัดเย็บ)</option>
+      <option value="sewn">ราคาตัดเย็บ (Price A / B / C)</option>
+    </select>
+
+    <div id="tierRow" style="display:none;">
+      <label>เกรดการตัดเย็บ (Sewing Grade)</label>
+      <select id="tier">
+        <option value="a">Price A - เย็บพับกระบอกบน-ล่าง / เจาะตาไก่ทุก 30 ซม. / ผ้าใบแนวตั้ง ST-2000</option>
+        <option value="b" selected>Price B - กันสาดพับเก็บได้ / กระบอกบน-ล่างมีระบาย / โครงกันสาดหน้าตัดโค้งหรือตรง</option>
+        <option value="c">Price C - โครงทรงยุโรป / เต็นท์ Tension 3-4 เหลี่ยมอย่างง่าย</option>
+      </select>
+      <div class="hint" id="tierHint"></div>
+    </div>
+
+    <label>ชนิดผ้า (Fabric)</label>
+    <select id="fabric"></select>
+    <div class="hint" id="fabricInfo"></div>
+
+    <label>หน้ากว้างผ้า / Fabric Width (เมตร)</label>
+    <input id="fabricWidth" type="number" step="0.01" min="0" value="2.50"/>
+    <div class="hint" id="fabricWidthHint"></div>
+
+    <label>การต่อผ้า / Joining Pattern</label>
+    <select id="seamDir">
+      <option value="v" selected>ต่อแนวตั้ง — รอยต่อตามความยาว (Vertical seams)</option>
+      <option value="h">ต่อแนวนอน — รอยต่อตามความกว้าง (Horizontal seams)</option>
+    </select>
+    <div class="hint" id="seamHint"></div>
+
+    <label>ระยะทับกันของรอยต่อ / Seam Overlap (ซม.)</label>
+    <input id="seamOverlap" type="number" step="0.5" min="0" value="0"/>
+    <div class="hint" id="overlapHint"></div>
+
+    <label>ความกว้างงาน / Job Width (เมตร)</label>
+    <input id="jobWidth" type="number" step="0.01" min="0" value="2.00"/>
+
+    <label>ความยาวงาน / Job Length (เมตร)</label>
+    <input id="jobLength" type="number" step="0.01" min="0" value="5.00"/>
+    <div class="hint">คิดพื้นที่ตามหน้ากว้างผ้า รวมเศษ (ตามหมายเหตุท้ายตารางราคา)</div>
+
+    <label>จำนวน (ผืน)</label>
+    <input id="qty" type="number" min="1" value="1"/>
+
+    <label>ด้ายเย็บผ้าใบ (Sewing Thread)</label>
+    <select id="thread">
+      <option value="">- ไม่คิดด้าย -</option>
+    </select>
+
+    <label>จำนวนด้าย (หลอด)</label>
+    <input id="threadQty" type="number" min="0" step="1" value="0"/>
+
+    <label>Solar Trim / ผ้ากันขอบ (หลา)</label>
+    <input id="trimYards" type="number" min="0" step="1" value="0"/>
+
+    <div class="check-row">
+      <input id="installFee" type="checkbox"/>
+      <label for="installFee">ค่าขนส่ง + ติดตั้ง (กรณีเปลี่ยนผ้าใช้โครงเดิม)</label>
+    </div>
+    <div class="hint">คิด 300 บาท/ตร.ม. ค่าบริการขั้นต่ำ 3,000 บาท</div>
+
+    <label>อุปกรณ์เสริมเพิ่มเติม (บาท)</label>
+    <input id="accessories" type="number" min="0" value="0"/>
+
+    <label>ส่วนลดพิเศษ (บาท)</label>
+    <input id="specialDiscount" type="number" min="0" value="0"/>
+
+    <label>ส่วนลด (%)</label>
+    <input id="discount" type="number" min="0" max="100" value="0"/>
+
+    <label for="jobNote">หมายเหตุ / Note</label>
+    <input id="jobNote" type="text" placeholder="Optional note"/>
+
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="result-panel"><div class="st-brandbar" style="background:#003366;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;"><div style="font-weight:900;letter-spacing:2px;font-size:15px;">SANGTHONG CREATION</div><div style="font-size:11px;letter-spacing:.4px;opacity:.85;margin-top:3px;">Price presented by Sangthong Creation</div></div>
+    <h3 style="text-align:center;">ผลการคำนวณ</h3>
+    <div class="languageToggle" aria-label="Result language">
+      <button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button>
+      <button type="button" data-result-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <div id="result"></div>
+    <button class="copy-btn" id="copyResult">คัดลอกผลลัพธ์ทั้งหมด</button>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   ตารางราคาขายผ้าใบ (Fabric Price) - Update 15 Oct 2025
+   ---------------------------------------------------------------------
+   แก้ราคาที่นี่ที่เดียว แล้วอย่าลืม bump CACHE_NAME ใน sw.js
+
+   roll  = หน้ากว้างผ้า (เมตร) - ใช้คำนวณเศษ
+   len   = ความยาวต่อม้วน (เมตร) - แสดงเป็นข้อมูลเฉยๆ ไม่ได้ใช้คำนวณ
+   unit  = หน่วยของราคาเฉพาะผ้า
+           'm'   = ราคาต่อเมตรความยาวม้วน
+           'sqm' = ราคาต่อตารางเมตร
+           *** ห้ามสลับสองค่านี้ เพราะคิดเงินคนละแบบ ***
+   price = ราคาเฉพาะผ้า (ตามหน่วย unit)
+   a/b/c = ราคาตัดเย็บ Price A / B / C หน่วยเป็น บาท/ตร.ม. เสมอ
+   ===================================================================== */
+const FABRIC_PRICES = [
+  // --- 1. Solar Series ---
+  { key:'solar_view',       group:'Solar Series', label:'Solar View - ผ้าใบโปร่งแสง Translucent PVC',          roll:1.52, len:50,    unit:'m',   price:350,  a:450,  b:550,  c:750  },
+  { key:'solar_sand',       group:'Solar Series', label:'Solar Sand - ผ้า Premium PVC',                        roll:2.04, len:100,   unit:'m',   price:450,  a:450,  b:550,  c:750  },
+  { key:'solar_neon_mix',   group:'Solar Series', label:'Solar Neon - สีสลับ',                                 roll:1.55, len:50,    unit:'sqm', price:250,  a:450,  b:550,  c:750  },
+  { key:'solar_neon_white', group:'Solar Series', label:'Solar Neon - สีขาวล้วน',                              roll:2.50, len:50,    unit:'sqm', price:250,  a:450,  b:550,  c:750  },
+  { key:'solar_max',        group:'Solar Series', label:'Solar Max - ผ้าใบ Coated PVC Sioen B8000 630 g',      roll:2.50, len:60,    unit:'sqm', price:350,  a:550,  b:650,  c:900  },
+  { key:'solar_screen_25',  group:'Solar Series', label:'Solar Screen - ผ้าตาข่ายกรองแสง 5% (หน้ากว้าง 2.5 m)', roll:2.50, len:30,   unit:'m',   price:720,  a:580,  b:680,  c:800  },
+  { key:'solar_screen_30',  group:'Solar Series', label:'Solar Screen - ผ้าตาข่ายกรองแสง 5% (หน้ากว้าง 3 m)',   roll:3.00, len:30,   unit:'m',   price:800,  a:600,  b:700,  c:840  },
+  { key:'suntex_90',        group:'Solar Series', label:'Suntex 90 Design UV / Openness 10%',                  roll:2.44, len:30.48, unit:'m',   price:900,  a:640,  b:740,  c:880  },
+  { key:'solar_zip_5',      group:'Solar Series', label:'Solar Zip - ผ้า Openness 5%',                         roll:3.00, len:30,    unit:'m',   price:800,  a:580,  b:680,  c:800  },
+  { key:'solar_zip_1',      group:'Solar Series', label:'Solar Zip - ผ้า Openness 1%',                         roll:3.00, len:30,    unit:'m',   price:900,  a:640,  b:740,  c:880  },
+  { key:'solar_zip_0',      group:'Solar Series', label:'Solar Zip - ผ้า Openness 0%',                         roll:3.00, len:30,    unit:'m',   price:1300, a:950,  b:1050, c:1200 },
+  { key:'shade_g325',       group:'Solar Series', label:'Solar Shade - G 325',                                 roll:3.00, len:50,    unit:'m',   price:360,  a:220,  b:350,  c:500  },
+  { key:'shade_com95',      group:'Solar Series', label:'Solar Shade - Commercial 95 & Dual shade',            roll:3.00, len:40,    unit:'m',   price:600,  a:400,  b:600,  c:900  },
+  { key:'shade_heavy',      group:'Solar Series', label:'Solar Shade - Commercial Heavy',                      roll:3.00, len:40,    unit:'m',   price:800,  a:700,  b:900,  c:1200 },
+  { key:'clear_thai',       group:'Solar Series', label:'Solar Clear - ผ้าพลาสติกใส Clear PVC (Thai)',         roll:1.37, len:45,    unit:'m',   price:150,  a:250,  b:350,  c:580  },
+  { key:'clear_vin_075',    group:'Solar Series', label:'Solar Clear - ผ้าพลาสติกใส Vinistar 0.75 mm (Japan)', roll:1.37, len:30,    unit:'m',   price:480,  a:720,  b:950,  c:1200 },
+  { key:'clear_vin_100',    group:'Solar Series', label:'Solar Clear - ผ้าพลาสติกใส Vinistar 1.00 mm (Japan)', roll:1.37, len:30,    unit:'m',   price:590,  a:820,  b:1040, c:1320 },
+  { key:'clear_vin_050y',   group:'Solar Series', label:'Solar Clear - ผ้าพลาสติกใสเหลือง Vinistar 0.5 mm (Japan)', roll:1.37, len:20, unit:'m', price:500,  a:690,  b:920,  c:1100 },
+  { key:'acrylic_docril',   group:'Solar Series', label:'Solar Soft - ผ้าอะครีลิค Acrylic DOCRIL',             roll:1.20, len:60,    unit:'m',   price:650,  a:850,  b:1000, c:2000 },
+  { key:'acrylic_sunbrella',group:'Solar Series', label:'Solar Soft - ผ้าอะครีลิค Acrylic Sunbrella',          roll:1.20, len:60,    unit:'m',   price:1300, a:1600, b:1800, c:2600 },
+
+  // --- 3. SIOEN (ราคาเฉพาะผ้าเป็น บาท/ตร.ม. ทุกแถว) ---
+  { key:'sioen_b7465',      group:'SIOEN',        label:'ผ้าใบ Coated PVC - SIOEN no.B7465 : 450 gram',        roll:2.50, len:65,    unit:'sqm', price:300,  a:400,  b:520,  c:750  },
+  { key:'sioen_t0108',      group:'SIOEN',        label:'ผ้าใบ Coated PVC - SIOEN no.T0108 : 650 gram',        roll:2.50, len:65,    unit:'sqm', price:680,  a:900,  b:1100, c:1400 },
+  { key:'sioen_t1108',      group:'SIOEN',        label:'ผ้าใบ Coated PVC - SIOEN no.T1108 : 725 gram',        roll:2.50, len:60,    unit:'sqm', price:760,  a:1000, b:1350, c:1700 },
+  { key:'sioen_t2108',      group:'SIOEN',        label:'ผ้าใบ Coated PVC - SIOEN no.T2108 : 1050 gram',       roll:2.50, len:60,    unit:'sqm', price:990,  a:1400, b:1800, c:2200 },
+  { key:'sioen_b8288',      group:'SIOEN',        label:'ผ้าใบ BLOCKOUT - SIOEN no.B8288 : 800 gram',          roll:2.50, len:60,    unit:'sqm', price:750,  a:950,  b:1200, c:1600 },
+  { key:'sioen_b7122',      group:'SIOEN',        label:'ผ้าใบ BLOCKOUT - SIOEN no.B7122 : 580 gram White-Cream', roll:2.50, len:50, unit:'sqm', price:680,  a:900,  b:1100, c:1400 },
+  { key:'sioen_m5550',      group:'SIOEN',        label:'ผ้าตาข่าย MESH - SIOEN no.M5550 : 250 gram',          roll:3.20, len:50,    unit:'sqm', price:500,  a:700,  b:900,  c:1200 },
+
+  // --- 4. ECO-LINE ---
+  { key:'eco_pvc_hc',       group:'ECO-LINE',     label:'ผ้าใบ PVC - HC',                                      roll:1.08, len:90,    unit:'m',   price:105,  a:190,  b:270,  c:480  }
+];
+
+// ด้ายเย็บผ้าใบ - ราคาต่อหลอด (cone) / ไม่มีราคาตัดเย็บ A B C
+const THREADS = [
+  { key:'dabond',   label:'DABOND (2,000 เมตร/หลอด)',        price:600   },
+  { key:'pro40',    label:'Outdoor Pro 40 (5,500 เมตร/หลอด)', price:1350  },
+  { key:'tenara',   label:'TENARA (1,050 เมตร/หลอด)',         price:6000  },
+  { key:'cusbor',   label:'CUSBOR (3,000 เมตร/หลอด)',         price:4000  }
+];
+
+const TRIM_PRICE_PER_YARD = 15;   // Solar Trim ผ้ากันขอบ - บาท/หลา
+const INSTALL_RATE_PER_SQM = 300; // ค่าขนส่ง+ติดตั้ง กรณีเปลี่ยนผ้าใช้โครงเดิม
+const INSTALL_MINIMUM = 3000;     // ค่าบริการขั้นต่ำ
+
+// คำอธิบายแต่ละเกรดการตัดเย็บ (เชิงอรรถท้ายตารางราคา)
+const TIER_NOTES = {
+  a:'เย็บพับกระบอกบน-ล่าง, เย็บพับริมเจาะรูตาไก่ทุก 30 ซม./ตัว, เย็บแบบผ้าใบแนวตั้ง ST-2000',
+  b:'เย็บพับกันสาดพับเก็บได้, เย็บพับกระบอกบน-ล่างมีระบาย, เย็บแบบโครงกันสาดเข้ารูปหน้าตัดโค้ง หรือตรง ธรรมดา',
+  c:'เย็บเป็นโครงทรงยุโรป, เต็นท์ Tension แบบ 3 เหลี่ยม หรือ 4 เหลี่ยมอย่างง่าย, ไม่รวมอุปกรณ์ในการจับยึดผ้าใบ เช่น สลิง เคเบิล ปะกับ เกลียวเร่ง'
+};
+
+const TIER_LABELS = { a:'A', b:'B', c:'C' };
+
+/* ---- สร้าง dropdown จากตารางราคาด้านบน ---- */
+function buildFabricOptions(){
+  const select = document.getElementById('fabric');
+  let html = '';
+  let currentGroup = '';
+  FABRIC_PRICES.forEach(f => {
+    if(f.group !== currentGroup){
+      if(currentGroup !== '') html += '</optgroup>';
+      html += '<optgroup label="' + f.group + '">';
+      currentGroup = f.group;
+    }
+    html += '<option value="' + f.key + '">' + f.label + '</option>';
+  });
+  if(currentGroup !== '') html += '</optgroup>';
+  select.innerHTML = html;
+}
+
+function buildThreadOptions(){
+  const select = document.getElementById('thread');
+  let html = '<option value="">- ไม่คิดด้าย -</option>';
+  THREADS.forEach(t => {
+    html += '<option value="' + t.key + '">' + t.label + ' - ' + t.price.toLocaleString('th-TH') + ' บาท/หลอด</option>';
+  });
+  select.innerHTML = html;
+}
+
+function getFabric(){
+  const key = document.getElementById('fabric').value;
+  return FABRIC_PRICES.filter(f => f.key === key)[0] || FABRIC_PRICES[0];
+}
+
+function bahtText(n){
+  return Number(n).toLocaleString('th-TH', {minimumFractionDigits:0, maximumFractionDigits:2}) + ' บาท';
+}
+
+// แถบข้อมูลใต้ช่องเลือกผ้า - บอกหน้ากว้าง ราคาผ้า และราคาตัดเย็บทั้ง 3 เกรด
+function updateFabricInfo(){
+  const f = getFabric();
+  const unitText = f.unit === 'm' ? ' บาท/เมตร' : ' บาท/ตร.ม.';
+  document.getElementById('fabricInfo').textContent =
+    'หน้ากว้าง ' + f.roll.toFixed(2) + ' ม. · ม้วนละ ' + f.len + ' ม. · ผ้า ' +
+    f.price.toLocaleString('th-TH') + unitText +
+    ' · ตัดเย็บ A ' + f.a.toLocaleString('th-TH') +
+    ' / B ' + f.b.toLocaleString('th-TH') +
+    ' / C ' + f.c.toLocaleString('th-TH') + ' บาท/ตร.ม.';
+}
+
+// ดึงหน้ากว้างมาตรฐานของผ้าที่เลือก มาใส่ในช่อง "หน้ากว้างผ้า"
+// เรียกเฉพาะตอนเปลี่ยนชนิดผ้าและตอนเปิดหน้าเท่านั้น ห้ามเรียกใน calculatePrice()
+// มิฉะนั้นค่าที่ผู้ใช้พิมพ์เองจะถูกเขียนทับทุกครั้งที่คำนวณ
+function syncFabricWidthToCatalogue(){
+  document.getElementById('fabricWidth').value = getFabric().roll.toFixed(2);
+}
+
+// หน้ากว้างที่ใช้คำนวณจริง (อ่านจากช่องกรอก ไม่ใช่จากตารางผ้าโดยตรง)
+function getRollWidth(){
+  return parseFloat(document.getElementById('fabricWidth').value) || 0;
+}
+
+// บอกว่าตอนนี้ใช้ค่ามาตรฐานอยู่ หรือผู้ใช้กำหนดหน้ากว้างเอง
+// เทียบด้วย toFixed(2) เพราะช่องกรอกละเอียดแค่ 2 ตำแหน่ง
+function isWidthOverridden(){
+  return getRollWidth().toFixed(2) !== getFabric().roll.toFixed(2);
+}
+
+// แถบข้อความใต้ช่องหน้ากว้าง - เตือนเมื่อกำหนดเอง พร้อมปุ่มรีเซ็ตกลับค่ามาตรฐาน
+function updateFabricWidthHint(){
+  const standard = getFabric().roll.toFixed(2);
+  document.getElementById('fabricWidthHint').innerHTML = isWidthOverridden()
+    ? '<span style="color:#b91c1c;font-weight:700;">⚠ กำหนดหน้ากว้างเอง</span> (ค่ามาตรฐาน ' +
+      standard + ' ม.) <button type="button" class="link-btn" id="resetFabricWidth">รีเซ็ต</button>'
+    : 'ค่ามาตรฐานของผ้านี้ ' + standard + ' ม. · แก้ได้ถ้าผ้าที่มีอยู่หน้ากว้างไม่เท่านี้';
+}
+
+// แถบข้อความใต้ช่องการต่อผ้า - บอกว่าด้านไหนถูกหารด้วยหน้ากว้าง
+function updateSeamHint(){
+  const horizontal = document.getElementById('seamDir').value === 'h';
+  document.getElementById('seamHint').textContent = horizontal
+    ? 'หน้าผ้าพาดตามความยาวงาน · จำนวนท่อน = ความยาว ÷ หน้ากว้างผ้า'
+    : 'หน้าผ้าพาดตามความกว้างงาน · จำนวนท่อน = ความกว้าง ÷ หน้ากว้างผ้า';
+}
+
+// แถบข้อความใต้ช่องเผื่อตะเข็บ - เตือนถ้ามีรอยต่อแต่ยังไม่ได้เผื่อไว้เลย
+// (hasSeam ส่งมาจาก calculatePrice เพราะต้องรู้จำนวนท่อนก่อน)
+function updateOverlapHint(overlapCm, hasSeam){
+  const el = document.getElementById('overlapHint');
+  if(hasSeam && overlapCm <= 0){
+    el.innerHTML = '<span style="color:#b91c1c;font-weight:700;">⚠ งานนี้มีรอยต่อ แต่ยังไม่ได้เผื่อผ้าทับกัน</span> — ผ้าที่สั่งอาจไม่พอเย็บ';
+  } else if(overlapCm > 0){
+    el.textContent = 'ผ้าสองท่อนวางทับกันข้างละ ' + overlapCm + ' ซม. ก่อนเย็บ · ยิ่งทับมาก ยิ่งต้องใช้ท่อนเยอะขึ้น';
+  } else {
+    el.textContent = 'ระยะที่ผ้าสองท่อนต้องวางทับกันก่อนเย็บ (ใส่ 0 ถ้าไม่คิดเผื่อ)';
+  }
+}
+
+// โหมด "ราคาเฉพาะผ้า" ไม่ต้องเลือกเกรด จึงซ่อนช่องเกรดไว้
+function refreshModeFields(){
+  const sewn = document.getElementById('priceMode').value === 'sewn';
+  document.getElementById('tierRow').style.display = sewn ? 'block' : 'none';
+  if(sewn){
+    document.getElementById('tierHint').textContent = TIER_NOTES[document.getElementById('tier').value];
+  }
+}
+
+/* ---- ผังการตัดต่อผ้า (วาดเป็นรูป SVG ไว้บนกล่องผลลัพธ์) ----
+   เป็นภาพ "สเกลจริง" ย่อส่วนมา ให้เห็นว่าตัดกี่ท่อน รอยต่อวิ่งทางไหน
+   และเศษที่ต้องจ่ายอยู่ตรงไหน
+   หมายเหตุ: รูปนี้ไม่ได้อยู่ในข้อความที่คัดลอกส่งลูกค้า (ตัวข้อความยังเหมือนเดิม) */
+function buildLayoutDiagram(d){
+  const en = resultLanguage === 'en';
+  const horizontal = d.seamDir === 'h';
+
+  // กรอบนอก = ผืนผ้าหลังเย็บต่อเสร็จแล้ว (หักส่วนที่ทับกันออกแล้ว) หน่วยเป็นเมตร
+  const totalW = horizontal ? d.jobWidth    : d.coveredSpan;
+  const totalH = horizontal ? d.coveredSpan : d.jobLength;
+
+  // ย่อส่วนให้พอดีกรอบ โดยคงสัดส่วนจริงไว้ทั้งสองด้าน
+  const PAD_L = 46, PAD_T = 26, PAD_R = 12, PAD_B = 14;
+  const scale = Math.min(286 / totalW, 194 / totalH);
+  const w = totalW * scale, h = totalH * scale;
+  const jw = d.jobWidth * scale, jh = d.jobLength * scale;
+  const svgW = PAD_L + w + PAD_R, svgH = PAD_T + h + PAD_B;
+
+  // แถบทับกัน + เส้นรอยต่อ + เลขกำกับท่อน
+  // ท่อนที่ i เริ่มที่ i × (หน้ากว้าง - ระยะทับ) แล้วกินยาวไปเท่าหน้ากว้าง
+  // ดังนั้นช่วงที่ผ้าทับกันของรอยที่ i คือ [เริ่มท่อน i, เริ่มท่อน i + ระยะทับ]
+  let bands = '', seams = '', tags = '';
+  const panelPx = d.rollWidth * scale;
+  const stepPx = (d.rollWidth - d.overlap) * scale;   // ระยะเลื่อนของท่อนถัดไป
+  const overlapPx = d.overlap * scale;
+  for(let i = 0; i < d.panels; i++){
+    const start = i * stepPx;
+    const at = PAD_T + start, ax = PAD_L + start;
+    if(i > 0){
+      // แถบสีส้ม = ผ้าสองชั้นทับกัน (จ่ายเงินสองรอบแต่ได้หน้ากว้างรอบเดียว)
+      if(overlapPx > 0.4){
+        bands += horizontal
+          ? '<rect x="' + PAD_L + '" y="' + at + '" width="' + w + '" height="' + overlapPx + '" fill="#f59e0b" fill-opacity="0.5" stroke="#b45309" stroke-width="0.8"/>'
+          : '<rect x="' + ax + '" y="' + PAD_T + '" width="' + overlapPx + '" height="' + h + '" fill="#f59e0b" fill-opacity="0.5" stroke="#b45309" stroke-width="0.8"/>';
+      }
+      // เส้นเย็บอยู่กลางแถบทับ (ถ้าไม่เผื่อทับ ก็คือตรงรอยต่อพอดี)
+      const mid = start + overlapPx / 2;
+      seams += horizontal
+        ? '<line x1="' + PAD_L + '" y1="' + (PAD_T + mid) + '" x2="' + (PAD_L + w) + '" y2="' + (PAD_T + mid) + '" stroke="#003366" stroke-width="3" stroke-dasharray="8 4"/>'
+        : '<line x1="' + (PAD_L + mid) + '" y1="' + PAD_T + '" x2="' + (PAD_L + mid) + '" y2="' + (PAD_T + h) + '" stroke="#003366" stroke-width="3" stroke-dasharray="8 4"/>';
+    }
+    // ใส่เลขท่อนเฉพาะตอนช่องใหญ่พอทั้งสองด้าน (งานยาวมากแต่แคบมาก รูปจะบางจนตัวเลขล้น)
+    const across = horizontal ? w : h;
+    if(d.panels > 1 && stepPx > 20 && across > 18){
+      const cx = horizontal ? PAD_L + w / 2 : ax + panelPx / 2;
+      const cy = horizontal ? at + panelPx / 2 : PAD_T + h / 2;
+      tags += '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="central"' +
+              ' font-size="11" font-weight="700" fill="#003366">' + (i + 1) + '</text>';
+    }
+  }
+
+  // ป้ายบอกขนาดงานจริง (ด้านบน = ความกว้าง / ด้านซ้าย = ความยาว)
+  const wLabel = (en ? 'W ' : 'กว้าง ') + d.jobWidth.toFixed(2) + (en ? ' m' : ' ม.');
+  const lLabel = (en ? 'L ' : 'ยาว ')  + d.jobLength.toFixed(2) + (en ? ' m' : ' ม.');
+  const dims =
+    '<line x1="' + PAD_L + '" y1="' + (PAD_T - 9) + '" x2="' + (PAD_L + jw) + '" y2="' + (PAD_T - 9) + '" stroke="#1d4ed8" stroke-width="1.2"/>' +
+    '<text x="' + (PAD_L + jw / 2) + '" y="' + (PAD_T - 14) + '" text-anchor="middle" font-size="10.5" fill="#1d4ed8">' + wLabel + '</text>' +
+    '<line x1="' + (PAD_L - 9) + '" y1="' + PAD_T + '" x2="' + (PAD_L - 9) + '" y2="' + (PAD_T + jh) + '" stroke="#1d4ed8" stroke-width="1.2"/>' +
+    '<text x="' + (PAD_L - 14) + '" y="' + (PAD_T + jh / 2) + '" text-anchor="middle" font-size="10.5" fill="#1d4ed8"' +
+    ' transform="rotate(-90 ' + (PAD_L - 14) + ' ' + (PAD_T + jh / 2) + ')">' + lLabel + '</text>';
+
+  const title = en
+    ? (horizontal ? 'Cutting layout — horizontal seams' : 'Cutting layout — vertical seams')
+    : (horizontal ? 'ผังการตัดต่อผ้า — ต่อแนวนอน' : 'ผังการตัดต่อผ้า — ต่อแนวตั้ง');
+
+  // บรรทัดสรุปใต้รูป: ผ้าที่ต้องซื้อ -> หน้ากว้างที่ได้จริงหลังเย็บ
+  const overlapNote = d.overlap > 0 && d.panels > 1
+    ? (en
+        ? ', minus ' + (d.panels - 1) + ' x ' + (d.overlap * 100).toFixed(1).replace(/\.0$/, '') +
+          ' cm buried in the seams = ' + d.coveredSpan.toFixed(2) + ' m usable'
+        : ' หักส่วนที่ทับกัน ' + (d.panels - 1) + ' รอย × ' + (d.overlap * 100).toFixed(1).replace(/\.0$/, '') +
+          ' ซม. เหลือใช้จริง ' + d.coveredSpan.toFixed(2) + ' ม.')
+    : '';
+
+  const caption = en
+    ? 'Roll width ' + d.rollWidth.toFixed(2) + ' m x ' + d.panels + ' panel(s) = ' +
+      d.billedSpan.toFixed(2) + ' m' + overlapNote + ' — billed ' + d.billedArea.toFixed(2) + ' sq.m' +
+      (d.panels > 1 ? ' (' + (d.panels - 1) + ' seam(s) to sew)' : ' (no seam)')
+    : 'หน้ากว้างผ้า ' + d.rollWidth.toFixed(2) + ' ม. × ' + d.panels + ' ท่อน = ' +
+      d.billedSpan.toFixed(2) + ' ม.' + overlapNote + ' — คิดเงิน ' + d.billedArea.toFixed(2) + ' ตร.ม.' +
+      (d.panels > 1 ? ' (ต้องเย็บต่อ ' + (d.panels - 1) + ' รอย)' : ' (ไม่มีรอยต่อ)');
+
+  // แสดงเศษก็ต่อเมื่อมีจริง (เลี่ยงเศษจากการปัดทศนิยม)
+  const legend =
+    '<span><i class="legend-swatch" style="background:#cfe3ff;border:1.5px solid #1d4ed8;"></i>' +
+      (en ? 'Actual job' : 'งานจริง') + ' ' + d.netArea.toFixed(2) + (en ? ' sq.m' : ' ตร.ม.') + '</span>' +
+    (d.overlapArea > 0.004
+      ? '<span><i class="legend-swatch" style="background:#f7c469;border:1.5px solid #b45309;"></i>' +
+        (en ? 'Buried in seams' : 'จมในตะเข็บ') + ' ' + d.overlapArea.toFixed(2) + (en ? ' sq.m' : ' ตร.ม.') + '</span>'
+      : '') +
+    (d.trimArea > 0.004
+      ? '<span><i class="legend-swatch" style="background:#fde8e8;border:1.5px dashed #dc2626;"></i>' +
+        (en ? 'Offcut' : 'เศษเจียนทิ้ง') + ' ' + d.trimArea.toFixed(2) + (en ? ' sq.m' : ' ตร.ม.') + '</span>'
+      : '') +
+    (d.panels > 1
+      ? '<span><i class="legend-swatch" style="background:transparent;border-top:3px dashed #003366;border-radius:0;height:0;"></i>' +
+        (en ? 'Seam' : 'รอยต่อ') + '</span>'
+      : '');
+
+  return '<div class="layout-diagram">' +
+    '<div class="layout-diagram-title">' + title + '</div>' +
+    '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" width="' + svgW + '" height="' + svgH + '" role="img" aria-label="' + title + '">' +
+      '<defs><pattern id="scrapHatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">' +
+        '<rect width="7" height="7" fill="#fde8e8"/><line x1="0" y1="0" x2="0" y2="7" stroke="#f4a3a3" stroke-width="3"/>' +
+      '</pattern></defs>' +
+      // กรอบนอก = ผ้าที่ต้องจ่ายเงินทั้งหมด (ส่วนที่โผล่พ้นงานจริงคือเศษ)
+      '<rect x="' + PAD_L + '" y="' + PAD_T + '" width="' + w + '" height="' + h + '" fill="url(#scrapHatch)" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5 3"/>' +
+      // กรอบใน = ขนาดงานจริง
+      '<rect x="' + PAD_L + '" y="' + PAD_T + '" width="' + jw + '" height="' + jh + '" fill="#cfe3ff" fill-opacity="0.9" stroke="#1d4ed8" stroke-width="1.8"/>' +
+      bands + seams + tags + dims +
+    '</svg>' +
+    '<div class="layout-legend">' + legend + '</div>' +
+    '<div class="layout-caption">' + caption + '</div>' +
+  '</div>';
+}
+
+function calculatePrice(){
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+  errorEl.style.display = 'none';
+
+  // อัปเดตแถบข้อความก่อนตรวจค่า เพื่อให้ยังเห็นสถานะแม้กรอกค่าไม่ครบ
+  updateFabricWidthHint();
+  updateSeamHint();
+  // เรียกรอบแรกเผื่อกรอกค่าไม่ครบแล้ว return ก่อน (ยังไม่รู้จำนวนท่อน)
+  // ถ้าคำนวณผ่าน จะถูกเรียกซ้ำอีกทีพร้อมจำนวนท่อนจริง
+  updateOverlapHint(Math.max(0, parseFloat(document.getElementById('seamOverlap').value) || 0), false);
+
+  const priceMode = document.getElementById('priceMode').value;
+  const tier = document.getElementById('tier').value;
+  const f = getFabric();
+  const rollWidth = getRollWidth();                            // หน้ากว้างผ้าที่ใช้จริง (แก้เองได้)
+  const seamDir = document.getElementById('seamDir').value;    // 'v' = ต่อแนวตั้ง, 'h' = ต่อแนวนอน
+  // ช่องกรอกเป็น "เซนติเมตร" (เลขกลม ๆ ใช้ง่ายกว่า) แต่คำนวณเป็นเมตรทั้งหมด
+  const overlapCm = Math.max(0, parseFloat(document.getElementById('seamOverlap').value) || 0);
+  const overlap = overlapCm / 100;
+  const jobWidth = parseFloat(document.getElementById('jobWidth').value) || 0;
+  const jobLength = parseFloat(document.getElementById('jobLength').value) || 0;
+  const qty = Math.max(1, parseInt(document.getElementById('qty').value) || 1);
+  const threadKey = document.getElementById('thread').value;
+  const threadQty = Math.max(0, parseInt(document.getElementById('threadQty').value) || 0);
+  const trimYards = Math.max(0, parseFloat(document.getElementById('trimYards').value) || 0);
+  const wantInstall = document.getElementById('installFee').checked;
+  const accessories = parseFloat(document.getElementById('accessories').value) || 0;
+  const specialDiscount = parseFloat(document.getElementById('specialDiscount').value) || 0;
+  const discountPct = parseFloat(document.getElementById('discount').value) || 0;
+  const jobNote = document.getElementById('jobNote').value.trim();
+
+  if(jobWidth <= 0 || jobLength <= 0){
+    errorEl.textContent = 'กรุณาระบุความกว้างและความยาวให้ถูกต้อง';
+    errorEl.style.display = 'block';
+    resultEl.innerHTML = '';
+    return;
+  }
+
+  if(rollWidth <= 0){
+    errorEl.textContent = 'กรุณาระบุหน้ากว้างผ้าให้ถูกต้อง';
+    errorEl.style.display = 'block';
+    resultEl.innerHTML = '';
+    return;
+  }
+
+  // ถ้าทับกันมากกว่าหรือเท่ากับหน้ากว้าง ต่อยังไงก็ไม่มีวันคลุมงานได้ (ท่อนใหม่ไม่เพิ่มความกว้างเลย)
+  if(overlap >= rollWidth){
+    errorEl.textContent = 'ระยะทับกันของรอยต่อต้องน้อยกว่าหน้ากว้างผ้า (' + (rollWidth * 100).toFixed(0) + ' ซม.)';
+    errorEl.style.display = 'block';
+    resultEl.innerHTML = '';
+    return;
+  }
+
+  // เลือกว่าจะเอาด้านไหนของงานไปหารด้วยหน้ากว้างผ้า
+  //   ต่อแนวตั้ง (v) = หน้าผ้าพาดตามความกว้าง รอยต่อวิ่งตามความยาว
+  //   ต่อแนวนอน (h) = หน้าผ้าพาดตามความยาว รอยต่อวิ่งตามความกว้าง
+  const spanAcrossRoll = seamDir === 'h' ? jobLength : jobWidth;  // ด้านที่หารด้วยหน้ากว้าง
+  const runLength      = seamDir === 'h' ? jobWidth  : jobLength; // ด้านที่ดึงยาวไปตามม้วน
+
+  // เผื่อตะเข็บ: ผ้าสองท่อนต้องวางทับกันก่อนเย็บ ท่อนที่ 2 เป็นต้นไปจึงกินหน้ากว้าง
+  // ได้จริงแค่ (หน้ากว้าง - ระยะทับ) เช่น ผ้า 2.50 ม. ทับกัน 5 ซม. สองท่อนคลุมได้ 4.95 ม.
+  // ไม่ใช่ 5.00 ม. งานกว้าง 5.00 ม. จึงต้องใช้ 3 ท่อน
+  //   คลุมได้ = จำนวนท่อน × หน้ากว้าง - (จำนวนท่อน - 1) × ระยะทับ
+  //   แก้สมการหาจำนวนท่อน = (ด้านที่ต่อ - ระยะทับ) / (หน้ากว้าง - ระยะทับ)
+  // ลบ 1e-9 กันปัญหาทศนิยมลอยตัว เช่น 4.08/2.04 ได้ 2.0000000000000004 แล้วปัดขึ้นเป็น 3 ท่อน
+  // Math.max(1, ...) กันกรณีงานเล็กมากจนโดน 1e-9 กดเหลือ 0 ท่อน
+  const panels = Math.max(1, Math.ceil((spanAcrossRoll - overlap) / (rollWidth - overlap) - 1e-9));
+  const billedSpan = panels * rollWidth;                        // ผ้าที่ต้องดึงจากม้วนรวมทุกท่อน
+  const coveredSpan = billedSpan - (panels - 1) * overlap;      // หน้ากว้างจริงหลังเย็บต่อเสร็จ
+  const linearM = panels * runLength;              // ความยาวผ้าที่ต้องดึงจากม้วน
+  const billedArea = billedSpan * runLength;       // ตร.ม. ที่คิดเงิน (รวมเศษ + ส่วนที่ทับกัน)
+  const netArea = jobWidth * jobLength;            // ตร.ม. ของงานจริง
+  const scrapArea = billedArea - netArea;
+  const overlapArea = (panels - 1) * overlap * runLength;       // ผ้าที่จมอยู่ในตะเข็บ
+  const trimArea = scrapArea - overlapArea;                     // เศษที่ต้องเจียนทิ้งริมงาน
+  const totalBilledArea = billedArea * qty;
+
+  updateOverlapHint(overlapCm, panels > 1);
+
+  // ราคาต่อผืน: โหมดผ้าอย่างเดียวคิดตามหน่วยของผ้า / โหมดตัดเย็บคิดตาม ตร.ม. เสมอ
+  let pricePerPiece, rateLine;
+  if(priceMode === 'fabric'){
+    if(f.unit === 'm'){
+      pricePerPiece = linearM * f.price;
+      rateLine = 'ราคาผ้า: ' + f.price.toLocaleString('th-TH') + ' บาท/เมตร';
+    } else {
+      pricePerPiece = billedArea * f.price;
+      rateLine = 'ราคาผ้า: ' + f.price.toLocaleString('th-TH') + ' บาท/ตร.ม.';
+    }
+  } else {
+    pricePerPiece = billedArea * f[tier];
+    rateLine = 'ราคาตัดเย็บ: ' + f[tier].toLocaleString('th-TH') + ' บาท/ตร.ม.';
+  }
+
+  const threadRow = THREADS.filter(t => t.key === threadKey)[0];
+  const threadCost = (threadRow && threadQty > 0) ? threadRow.price * threadQty : 0;
+  const trimCost = trimYards * TRIM_PRICE_PER_YARD;
+  const installCost = wantInstall ? Math.max(INSTALL_MINIMUM, INSTALL_RATE_PER_SQM * totalBilledArea) : 0;
+
+  // ลำดับการคิดเงินเหมือนเครื่องคำนวณหน้าอื่นทุกหน้า
+  const subtotal = (pricePerPiece * qty) + threadCost + trimCost + installCost + accessories;
+  const specialDiscountAmount = Math.min(specialDiscount, subtotal);
+  const afterSpecial = subtotal - specialDiscountAmount;
+  const discountAmount = afterSpecial * (discountPct / 100);
+  const totalExclVat = afterSpecial - discountAmount;
+  const vatAmount = totalExclVat * 0.07;
+  const totalInclVat = totalExclVat + vatAmount;
+
+  const modeLine = priceMode === 'fabric'
+    ? 'รูปแบบราคา: ราคาเฉพาะผ้า (ยังไม่ตัดเย็บ)'
+    : 'รูปแบบราคา: ราคาตัดเย็บ เกรด ' + TIER_LABELS[tier];
+
+  const customerLines = [
+    'Sangthong Creation - ราคาผ้าใบ',
+    modeLine,
+    'ชนิดผ้า: ' + f.label,
+    'ขนาดงาน: กว้าง ' + jobWidth.toFixed(2) + ' ม. x ยาว ' + jobLength.toFixed(2) + ' ม. (' + netArea.toFixed(2) + ' ตร.ม.)',
+    'หน้ากว้างผ้า: ' + rollWidth.toFixed(2) + ' ม.' + (isWidthOverridden() ? ' (กำหนดเอง)' : ''),
+    panels > 1
+      ? 'การต่อผ้า: ' + (seamDir === 'h' ? 'ต่อแนวนอน' : 'ต่อแนวตั้ง') +
+        ' · ' + panels + ' ท่อน · รอยต่อ ' + (panels - 1) +
+        (overlapCm > 0 ? ' · ทับกันรอยละ ' + overlapCm + ' ซม.' : '')
+      : 'การต่อผ้า: ผืนเดียว ไม่มีรอยต่อ',
+    (panels > 1 && overlapCm > 0)
+      ? 'ผ้าที่จมในตะเข็บ: ' + overlapArea.toFixed(2) + ' ตร.ม.'
+      : '',
+    'พื้นที่คิดราคา: ' + billedArea.toFixed(2) + ' ตร.ม.' + (scrapArea > 0.004 ? ' (รวมเศษ ' + scrapArea.toFixed(2) + ' ตร.ม.)' : ''),
+    (priceMode === 'fabric' && f.unit === 'm') ? 'ความยาวผ้าที่ใช้: ' + linearM.toFixed(2) + ' ม.' : '',
+    rateLine,
+    'ราคาต่อผืน: ' + bahtText(pricePerPiece),
+    'จำนวน: ' + qty + ' ผืน (พื้นที่รวม ' + totalBilledArea.toFixed(2) + ' ตร.ม.)',
+    threadCost > 0 ? 'ด้ายเย็บ: ' + threadRow.label + ' x ' + threadQty + ' หลอด = ' + bahtText(threadCost) : '',
+    trimCost > 0 ? 'Solar Trim: ' + trimYards + ' หลา = ' + bahtText(trimCost) : '',
+    installCost > 0 ? 'ค่าขนส่งและติดตั้ง: ' + bahtText(installCost) : '',
+    accessories > 0 ? 'อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(accessories) : '',
+    '',
+    'ราคารวมก่อนส่วนลด: ' + bahtText(subtotal),
+    specialDiscountAmount > 0 ? 'ส่วนลดพิเศษ: -' + bahtText(specialDiscountAmount) : '',
+    discountAmount > 0 ? 'ส่วนลด ' + discountPct + '%: -' + bahtText(discountAmount) : '',
+    'ราคารวม (ไม่รวม VAT): ' + bahtText(totalExclVat),
+    'VAT 7%: ' + bahtText(vatAmount),
+    'ราคารวม VAT: ' + bahtText(totalInclVat),
+    jobNote ? ('หมายเหตุ: ' + jobNote) : '',
+    '',
+    priceMode === 'sewn' ? 'งานตัดเย็บเกรด ' + TIER_LABELS[tier] + ': ' + TIER_NOTES[tier] : '',
+    'เงื่อนไข: กรณีสั่งผ้าใบขนาดเล็ก ต่ำกว่าหน้าผ้า คิดพื้นที่ ตร.ม. ตามหน้าผ้าที่ตัดใช้จริง',
+    'ราคาไม่รวมภาษีมูลค่าเพิ่ม',
+    'ราคาเฉพาะผ้ารวมค่าขนส่งเฉพาะในเขตกรุงเทพฯ เมื่อสั่งยอดเกิน 3,000 บาท',
+    'สินค้าสั่งตัด ไม่รับเปลี่ยนหรือคืนสินค้าในทุกกรณี'
+  ].filter(Boolean);
+
+  window.latestCopyText = customerLines.join('\n');
+
+  // Show the exact customer copy text as the result, so what the sales
+  // staff sees is what gets copied and sent to the customer.
+  resultEl.innerHTML =
+    buildLayoutDiagram({ seamDir, panels, rollWidth, overlap, jobWidth, jobLength,
+                         billedSpan, coveredSpan, billedArea, netArea, overlapArea, trimArea }) +
+    '<div class="customer-copy-label">Customer copy text / ข้อความสำหรับส่งลูกค้า</div>' +
+    '<pre class="customer-copy-text" id="copyPreview"></pre>';
+  document.getElementById('copyPreview').textContent = window.latestCopyText;
+}
+
+/* ---- TH/EN result language toggle (same pattern as the other calculators) ---- */
+let resultLanguage = 'th';
+
+// Thai -> English replacements for the result panel and customer copy text.
+// Longest strings are replaced first (sorted at runtime), so overlapping
+// phrases such as "ราคารวมก่อนส่วนลด" vs "ราคารวม" resolve correctly.
+const RESULT_EN_REPLACEMENTS = [
+  ['Sangthong Creation - ราคาผ้าใบ', 'Sangthong Creation - FABRIC PRICE'],
+  ['เงื่อนไข: กรณีสั่งผ้าใบขนาดเล็ก ต่ำกว่าหน้าผ้า คิดพื้นที่ ตร.ม. ตามหน้าผ้าที่ตัดใช้จริง', 'Conditions: for pieces narrower than the fabric roll, the area is charged at the full roll width actually cut'],
+  ['ราคาเฉพาะผ้ารวมค่าขนส่งเฉพาะในเขตกรุงเทพฯ เมื่อสั่งยอดเกิน 3,000 บาท', 'Fabric-only price includes delivery within Bangkok for orders over 3,000 THB'],
+  ['สินค้าสั่งตัด ไม่รับเปลี่ยนหรือคืนสินค้าในทุกกรณี', 'Made-to-order product; no exchange or return in any case'],
+  ['กรุณาระบุความกว้างและความยาวให้ถูกต้อง', 'Please enter a valid width and length'],
+  ['ราคาไม่รวมภาษีมูลค่าเพิ่ม', 'Price excludes VAT'],
+  ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
+
+  // Sewing grade descriptions
+  ['เย็บพับกระบอกบน-ล่าง, เย็บพับริมเจาะรูตาไก่ทุก 30 ซม./ตัว, เย็บแบบผ้าใบแนวตั้ง ST-2000', 'Top-bottom pocket hem, edge hem with eyelets every 30 cm, ST-2000 vertical awning style'],
+  ['เย็บพับกันสาดพับเก็บได้, เย็บพับกระบอกบน-ล่างมีระบาย, เย็บแบบโครงกันสาดเข้ารูปหน้าตัดโค้ง หรือตรง ธรรมดา', 'Retractable awning hem, top-bottom pocket hem with valance, shaped to a curved or straight standard awning frame'],
+  ['เย็บเป็นโครงทรงยุโรป, เต็นท์ Tension แบบ 3 เหลี่ยม หรือ 4 เหลี่ยมอย่างง่าย, ไม่รวมอุปกรณ์ในการจับยึดผ้าใบ เช่น สลิง เคเบิล ปะกับ เกลียวเร่ง', 'European-style frame, simple 3 or 4 sided tension sail; excludes fixing hardware such as wire rope, cable, clamps and turnbuckles'],
+  ['งานตัดเย็บเกรด', 'Sewing grade'],
+
+  // Fabric name fragments
+  ['ผ้าใบโปร่งแสง Translucent PVC', 'Translucent PVC'],
+  ['ผ้าพลาสติกใสเหลือง', 'Yellow clear PVC'],
+  ['ผ้าตาข่ายกรองแสง', 'Shade mesh'],
+  ['ผ้าพลาสติกใส', 'Clear PVC'],
+  ['ผ้าอะครีลิค', 'Acrylic'],
+  ['ผ้าใบ Coated PVC', 'Coated PVC'],
+  ['ผ้าใบ BLOCKOUT', 'BLOCKOUT'],
+  ['ผ้าตาข่าย MESH', 'MESH'],
+  ['ผ้าใบ PVC - HC', 'PVC - HC'],
+  ['ผ้า Premium PVC', 'Premium PVC'],
+  ['ผ้า Openness', 'Openness'],
+  ['หน้ากว้าง', 'roll width'],
+  ['สีขาวล้วน', 'plain white'],
+  ['สีสลับ', 'multi-colour'],
+
+  // Result lines
+  ['รูปแบบราคา: ราคาเฉพาะผ้า (ยังไม่ตัดเย็บ)', 'Price mode: Fabric only (not sewn)'],
+  ['รูปแบบราคา: ราคาตัดเย็บ เกรด', 'Price mode: Cut & sewn - grade'],
+  ['ขนาดงาน: กว้าง', 'Job size: Width'],
+  ['การต่อผ้า: ผืนเดียว ไม่มีรอยต่อ', 'Seam layout: single panel, no seams'],
+  ['การต่อผ้า: ต่อแนวตั้ง', 'Seam layout: vertical seams'],
+  ['การต่อผ้า: ต่อแนวนอน', 'Seam layout: horizontal seams'],
+  ['(กำหนดเอง)', '(custom)'],
+  ['ผ้าที่จมในตะเข็บ', 'Fabric buried in seams'],
+  ['ทับกันรอยละ', 'overlap per seam'],
+  ['ระยะทับกันของรอยต่อต้องน้อยกว่าหน้ากว้างผ้า', 'Seam overlap must be smaller than the fabric width'],
+  ['ซม.', 'cm'],
+  // 'รอยต่อ' -> 'joins:' เพื่อให้ตัวเลขต่อท้ายอ่านรู้เรื่องในภาษาอังกฤษ (joins: 1)
+  // ห้ามเพิ่มคีย์สั้น 'แนว' เพราะเป็นส่วนหนึ่งของ แนวตั้ง/แนวนอน และข้อความเกรด A
+  ['รอยต่อ', 'joins:'],
+  ['จำนวนท่อนที่ตัด', 'Panels cut'],
+  ['พื้นที่คิดราคา', 'Billed area'],
+  ['ความยาวผ้าที่ใช้', 'Fabric length used'],
+  ['หน้ากว้างผ้า', 'Fabric roll width'],
+  ['ราคาตัดเย็บ', 'Cut & sew rate'],
+  ['ราคาต่อผืน', 'Price per piece'],
+  ['ราคาผ้า', 'Fabric rate'],
+  ['ค่าขนส่งและติดตั้ง', 'Delivery & installation'],
+  ['อุปกรณ์เสริมเพิ่มเติม', 'Additional accessories'],
+  ['ราคารวมก่อนส่วนลด', 'Total before discount'],
+  ['ราคารวม (ไม่รวม VAT)', 'Total (excl. VAT)'],
+  ['ราคารวม VAT', 'Total incl. VAT'],
+  ['ส่วนลดพิเศษ', 'Special discount'],
+  ['ด้ายเย็บ', 'Sewing thread'],
+  ['พื้นที่รวม', 'total area'],
+  ['ผลการคำนวณ', 'Result'],
+  ['ชนิดผ้า', 'Fabric'],
+  ['ส่วนลด', 'Discount'],
+  ['เงื่อนไข', 'Conditions'],
+  ['หมายเหตุ', 'Note'],
+  ['จำนวน', 'Quantity'],
+  ['รวมเศษ', 'incl. offcut'],
+  ['เมตร/หลอด', 'm/cone'],
+  ['บาท/หลอด', 'THB/cone'],
+  ['บาท/เมตร', 'THB/m.'],
+  ['บาท/ตร.ม.', 'THB/sq.m.'],
+  ['ตร.ม.', 'sq.m.'],
+  ['หลอด', 'cone'],
+  ['ท่อน', 'panels'],
+  ['หลา', 'yd'],
+  ['ยาว', 'Length'],
+  ['บาท', 'THB'],
+  ['ผืน', 'pc'],
+  ['ม.', 'm.']
+];
+
+function localizeResultText(text){
+  if (resultLanguage !== 'en') return String(text || '');
+  let output = String(text || '');
+  RESULT_EN_REPLACEMENTS
+    .slice()
+    .sort((a, b) => b[0].length - a[0].length)
+    .forEach(([from, to]) => { output = output.split(from).join(to); });
+  return output
+    .replace(new RegExp('([0-9,])THB', 'g'), '$1 THB')
+    .replace(new RegExp('\\s+THB', 'g'), ' THB')
+    .trim();
+}
+
+// Translate the panel headings (e.g. "ผลการคำนวณ") when EN is active.
+function updateResultLanguageLabels(){
+  const resultSignal = 'ผลการ';
+  const customerSignal = 'ข้อความ';
+  document.querySelectorAll('h2,h3,h4,.panel-title,.customer-copy-title,.customer-copy-label').forEach(el => {
+    const original = el.getAttribute('data-result-label-th') || el.textContent.trim();
+    if (!original.includes(resultSignal) && !original.includes(customerSignal)) return;
+    if (!el.getAttribute('data-result-label-th')) el.setAttribute('data-result-label-th', original);
+    el.textContent = resultLanguage === 'en' ? localizeResultText(original) : original;
+  });
+}
+
+// In EN mode, translate the customer copy text shown in the result panel
+// (the copy button copies the same translated text).
+function localizeResultPanel(){
+  const pre = document.getElementById('copyPreview');
+  if (!pre || resultLanguage !== 'en' || !pre.textContent.trim()) return;
+  pre.textContent = localizeResultText(pre.textContent);
+  window.latestCopyText = pre.textContent;
+  updateResultLanguageLabels(); // the label above the text is re-created on every recalculation
+}
+
+function setResultLanguage(lang){
+  resultLanguage = lang === 'en' ? 'en' : 'th';
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  if (typeof calculatePrice === 'function') calculatePrice();
+  updateResultLanguageLabels();
+}
+
+function initResultLanguageToggle(){
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    button.addEventListener('click', () => setResultLanguage(button.dataset.resultLang));
+  });
+  // Wrap calculatePrice so every recalculation re-applies the translation.
+  if (typeof calculatePrice === 'function') {
+    const originalCalculatePrice = calculatePrice;
+    calculatePrice = function(){
+      originalCalculatePrice.apply(this, arguments);
+      localizeResultPanel();
+    };
+  }
+  updateResultLanguageLabels();
+}
+
+buildFabricOptions();
+buildThreadOptions();
+initResultLanguageToggle();
+/* ---- end language toggle ---- */
+
+document.getElementById('priceMode').addEventListener('change', () => { refreshModeFields(); calculatePrice(); });
+document.getElementById('tier').addEventListener('change', () => { refreshModeFields(); calculatePrice(); });
+// เปลี่ยนชนิดผ้า = ดึงหน้ากว้างมาตรฐานของผ้าใหม่มาใส่ ทับค่าที่เคยกำหนดเอง
+document.getElementById('fabric').addEventListener('change', () => {
+  updateFabricInfo();
+  syncFabricWidthToCatalogue();
+  calculatePrice();
+});
+
+// ปุ่มรีเซ็ตอยู่ในแถบ hint ที่ถูกสร้างใหม่ทุกครั้งที่คำนวณ
+// จึงดักคลิกที่ตัวแถบแทนการผูกกับปุ่มโดยตรง (ไม่งั้นต้องผูกใหม่ทุกรอบ)
+document.getElementById('fabricWidthHint').addEventListener('click', (e) => {
+  if(e.target && e.target.id === 'resetFabricWidth'){
+    syncFabricWidthToCatalogue();
+    calculatePrice();
+  }
+});
+
+[
+  'fabricWidth','seamDir','seamOverlap','jobWidth','jobLength','qty','thread','threadQty','trimYards','installFee',
+  'accessories','specialDiscount','discount','jobNote'
+].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', calculatePrice);
+  el.addEventListener('change', calculatePrice);
+});
+
+document.getElementById('copyResult').onclick = () => {
+  const text = window.latestCopyText || '';
+  if(text.trim() !== ''){
+    navigator.clipboard.writeText(text)
+      .then(() => alert('คัดลอกผลลัพธ์เรียบร้อยแล้ว!'))
+      .catch(() => alert('ไม่สามารถคัดลอกได้'));
+  } else {
+    alert('ยังไม่มีผลลัพธ์ให้คัดลอก');
+  }
+};
+
+refreshModeFields();
+updateFabricInfo();
+syncFabricWidthToCatalogue();
+calculatePrice();
+</script>
+</body></html>

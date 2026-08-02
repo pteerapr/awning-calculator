@@ -110,14 +110,14 @@ th{background:#f3f4f6;}
 <label>มอเตอร์</label>
 <select id="motor">
 <option value="0">ไม่มี</option>
-<option value="9900" selected>มอเตอร์ Strong Up 50/12 (9,900 บาท)</option>
-<option value="11900">มอเตอร์ Strong Up 50/12 with crank handle (11,900 บาท)</option>
-<option value="15900">มอเตอร์ Strong Up 80/15 (15,900 บาท)</option>
-<option value="25800">มอเตอร์ Somfy Altus 40/17 (25,800 บาท)</option>
-<option value="26800">มอเตอร์ Somfy Altus 50/12 (26,800 บาท)</option>
-<option value="32800">มอเตอร์ Somfy Altus 85/17 (32,800 บาท)</option>
-<option value="25000">มอเตอร์ Somfy MAESTRIA+50 RTS 15/17 + Remote 1 ช่อง (Telis situo 1 RTS) (25,000 บาท)</option>
-<option value="31000">มอเตอร์ Somfy MAESTRIA+50 RTS 35/17 + Remote 1 ช่อง (Telis situo 1 RTS) (31,000 บาท)</option>
+<option value="9900" data-price-key="strongUp50_12" selected>มอเตอร์ Strong Up 50/12 (9,900 บาท)</option>
+<option value="11900" data-price-key="strongUp50_12_crank">มอเตอร์ Strong Up 50/12 with crank handle (11,900 บาท)</option>
+<option value="15900" data-price-key="strongUp80_15">มอเตอร์ Strong Up 80/15 (15,900 บาท)</option>
+<option value="25800" data-price-key="somfyAltus40_17">มอเตอร์ Somfy Altus 40/17 (25,800 บาท)</option>
+<option value="26800" data-price-key="somfyAltus50_12">มอเตอร์ Somfy Altus 50/12 (26,800 บาท)</option>
+<option value="32800" data-price-key="somfyAltus85_17">มอเตอร์ Somfy Altus 85/17 (32,800 บาท)</option>
+<option value="25000" data-price-key="somfyMaestria50RTS15_17">มอเตอร์ Somfy MAESTRIA+50 RTS 15/17 + Remote 1 ช่อง (Telis situo 1 RTS) (25,000 บาท)</option>
+<option value="31000" data-price-key="somfyMaestria50RTS35_17">มอเตอร์ Somfy MAESTRIA+50 RTS 35/17 + Remote 1 ช่อง (Telis situo 1 RTS) (31,000 บาท)</option>
 </select>
 <div id="strongUpAccessoryBox" class="accessory-box">
   <h4>Strong Up Accessories / อุปกรณ์เสริม Strong Up</h4>
@@ -140,13 +140,20 @@ th{background:#f3f4f6;}
   <label><input id="chkSomfyEolis3D" type="checkbox"/> Eolis 3D Sensor RTS (+11,663 บาท)</label>
   <label><input id="chkSomfySoliris" type="checkbox"/> Soliris RTS Sensor (+21,756 บาท)</label>
   <label><input id="chkSomfyTaHoma" type="checkbox"/> TaHoma (+11,005 บาท)</label>
+  <label><input id="chkSomfyRemote1" type="checkbox"/> Somfy Remote 1 Channel / รีโมท 1 ช่อง (+3,108 บาท)</label>
+  <label><input id="chkSomfyRemote2" type="checkbox"/> Somfy Remote 2 Channel / รีโมท 2 ช่อง (+3,978 บาท)</label>
+  <label><input id="chkSomfyRemote5" type="checkbox"/> Somfy Remote 5 Channel / รีโมท 5 ช่อง (+6,216 บาท)</label>
+  <label><input id="chkSomfyRemote6" type="checkbox"/> Somfy Remote 6 Channel / รีโมท 6 ช่อง (+13,675 บาท)</label>
+  <label><input id="chkSomfyRemote16" type="checkbox"/> Somfy Remote 16 Channel / รีโมท 16 ช่อง (+12,432 บาท)</label>
+  <label><input id="chkSomfySmoove" type="checkbox"/> Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง (+2,362 บาท)</label>
+  <div class="diag" style="display:block;">หมายเหตุ: มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว ให้ติ๊กเฉพาะรีโมทที่ต้องการเพิ่ม</div>
   <div class="diag" style="display:block;">แสดงเฉพาะเมื่อเลือกมอเตอร์ Somfy</div>
 </div>
 <label>ฝาครอบ (Cover Profile)</label>
 <select id="cover">
 <option value="0">ไม่มี</option>
-<option value="2400">ฝาครอบอลูมิเนียม (2,400 บาท/เมตร)</option>
-<option value="2900">ฝาครอบสีขาว (2,900 บาท/เมตร)</option>
+<option value="2400" data-price-key="coverProfile.aluminum">ฝาครอบอลูมิเนียม (2,400 บาท/เมตร)</option>
+<option value="2900" data-price-key="coverProfile.white">ฝาครอบสีขาว (2,900 บาท/เมตร)</option>
 </select>
 <label>อุปกรณ์เสริมเพิ่มเติม (บาท)</label>
 <input id="accessories" min="0" placeholder="เช่น 1500" type="number" value="0"/>
@@ -1168,7 +1175,13 @@ function getAccessoryItemsByBrand(brand) {
     { id: "chkSomfyEolis", label: "Eolis Sensor RTS", value: P.somfy.eolis },
     { id: "chkSomfyEolis3D", label: "Eolis 3D Sensor RTS", value: P.somfy.eolis3D },
     { id: "chkSomfySoliris", label: "Soliris RTS Sensor", value: P.somfy.soliris },
-    { id: "chkSomfyTaHoma", label: "TaHoma", value: P.somfy.taHoma }
+    { id: "chkSomfyTaHoma", label: "TaHoma", value: P.somfy.taHoma },
+    { id: "chkSomfyRemote1", label: "Somfy Remote 1 Channel / รีโมท 1 ช่อง", value: P.somfy.remote1 },
+    { id: "chkSomfyRemote2", label: "Somfy Remote 2 Channel / รีโมท 2 ช่อง", value: P.somfy.remote2 },
+    { id: "chkSomfyRemote5", label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: P.somfy.remote5 },
+    { id: "chkSomfyRemote6", label: "Somfy Remote 6 Channel / รีโมท 6 ช่อง", value: P.somfy.remote6 },
+    { id: "chkSomfyRemote16", label: "Somfy Remote 16 Channel / รีโมท 16 ช่อง", value: P.somfy.remote16 },
+    { id: "chkSomfySmoove", label: "Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง", value: P.somfy.smoove }
   ];
 
   if (brand === "strongup") return strongUpItems;
@@ -1418,6 +1431,12 @@ function clearAll(){
   'chkSomfyEolis3D',
   'chkSomfySoliris',
   'chkSomfyTaHoma',
+  'chkSomfyRemote1',
+  'chkSomfyRemote2',
+  'chkSomfyRemote5',
+  'chkSomfyRemote6',
+  'chkSomfyRemote16',
+  'chkSomfySmoove',
   'cover',
   'accessories',
   'qty',

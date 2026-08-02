@@ -267,8 +267,8 @@
 <label for="coverType">Cover Type / ชนิดฝาครอบกันนํ้า</label>
 <select class="auto-calc" id="coverType">
 <option value="none">ไม่เอาฝาปิด</option>
-<option value="aluminum">ฝาปิดอลูมิเนียม (2,400 บาท × ความกว้าง)</option>
-<option value="white">ฝาปิดสีขาว (2,900 บาท × ความกว้าง)</option>
+<option value="aluminum" data-price-key="coverProfile.aluminum">ฝาปิดอลูมิเนียม (2,400 บาท × ความกว้าง)</option>
+<option value="white" data-price-key="coverProfile.white">ฝาปิดสีขาว (2,900 บาท × ความกว้าง)</option>
 </select>
 </div>
 <div>
@@ -314,13 +314,14 @@
 </div>
 
 <div class="preview">
-<h3>Customer copy text / ข้อความสำหรับส่งลูกค้า</h3>
 <div class="languageToggle" aria-label="Result language"><button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button><button type="button" data-result-lang="en" aria-pressed="false">EN</button></div>
 <div class="st-brandbar" style="background:#003366;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;"><div style="font-weight:900;letter-spacing:2px;font-size:15px;">SANGTHONG CREATION</div><div style="font-size:11px;letter-spacing:.4px;opacity:.85;margin-top:3px;">Price presented by Sangthong Creation</div></div><pre id="copyPreview"></pre>
 </div>
 </section>
 </div>
 </div>
+<!-- คลังราคากลาง (ฝาครอบกันน้ำ ฯลฯ) ต้องโหลดก่อนสคริปต์หลัก / shared price catalog, must load first -->
+<script src="prices.js"></script>
 <script>
 let resultLanguage = 'th';
 const RESULT_EN_REPLACEMENTS = [
@@ -582,9 +583,9 @@ initResultLanguageToggle();
     }
 
     function getCoverCost(width, type) {
-      if (type === 'aluminum') return width * 2400;
-      if (type === 'white') return width * 2900;
-      return 0;
+      // ราคาฝาครอบต่อเมตรมาจาก prices.js (แก้ที่นั่นที่เดียว) / per-metre rate from prices.js
+      const rate = window.getCoverProfileRate(type);
+      return rate ? width * rate : 0;   // ไม่เอาฝาปิด = 0 เสมอ / "none" is always 0
     }
 
     function coverTypeLabel(type) {

@@ -148,6 +148,9 @@ label input[type="checkbox"] {
 <label><input id="chkSomfyRemote1" type="checkbox" onchange="calc()"/> Somfy Remote 1 Channel / รีโมท 1 ช่อง (+3,017 บาท)</label>
 <label><input id="chkSomfyRemote2" type="checkbox" onchange="calc()"/> Somfy Remote 2 Channel / รีโมท 2 ช่อง (+3,862 บาท)</label>
 <label><input id="chkSomfyRemote5" type="checkbox" onchange="calc()"/> Somfy Remote 5 Channel / รีโมท 5 ช่อง (+6,035 บาท)</label>
+<label><input id="chkSomfyRemote6" type="checkbox" onchange="calc()"/> Somfy Remote 6 Channel / รีโมท 6 ช่อง (+13,675 บาท)</label>
+<label><input id="chkSomfyRemote16" type="checkbox" onchange="calc()"/> Somfy Remote 16 Channel / รีโมท 16 ช่อง (+12,432 บาท)</label>
+<label><input id="chkSomfySmoove" type="checkbox" onchange="calc()"/> Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง (+2,362 บาท)</label>
 <div class="note">หมายเหตุ: อุปกรณ์เสริม Somfy จะแสดงและคำนวณเฉพาะเมื่อเลือกมอเตอร์ Somfy เท่านั้น</div>
 </div>
 
@@ -156,8 +159,8 @@ label input[type="checkbox"] {
 <label for="coverType">ชนิดฝาครอบกันนํ้า</label>
 <select id="coverType" onchange="calc()">
 <option value="none">ไม่เอาฝาปิด</option>
-<option value="aluminum">ฝาปิดอลูมิเนียม (2,400 บาท × ความกว้าง)</option>
-<option value="white">ฝาปิดสีขาว (2,900 บาท × ความกว้าง)</option>
+<option value="aluminum" data-price-key="coverProfile.aluminum">ฝาปิดอลูมิเนียม (2,400 บาท × ความกว้าง)</option>
+<option value="white" data-price-key="coverProfile.white">ฝาปิดสีขาว (2,900 บาท × ความกว้าง)</option>
 </select>
 <label for="accCover">ฝาปิดกำหนดเอง (บาท)</label>
 <input id="accCover" type="number" value="0" oninput="calc()"/>
@@ -185,7 +188,6 @@ label input[type="checkbox"] {
     <button id="copyBtn" type="button">Copy All</button>
   </div>
   <div class="copy-preview-box">
-    <h4>Customer copy text / ข้อความสำหรับส่งลูกค้า</h4>
     <div class="languageToggle" aria-label="Result language"><button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button><button type="button" data-result-lang="en" aria-pressed="false">EN</button></div>
 <div class="st-brandbar" style="background:#003366;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;"><div style="font-weight:900;letter-spacing:2px;font-size:15px;">SANGTHONG CREATION</div><div style="font-size:11px;letter-spacing:.4px;opacity:.85;margin-top:3px;">Price presented by Sangthong Creation</div></div><pre id="copyPreview">ระบบจะแสดงข้อความสำหรับส่งลูกค้าอัตโนมัติเมื่อมีการเปลี่ยนข้อมูล</pre>
   </div>
@@ -455,7 +457,10 @@ function updateSomfyAccessoryVisibility() {
   'chkSomfyTaHoma',
   'chkSomfyRemote1',
   'chkSomfyRemote2',
-  'chkSomfyRemote5'
+  'chkSomfyRemote5',
+  'chkSomfyRemote6',
+  'chkSomfyRemote16',
+  'chkSomfySmoove'
 ].forEach(function(id) {const el = document.getElementById(id);
       if (el) el.checked = false;
     });
@@ -866,9 +871,9 @@ function getStrongUpAccessoryDetailHtml() {
     .join('');
 }
     function getCoverCost(width, type) {
-      if (type === 'aluminum') return width * 2400;
-      if (type === 'white') return width * 2900;
-      return 0;
+      // ราคาฝาครอบต่อเมตรมาจาก prices.js (แก้ที่นั่นที่เดียว) / per-metre rate from prices.js
+      const rate = window.getCoverProfileRate(type);
+      return rate ? width * rate : 0;   // ไม่เอาฝาปิด = 0 เสมอ / "none" is always 0
     }
 
     // ===== คำนวณหลัก =====
@@ -920,8 +925,8 @@ function getStrongUpAccessoryDetailHtml() {
       const somfyIsSelected = isSomfySelected();
 
       const somfyManualOnlyItems = [
-        { label: 'Somfy Altus 50/12', value: chkSomfy50 && chkSomfy50.checked ? 26800 : 0 },
-        { label: 'Somfy Altus 85/17', value: chkSomfy85 && chkSomfy85.checked ? 32800 : 0 },
+        { label: 'Somfy Altus 50/12', value: chkSomfy50 && chkSomfy50.checked ? window.SANGTHONG_PRICES.motors.somfyAltus50_12 : 0 },
+        { label: 'Somfy Altus 85/17', value: chkSomfy85 && chkSomfy85.checked ? window.SANGTHONG_PRICES.motors.somfyAltus85_17 : 0 },
         { label: 'Ondeis Rain Sensor', value: somfyIsSelected && chkSomfyOndeisRain && chkSomfyOndeisRain.checked ? window.SANGTHONG_PRICES.somfy.ondeisRain : 0 },
         { label: 'Dry Contact Transmitter RTS', value: somfyIsSelected && chkSomfyDryContact && chkSomfyDryContact.checked ? window.SANGTHONG_PRICES.somfy.dryContact : 0 },
         { label: 'Sunis Sensor RTS Wirefree', value: somfyIsSelected && chkSomfySunis && chkSomfySunis.checked ? window.SANGTHONG_PRICES.somfy.sunis : 0 },
@@ -931,7 +936,10 @@ function getStrongUpAccessoryDetailHtml() {
         { label: 'TaHoma', value: somfyIsSelected && chkSomfyTaHoma && chkSomfyTaHoma.checked ? window.SANGTHONG_PRICES.somfy.taHoma : 0 },
         { label: 'Somfy Remote 1 Channel / รีโมท 1 ช่อง', value: somfyIsSelected && chkSomfyRemote1 && chkSomfyRemote1.checked ? window.SANGTHONG_PRICES.somfy.remote1 : 0 },
         { label: 'Somfy Remote 2 Channel / รีโมท 2 ช่อง', value: somfyIsSelected && chkSomfyRemote2 && chkSomfyRemote2.checked ? window.SANGTHONG_PRICES.somfy.remote2 : 0 },
-        { label: 'Somfy Remote 5 Channel / รีโมท 5 ช่อง', value: somfyIsSelected && chkSomfyRemote5 && chkSomfyRemote5.checked ? window.SANGTHONG_PRICES.somfy.remote5 : 0 }
+        { label: 'Somfy Remote 5 Channel / รีโมท 5 ช่อง', value: somfyIsSelected && chkSomfyRemote5 && chkSomfyRemote5.checked ? window.SANGTHONG_PRICES.somfy.remote5 : 0 },
+        { label: 'Somfy Remote 6 Channel / รีโมท 6 ช่อง', value: somfyIsSelected && chkSomfyRemote6 && chkSomfyRemote6.checked ? window.SANGTHONG_PRICES.somfy.remote6 : 0 },
+        { label: 'Somfy Remote 16 Channel / รีโมท 16 ช่อง', value: somfyIsSelected && chkSomfyRemote16 && chkSomfyRemote16.checked ? window.SANGTHONG_PRICES.somfy.remote16 : 0 },
+        { label: 'Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง', value: somfyIsSelected && chkSomfySmoove && chkSomfySmoove.checked ? window.SANGTHONG_PRICES.somfy.smoove : 0 }
       ].filter(item => item.value > 0);
 
       const selectedStrongUpItems = includeMotor
@@ -1081,6 +1089,9 @@ const manualOverride50 = document.getElementById('manualOverride50');
 const chkSomfyRemote1    = document.getElementById('chkSomfyRemote1');
 const chkSomfyRemote2    = document.getElementById('chkSomfyRemote2');
 const chkSomfyRemote5    = document.getElementById('chkSomfyRemote5');
+const chkSomfyRemote6    = document.getElementById('chkSomfyRemote6');
+const chkSomfyRemote16   = document.getElementById('chkSomfyRemote16');
+const chkSomfySmoove     = document.getElementById('chkSomfySmoove');
     const coverTypeSel = document.getElementById('coverType');
     const accCover     = document.getElementById('accCover');
     const accSensor    = document.getElementById('accSensor');
@@ -1122,6 +1133,9 @@ chkSomfy50,
 chkSomfyRemote1,
 chkSomfyRemote2,
 chkSomfyRemote5,
+chkSomfyRemote6,
+chkSomfyRemote16,
+chkSomfySmoove,
 coverTypeSel,
       coverTypeSel,
       accCover,

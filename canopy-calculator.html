@@ -93,6 +93,10 @@ table.ref td.fabric-name{ text-align:left; font-weight:600; }
     <label>ระยะยื่น / Projection (เมตร)</label>
     <input id="projection" type="number" step="0.01" min="0" value="2.50"/>
 
+    <label>ระบาย / Valance (เมตร)</label>
+    <input id="valance" type="number" step="0.01" min="0" value="0.00"/>
+    <div class="hint">พื้นที่ = (กว้าง + ((สูงด้านหลัง + ระบาย) x 2)) x (ระยะยื่น + สูงด้านหลัง)</div>
+
     <label>จำนวน (ชุด)</label>
     <input id="qty" type="number" min="1" value="1"/>
 
@@ -172,6 +176,7 @@ function calculatePrice(){
   const width = parseFloat(document.getElementById('width').value) || 0;
   const backHeight = parseFloat(document.getElementById('backHeight').value) || 0;
   const projection = parseFloat(document.getElementById('projection').value) || 0;
+  const valance = parseFloat(document.getElementById('valance').value) || 0;
   const qty = Math.max(1, parseInt(document.getElementById('qty').value) || 1);
   const accessories = parseFloat(document.getElementById('accessories').value) || 0;
   const specialDiscount = parseFloat(document.getElementById('specialDiscount').value) || 0;
@@ -187,8 +192,8 @@ function calculatePrice(){
 
   const { price: pricePerSqm, fabricLabel } = getPricePerSqm();
 
-  // Formula: (width + (backHeight x 2)) then x (projection + backHeight)
-  const step1 = width + (backHeight * 2);
+  // Formula: (width + ((backHeight + valance) x 2)) x (projection + backHeight)
+  const step1 = width + ((backHeight + valance) * 2);
   const areaPerUnit = step1 * (projection + backHeight);
   const roundedArea = Math.round(areaPerUnit * 100) / 100;
 
@@ -214,6 +219,7 @@ function calculatePrice(){
     'ชนิดผ้า: ' + fabricLabel,
     'โครงสร้าง: ' + structureLabel + ' (' + styleLabel + ')',
     'ขนาด: กว้าง ' + width.toFixed(2) + ' ม. x สูงด้านหลัง ' + backHeight.toFixed(2) + ' ม. x ระยะยื่น ' + projection.toFixed(2) + ' ม.',
+    valance > 0 ? 'ระบาย: ' + valance.toFixed(2) + ' ม.' : '',
     'พื้นที่คิดราคา/ชุด: ' + roundedArea.toFixed(2) + ' ตร.ม.',
     'ราคาต่อตร.ม.: ' + bahtText(pricePerSqm),
     'ราคาต่อชุด: ' + bahtText(pricePerUnit),
@@ -272,6 +278,7 @@ const RESULT_EN_REPLACEMENTS = [
   ['ขนาด: กว้าง', 'Size: Width'],
   ['สูงด้านหลัง', 'Back Height'],
   ['ระยะยื่น', 'Projection'],
+  ['ระบาย', 'Valance'],
   ['ยื่น', 'Projection'],
   ['พื้นที่คิดราคา/ชุด', 'Priced area / set'],
   ['พื้นที่รวม', 'total area'],
@@ -356,7 +363,7 @@ initResultLanguageToggle();
 
 structureEl.addEventListener('change', () => { refreshStyleOptions(); calculatePrice(); });
 [
-  'style','fabric','width','backHeight','projection','qty',
+  'style','fabric','width','backHeight','projection','valance','qty',
   'accessories','specialDiscount','discount','jobNote'
 ].forEach(id => {
   const el = document.getElementById(id);

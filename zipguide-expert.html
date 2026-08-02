@@ -390,7 +390,6 @@ pre {
       </div>
 
       <div class="preview">
-        <h3 id="copyTitle">Customer copy text / ข้อความสำหรับส่งลูกค้า</h3>
         <div class="languageToggle" aria-label="Result language">
           <button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button>
           <button type="button" data-result-lang="en" aria-pressed="false">EN</button>
@@ -581,7 +580,6 @@ function buildEnglishLines(state) {
 function updateResultLanguageLabels() {
   const english = resultLanguage === "en";
   document.getElementById("resultTitle").textContent = english ? "Quotation Preview" : "Quotation Preview / ข้อความส่งลูกค้า";
-  document.getElementById("copyTitle").textContent = english ? "Customer copy text" : "Customer copy text / ข้อความสำหรับส่งลูกค้า";
   document.getElementById("copyBtn").textContent = english ? "Copy All" : "คัดลอกทั้งหมด";
 
   document.querySelectorAll("[data-result-lang]").forEach(button => {

@@ -73,16 +73,16 @@ label input[type="checkbox"]{display:inline-block;}
 <label>ฝาครอบกันน้ำ</label>
 <select id="coverSelect">
 <option value="none">ไม่มีฝาครอบ</option>
-<option value="B">ฝาครอบอลูมิเนียม (+2,400 บาท/เมตร)</option>
-<option value="C">ฝาครอบสีขาว (+2,900 บาท/เมตร)</option>
+<option value="B" data-price-key="coverProfile.aluminum">ฝาครอบอลูมิเนียม (+2,400 บาท/เมตร)</option>
+<option value="C" data-price-key="coverProfile.white">ฝาครอบสีขาว (+2,900 บาท/เมตร)</option>
 </select>
 </div>
 <div class="field-group">
 <label>มอเตอร์ (เลือกได้)</label>
 <select id="motorD1">
-<option value="9900" selected="selected">Strong Up 50/12 (9,900 บาท)</option>
-<option value="11900">Strong Up 50/12 with crank handle (11,900 บาท)</option>
-<option value="26800">Somfy Altus RTS 50/12 (26,800 บาท)</option>
+<option value="9900" data-price-key="strongUp50_12" selected="selected">Strong Up 50/12 (9,900 บาท)</option>
+<option value="11900" data-price-key="strongUp50_12_crank">Strong Up 50/12 with crank handle (11,900 บาท)</option>
+<option value="26800" data-price-key="somfyAltus50_12">Somfy Altus RTS 50/12 (26,800 บาท)</option>
 </select>
 </div>
 
@@ -110,6 +110,9 @@ label input[type="checkbox"]{display:inline-block;}
   <label><input id="chkSomfyRemote1" type="checkbox"/> Somfy Remote 1 Channel / รีโมท 1 ช่อง (+3,017 บาท)</label>
   <label><input id="chkSomfyRemote2" type="checkbox"/> Somfy Remote 2 Channel / รีโมท 2 ช่อง (+3,862 บาท)</label>
   <label><input id="chkSomfyRemote5" type="checkbox"/> Somfy Remote 5 Channel / รีโมท 5 ช่อง (+6,035 บาท)</label>
+  <label><input id="chkSomfyRemote6" type="checkbox"/> Somfy Remote 6 Channel / รีโมท 6 ช่อง (+13,675 บาท)</label>
+  <label><input id="chkSomfyRemote16" type="checkbox"/> Somfy Remote 16 Channel / รีโมท 16 ช่อง (+12,432 บาท)</label>
+  <label><input id="chkSomfySmoove" type="checkbox"/> Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง (+2,362 บาท)</label>
   <div class="note">แสดงและคำนวณเฉพาะเมื่อเลือกมอเตอร์ Somfy</div>
 </div>
 <div class="field-group">
@@ -506,7 +509,10 @@ function setResultLanguage(lang){
       { id: "chkSomfyTaHoma", label: "TaHoma", value: P.somfy.taHoma },
       { id: "chkSomfyRemote1", label: "Somfy Remote 1 Channel / รีโมท 1 ช่อง", value: P.somfy.remote1 },
       { id: "chkSomfyRemote2", label: "Somfy Remote 2 Channel / รีโมท 2 ช่อง", value: P.somfy.remote2 },
-      { id: "chkSomfyRemote5", label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: P.somfy.remote5 }
+      { id: "chkSomfyRemote5", label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: P.somfy.remote5 },
+      { id: "chkSomfyRemote6", label: "Somfy Remote 6 Channel / รีโมท 6 ช่อง", value: P.somfy.remote6 },
+      { id: "chkSomfyRemote16", label: "Somfy Remote 16 Channel / รีโมท 16 ช่อง", value: P.somfy.remote16 },
+      { id: "chkSomfySmoove", label: "Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง", value: P.somfy.smoove }
     ];
     if (brand === "strongup") return strongUpItems;
     if (brand === "somfy") return somfyItems;
@@ -576,8 +582,9 @@ function calculate() {
   // ฝาครอบ
   let coverVal = 0;
   const cover = coverSelect.value;
-  if (cover === "B") coverVal = width * 2400;
-  if (cover === "C") coverVal = width * 2900;
+  // ราคาฝาครอบต่อเมตรมาจาก prices.js (แก้ที่นั่นที่เดียว) / per-metre rate from prices.js
+  if (cover === "B") coverVal = width * window.getCoverProfileRate("aluminum");
+  if (cover === "C") coverVal = width * window.getCoverProfileRate("white");
 
   let coverLabel = "";
   if (cover === "B") coverLabel = "ฝาครอบอลูมิเนียม";
@@ -718,6 +725,9 @@ function calculate() {
     document.getElementById("chkSomfyRemote1"),
     document.getElementById("chkSomfyRemote2"),
     document.getElementById("chkSomfyRemote5"),
+    document.getElementById("chkSomfyRemote6"),
+    document.getElementById("chkSomfyRemote16"),
+    document.getElementById("chkSomfySmoove"),
     document.getElementById("accessoriesLabelInput"),
     document.getElementById("accessoriesInput"),
     document.getElementById("jobNote"),

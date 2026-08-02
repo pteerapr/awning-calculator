@@ -99,12 +99,12 @@ Motorized System: กว้าง 0.70 - 5.80 ม. / สูง 0.85 - 3.25 ม.
 <div id="somfyMotorOptions" style="display:none;">
 <label>รุ่นมอเตอร์ Somfy</label>
 <select id="somfyMotor" onchange="calculate(false)">
-<option value="21800">Somfy Altus 50 RTS 10/17 + Remote 1 ช่อง = 21,800 บาท</option>
-<option value="23800">Somfy Altus 50 RTS 20/17 + Remote 1 ช่อง = 23,800 บาท</option>
-<option value="24800">Somfy Altus 50 RTS 30/17 + Remote 1 ช่อง = 24,800 บาท</option>
-<option value="25800">Somfy Altus 50 RTS 40/17 + Remote 1 ช่อง = 25,800 บาท</option>
-<option value="25000">Somfy MAESTRIA+50 RTS 15/17 + Remote 1 ช่อง (Telis situo 1 RTS) = 25,000 บาท</option>
-<option value="31000">Somfy MAESTRIA+50 RTS 35/17 + Remote 1 ช่อง (Telis situo 1 RTS) = 31,000 บาท</option>
+<option value="21800" data-price-key="somfyAltus50RTS10_17">Somfy Altus 50 RTS 10/17 + Remote 1 ช่อง = 21,800 บาท</option>
+<option value="23800" data-price-key="somfyAltus50RTS20_17">Somfy Altus 50 RTS 20/17 + Remote 1 ช่อง = 23,800 บาท</option>
+<option value="24800" data-price-key="somfyAltus50RTS30_17">Somfy Altus 50 RTS 30/17 + Remote 1 ช่อง = 24,800 บาท</option>
+<option value="25800" data-price-key="somfyAltus50RTS40_17">Somfy Altus 50 RTS 40/17 + Remote 1 ช่อง = 25,800 บาท</option>
+<option value="25000" data-price-key="somfyMaestria50RTS15_17">Somfy MAESTRIA+50 RTS 15/17 + Remote 1 ช่อง (Telis situo 1 RTS) = 25,000 บาท</option>
+<option value="31000" data-price-key="somfyMaestria50RTS35_17">Somfy MAESTRIA+50 RTS 35/17 + Remote 1 ช่อง (Telis situo 1 RTS) = 31,000 บาท</option>
 </select>
 </div>
 
@@ -120,6 +120,9 @@ Motorized System: กว้าง 0.70 - 5.80 ม. / สูง 0.85 - 3.25 ม.
 <label><input id="chkSomfyRemote1" type="checkbox" onchange="calculate(false)"/> Somfy Remote 1 Channel / รีโมท 1 ช่อง (+3,017 บาท)</label>
 <label><input id="chkSomfyRemote2" type="checkbox" onchange="calculate(false)"/> Somfy Remote 2 Channel / รีโมท 2 ช่อง (+3,862 บาท)</label>
 <label><input id="chkSomfyRemote5" type="checkbox" onchange="calculate(false)"/> Somfy Remote 5 Channel / รีโมท 5 ช่อง (+6,035 บาท)</label>
+<label><input id="chkSomfyRemote6" type="checkbox" onchange="calculate(false)"/> Somfy Remote 6 Channel / รีโมท 6 ช่อง (+13,675 บาท)</label>
+<label><input id="chkSomfyRemote16" type="checkbox" onchange="calculate(false)"/> Somfy Remote 16 Channel / รีโมท 16 ช่อง (+12,432 บาท)</label>
+<label><input id="chkSomfySmoove" type="checkbox" onchange="calculate(false)"/> Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง (+2,362 บาท)</label>
 <div class="note">หมายเหตุ: อุปกรณ์เสริม Somfy จะแสดงและคำนวณเฉพาะเมื่อเลือก Somfy Motor เท่านั้น</div>
 </div>
 
@@ -162,7 +165,6 @@ Motorized System: กว้าง 0.70 - 5.80 ม. / สูง 0.85 - 3.25 ม.
   <button type="button" onclick="copyResult()" id="copyBtn">Copy All</button>
 </div>
 <div class="preview">
-  <h3>Customer copy text / ข้อความสำหรับส่งลูกค้า</h3>
   <div class="languageToggle" aria-label="Result language"><button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button><button type="button" data-result-lang="en" aria-pressed="false">EN</button></div>
 <div class="st-brandbar" style="background:#003366;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;"><div style="font-weight:900;letter-spacing:2px;font-size:15px;">SANGTHONG CREATION</div><div style="font-size:11px;letter-spacing:.4px;opacity:.85;margin-top:3px;">Price presented by Sangthong Creation</div></div><pre id="copyPreview">ระบบจะแสดงข้อความสำหรับส่งลูกค้าอัตโนมัติเมื่อมีการเปลี่ยนข้อมูล</pre>
 </div>
@@ -437,7 +439,10 @@ function toggleOptions(){
       "chkSomfyTaHoma",
       "chkSomfyRemote1",
       "chkSomfyRemote2",
-      "chkSomfyRemote5"
+      "chkSomfyRemote5",
+      "chkSomfyRemote6",
+      "chkSomfyRemote16",
+      "chkSomfySmoove"
     ].forEach(function(id) {
       const el = document.getElementById(id);
       if (el) el.checked = false;
@@ -497,7 +502,10 @@ function calculate(showAlert = true){
     { label: "TaHoma", value: P.somfy.taHoma, id: "chkSomfyTaHoma" },
     { label: "Somfy Remote 1 Channel / รีโมท 1 ช่อง", value: P.somfy.remote1, id: "chkSomfyRemote1" },
     { label: "Somfy Remote 2 Channel / รีโมท 2 ช่อง", value: P.somfy.remote2, id: "chkSomfyRemote2" },
-    { label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: P.somfy.remote5, id: "chkSomfyRemote5" }
+    { label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: P.somfy.remote5, id: "chkSomfyRemote5" },
+    { label: "Somfy Remote 6 Channel / รีโมท 6 ช่อง", value: P.somfy.remote6, id: "chkSomfyRemote6" },
+    { label: "Somfy Remote 16 Channel / รีโมท 16 ช่อง", value: P.somfy.remote16, id: "chkSomfyRemote16" },
+    { label: "Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง", value: P.somfy.smoove, id: "chkSomfySmoove" }
   ];
   const discount=parseFloat(document.getElementById("discount").value)||0;
   const specialDiscountInput=parseFloat(document.getElementById("specialDiscount").value)||0;
