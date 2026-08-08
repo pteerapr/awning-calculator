@@ -323,7 +323,7 @@
         <div class="note">
           <strong>หมายเหตุ</strong>
           <div>* ราคารวม VAT 7%</div>
-          <div>* ราคานี้ติดตั้งภายในกทมเท่านั้น</div>
+          <div>* ราคานี้ติดตั้งภายในกรุงเทพฯ และปริมณฑล</div>
           <div>* กันสาดมาพร้อมฝาครอบกันน้ำในตัว</div>
           <div>* สินค้านำเข้าทั้งโครงสร้าง ราคาขายเป็นชุดเท่านั้น</div>
         </div>
@@ -443,9 +443,8 @@ const RESULT_EN_REPLACEMENTS = [
   ['กรุณาเลือก', 'Please select'],
   ['กรุณากรอก', 'Please enter'],
   ['รวม VAT 7% แล้ว', 'VAT 7% included'],
-  ['ราคาติดตั้งภายในกทมเท่านั้น', 'Installation in Bangkok only'],
-  ['ราคานี้ยังไม่รวมค่าขนส่งและติดตั้ง', 'This price excludes delivery and installation'],
-  ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
+  ['ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล', 'Installation within Bangkok and Vicinity'],
+   ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
   ['หมายเหตุ', 'Note'],
   ['Note/หมายเหตุ', 'Note'],
   ['บาท', 'THB'],
@@ -569,7 +568,7 @@ const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
       lines.push(`ราคารวม: ${money(grandTotal)}`);
       if (jobNote) lines.push(`Note/หมายเหตุ: ${jobNote}`);
       lines.push("รวม VAT 7% แล้ว");
-      lines.push("ราคาติดตั้งภายในกทมเท่านั้น");
+      lines.push("ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล");
       lines.push("กันสาดมาพร้อมฝาครอบกันน้ำในตัว (Waterproof Cover)");
       lines.push("สินค้านำเข้าทั้งโครงสร้าง ราคาขายเป็นชุดเท่านั้น");
 
