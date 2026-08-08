@@ -671,6 +671,7 @@ initResultLanguageToggle();
       if (specialDiscountAmount > 0) lines.push(`ส่วนลดพิเศษ: -${money(specialDiscountAmount)}`);
       if (discountPercent > 0) lines.push(`ส่วนลด: ${discountPercent}% = -${money(discountAmount)}`);
       lines.push(`ราคาสุทธิ: ${money(grandTotal)}`);
+      lines.push("ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล");
       if (jobNote) lines.push(`\nNote/หมายเหตุ: ${jobNote}`);
 
       setLocalizedCopyPreview(lines.join("\n"));
