@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
   <title>RV Awning Price Calculator</title>
   <style>
     * { box-sizing: border-box; }
@@ -331,77 +333,19 @@
     </div>
   </div>
 
-  <script>
+  <script src="i18n.js"></script>
+<script>
 let resultLanguage = 'th';
-const RESULT_EN_REPLACEMENTS = [
-  // RV Awning-specific full-line translations (added so the EN toggle has no leftover Thai)
+// คำแปลเฉพาะของไฟล์นี้ / wording specific to this calculator.
+// คำที่ใช้ร่วมกับไฟล์อื่นในกลุ่มอยู่ใน i18n.js — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์.
+// รายการข้างล่างนี้ถูกใช้ก่อนเสมอ (this list wins over the shared one).
+const RESULT_EN_OVERRIDES = [
   ['กันสาดมาพร้อมฝาครอบกันน้ำในตัว (Waterproof Cover)', 'Built-in waterproof cover'],
   ['สินค้านำเข้าทั้งโครงสร้าง ราคาขายเป็นชุดเท่านั้น', 'Imported structure, sold as a complete set only'],
   ['มาตรฐานอเมริกา', 'American Standard'],
-  ['ในกรณีใช้', 'when using'],
-  ['ใช้', 'using'],
-
-  ['ชนิดผ้าใบ', 'Fabric'],
-
-  ['ระบบมือดึง', 'Manual Pull System'],
-  ['มือดึง', 'Manual pull'],
-  ['ราคาต่อตรม', 'Rate per sqm'],
-  ['ตรม', 'sqm'],
-  ['ผ้าใบโซล่าแซนด์', 'Solar Sand Fabric'],
-  ['ผ้า Acrylic', 'Acrylic Fabric'],
-  ['ผ้าใบ', 'Fabric'],
-  ['ผ้า', 'Fabric'],
-  ['ราคาต่อชุดก่อนส่วนลด', 'Unit Price Before Discount'],
-  ['//ราคาต่อชุดก่อนส่วนลด', 'Unit Price Before Discount'],
-  ['ราคาต่อ', 'Unit Price'],
-  ['ก่อน', 'Before'],
-  ['ช่อง', 'channel'],
-  ['ในกรณี', 'for'],
   ['รับประกัน', 'Warranty'],
-  ['ปี', 'years'],
-  ['ระบบ', 'System'],
-  ['รวม', 'Total'],
-  ['สำหรับระบบมือหมุน', 'for manual system'],
-  ['แขนพร้อมไฟ', 'arms with LED'],
-  ['อุปกรณ์เสริม', 'Accessories'],
   ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
-  ['Quotation Preview / ข้อความส่งลูกค้า', 'Quotation Preview'],
-  ['ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
-  ['ข้อความส่งลูกค้า', 'Customer copy text'],
-  ['ผลการคำนวณราคา', 'Price Calculation Result'],
-  ['ผลการคำนวณ', 'Calculation Result'],
-  ['ระบบมอเตอร์ RTS + รีโมท + LED Lighting', 'RTS motor system + remote + LED lighting'],
-  ['ระบบมอเตอร์ RTS + รีโมท', 'RTS motor system + remote'],
-  ['ระบบมอเตอร์: 50/12 เท่านั้น', 'Motor system: 50/12 only'],
-  ['รุ่นมาตรฐาน + มอเตอร์ RTS ไม่มีไฟ LED', 'Standard model + RTS motor without LED'],
-  ['รุ่นพรีเมี่ยม + มอเตอร์ RTS ไม่มีไฟ LED', 'Premium model + RTS motor without LED'],
-  ['โครงสร้างสีดํา/เทา หรือขาว , Waterproof Cover', 'Black/gray or white frame, waterproof cover'],
-  ['โครงสร้างสีดำ/เทา หรือขาว , Waterproof Cover', 'Black/gray or white frame, waterproof cover'],
-  ['โครงสร้างสีดํา/เทา มีฝาครอบกันนํ้า', 'Black/gray frame with waterproof cover'],
-  ['โครงสร้างสีดำ/เทา มีฝาครอบกันน้ำ', 'Black/gray frame with waterproof cover'],
-  ['โครงสร้างสีดํา/เทา หรือขาว', 'Black/gray or white frame'],
-  ['โครงสร้างสีดำ/เทา หรือขาว', 'Black/gray or white frame'],
-  ['โครงสร้างอลูมิเนียม เคลือบ Powder Coated', 'Powder-coated aluminum structure'],
-  ['โครงสร้างมาตรฐานตามรุ่น MA4', 'Standard frame structure for MA4 model'],
-  ['โครงสร้างสีมาตรฐานตามรุ่นสินค้า', 'Standard frame color for this model'],
-  ['ราคานี้ยังไม่รวมงานโครงสร้างเสริมพิเศษ หากมี', 'This price excludes additional structural work, if any'],
-  ['มอเตอร์พร้อมมือหมุน + 1 ก้านหมุน / ฝาครอบกันนํ้า', 'Motor with manual override + 1 crank handle / waterproof cover'],
-  ['มอเตอร์พร้อมมือหมุน + 1 ก้านหมุน', 'Motor with manual override + 1 crank handle'],
-  ['มอเตอร์พร้อมมือหมุน', 'Motor with manual override'],
-  ['Crank Size: ก้านหมุนเลือกได้', 'Crank size: selectable'],
-  ['ก้านหมุนเลือกได้', 'selectable crank handle'],
   ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
-  ['รอสินค้า', 'lead time'],
-  ['รีโมท', 'Remote'],
-  ['ไม่มีราคาสำหรับระบบมือหมุนในขนาดนี้', 'No price found for manual system at this size'],
-  ['ยังไม่มีราคามอเตอร์สำหรับขนาดนี้', 'No motorized price found for this size'],
-  ['กรุณาเลือกระบบมือหมุนหรือระบบมอเตอร์อย่างน้อย 1 ระบบ', 'Please select at least one system: manual or motorized'],
-  ['กรุณาเลือกอย่างน้อย 1 ระบบ: ระบบมือหมุน หรือ ระบบมอเตอร์', 'Please select at least one system: manual or motorized'],
-  ['ไม่มีราคาสำหรับขนาดนี้', 'No price found for this size'],
-  ['ฝาครอบอลูมิเนียม', 'Aluminum cover'],
-  ['ฝาครอบสีขาว', 'White cover'],
-  ['ไม่มีฝาครอบ', 'No cover'],
-  ['คิดจากกว้างรวม', 'calculated from total width'],
   ['กว้างรวม', 'Total width'],
   ['แบ่งผ้า', 'Fabric split'],
   ['ชิ้นที่ 1', 'Panel 1'],
@@ -423,8 +367,6 @@ const RESULT_EN_REPLACEMENTS = [
   ['กว้าง', 'Width'],
   ['ยื่น', 'Projection'],
   ['ระยะยื่น', 'Projection'],
-  ['ระบบมอเตอร์', 'Motor System'],
-  ['ระบบมือหมุน', 'Manual System'],
   ['ราคาเริ่มต้นต่อชุด', 'Starting Price / Set'],
   ['ราคาต่อชุดรวมอุปกรณ์', 'Unit Price with Accessories'],
   ['ราคาก่อนส่วนลด', 'Before Discount'],
@@ -441,16 +383,13 @@ const RESULT_EN_REPLACEMENTS = [
   ['ตัวเลือกที่', 'Option'],
   ['ไม่มีราคาสำหรับ', 'No price found for'],
   ['กรุณาเลือก', 'Please select'],
-  ['กรุณากรอก', 'Please enter'],
-  ['รวม VAT 7% แล้ว', 'VAT 7% included'],
-  ['ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล', 'Installation within Bangkok and Vicinity'],
-   ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
+  ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
   ['หมายเหตุ', 'Note'],
-  ['Note/หมายเหตุ', 'Note'],
-  ['บาท', 'THB'],
-  ['ชุด', 'set'],
-  ['ม.', 'm.']
+  ['Note/หมายเหตุ', 'Note']
 ];
+const RESULT_EN_REPLACEMENTS = window.SANGTHONG_I18N
+  ? window.SANGTHONG_I18N.merge(RESULT_EN_OVERRIDES, 'AWNING')
+  : RESULT_EN_OVERRIDES;
 function localizeResultText(text){
   if (resultLanguage !== 'en') return String(text || '');
   let output = String(text || '');
@@ -569,7 +508,7 @@ const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
       if (jobNote) lines.push(`Note/หมายเหตุ: ${jobNote}`);
       lines.push("รวม VAT 7% แล้ว");
       lines.push("ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล");
-      lines.push("กันสาดมาพร้อมฝาครอบกันน้ำในตัว (Waterproof Cover)");
+lines.push("ราคาที่แจ้งเป็นราคาเบื้องต้นเท่านั้น ราคาที่แท้จริงสามารถแจ้งได้หลังสํารวจหน้างาน");lines.push("กันสาดมาพร้อมฝาครอบกันน้ำในตัว (Waterproof Cover)");
       lines.push("สินค้านำเข้าทั้งโครงสร้าง ราคาขายเป็นชุดเท่านั้น");
 
       setLocalizedCopyPreview(lines.join("\n"));
@@ -605,6 +544,18 @@ const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
 
     calculate();
 
+</script>
+<!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline.
+     ทำงานเฉพาะบน HTTPS (เช่น Cloudflare Pages) ไม่ทำงานกับ file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
 </script>
 </body>
 </html>

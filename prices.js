@@ -5,8 +5,9 @@
   several calculators. Change a number here once and every calculator that
   reads from this file updates automatically.
 
-  ไฟล์ HTML ที่อ่านค่าจากไฟล์นี้ / HTML files that read from this catalog (12):
+  ไฟล์ HTML ที่อ่านค่าจากไฟล์นี้ / HTML files that read from this catalog (13):
     - seatel-st2000.html  (มีระบบแบ่งผ้า split fabric ในตัวแล้ว)
+    - seatel-st2000-multiple.html  (หลายขนาดในใบเดียว: มอเตอร์ ฝาครอบ อุปกรณ์เสริม)
     - seatel-st1000e-vertical-awning.html
     - chill-d1.html
     - izip-screen.html

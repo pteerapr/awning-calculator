@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
 <title>iPergo PERGO-E Calculator</title>
 <style>
 :root{
@@ -68,7 +70,6 @@ label{display:block;font-weight:800;font-size:14px;margin:14px 0 7px;color:#1f29
     <textarea id="customNote" placeholder="ใส่หมายเหตุเพิ่มเติมสำหรับลูกค้า เช่น สี, เงื่อนไขหน้างาน, ระยะเวลาสั่งสินค้า..."></textarea>
 
     <button class="button" type="button" onclick="copyQuotation()">Copy Quotation</button>
-    <button class="button secondary" type="button" onclick="resetForm()">Reset</button>
   </section>
 
   <section class="card">
@@ -89,7 +90,7 @@ label{display:block;font-weight:800;font-size:14px;margin:14px 0 7px;color:#1f29
   </section>
 </main>
 <script>
-const PRODUCT = {"filename": "ipergo-pergo-e.html", "title": "iPergo PERGO-E", "subtitle": "Aluminium Louver Pergola - Free Standing Design", "source": "iPergo Pricelist April 2026 - Page 1", "tag": "Pergola", "systemOptions": [{"id": "manual", "label": "Manual", "labelTh": "ระบบมือหมุน"}, {"id": "motorized_led", "label": "Motorized + LED Light", "labelTh": "ระบบมอเตอร์ + ไฟ LED"}], "defaultSystem": "motorized_led", "items": [{"id": "3x3", "label": "Width 3 m. x Length 3 m. x Height 2.5 m.", "dimensionsText": "กว้าง 3.00 ม. x ยาว 3.00 ม. x สูง 2.50 ม.", "copyDimensionsText": "กว้าง 3.00 ม. x ยาว 3.00 ม. x สูง 2.50 ม.", "postText": "4 เสา", "bayText": "1 Bay", "prices": {"manual": 109800, "motorized_led": 126100}}, {"id": "3x4", "label": "Width 3 m. x Length 4 m. x Height 2.5 m.", "dimensionsText": "กว้าง 3.00 ม. x ยาว 4.00 ม. x สูง 2.50 ม.", "copyDimensionsText": "กว้าง 3.00 ม. x ยาว 4.00 ม. x สูง 2.50 ม.", "postText": "4 เสา", "bayText": "1 Bay", "prices": {"manual": 133900, "motorized_led": 150800}}, {"id": "4x4", "label": "Width 4 m. x Length 4 m. x Height 2.5 m.", "dimensionsText": "กว้าง 4.00 ม. x ยาว 4.00 ม. x สูง 2.50 ม.", "copyDimensionsText": "กว้าง 4.00 ม. x ยาว 4.00 ม. x สูง 2.50 ม.", "postText": "4 เสา", "bayText": "1 Bay", "prices": {"manual": 182600, "motorized_led": 221600}}, {"id": "4x6", "label": "Width 4 m. x Length 6 m. x Height 2.5 m.", "dimensionsText": "กว้าง 4.00 ม. x ยาว 6.00 ม. x สูง 2.50 ม.", "copyDimensionsText": "กว้าง 4.00 ม. x ยาว 6.00 ม. x สูง 2.50 ม.", "postText": "6 เสา", "bayText": "2 Bay", "prices": {"manual": 247000, "motorized_led": 287600}}], "frameColors": ["RAL 7016 Anthracite Grey", "RAL 9016 Traffic White"], "notes": ["Price included VAT 7% and installation fee in Bangkok only.", "Motorized system includes remote and LED Strip Light Warm White 3000K & Cool White 4000K.", "Wind resistant estimate: 100 km/h.", "Manual crank length: 1.20 m."]};
+const PRODUCT = {"filename": "ipergo-pergo-e.html", "title": "iPergo PERGO-E", "subtitle": "Aluminium Louver Pergola - Free Standing Design", "source": "iPergo Pricelist April 2026 - Page 1", "tag": "Pergola", "systemOptions": [{"id": "manual", "label": "Manual", "labelTh": "ระบบมือหมุน"}, {"id": "motorized_led", "label": "Motorized + LED Light", "labelTh": "ระบบมอเตอร์ + ไฟ LED"}], "defaultSystem": "motorized_led", "items": [{"id": "3x3", "label": "Width 3 m. x Length 3 m. x Height 2.5 m.", "dimensionsText": "กว้าง 3.00 ม. x ยาว 3.00 ม. x สูง 2.50 ม.", "copyDimensionsText": "กว้าง 3.00 ม. x ยาว 3.00 ม. x สูง 2.50 ม.", "postText": "4 เสา", "bayText": "1 Bay", "prices": {"manual": 109800, "motorized_led": 126100}}, {"id": "3x4", "label": "Width 3 m. x Length 4 m. x Height 2.5 m.", "dimensionsText": "กว้าง 3.00 ม. x ยาว 4.00 ม. x สูง 2.50 ม.", "copyDimensionsText": "กว้าง 3.00 ม. x ยาว 4.00 ม. x สูง 2.50 ม.", "postText": "4 เสา", "bayText": "1 Bay", "prices": {"manual": 133900, "motorized_led": 150800}}, {"id": "4x4", "label": "Width 4 m. x Length 4 m. x Height 2.5 m.", "dimensionsText": "กว้าง 4.00 ม. x ยาว 4.00 ม. x สูง 2.50 ม.", "copyDimensionsText": "กว้าง 4.00 ม. x ยาว 4.00 ม. x สูง 2.50 ม.", "postText": "4 เสา", "bayText": "1 Bay", "prices": {"manual": 182600, "motorized_led": 221600}}, {"id": "4x6", "label": "Width 4 m. x Length 6 m. x Height 2.5 m.", "dimensionsText": "กว้าง 4.00 ม. x ยาว 6.00 ม. x สูง 2.50 ม.", "copyDimensionsText": "กว้าง 4.00 ม. x ยาว 6.00 ม. x สูง 2.50 ม.", "postText": "6 เสา", "bayText": "2 Bay", "prices": {"manual": 247000, "motorized_led": 287600}}], "frameColors": ["RAL 7016 Anthracite Grey", "RAL 9016 Traffic White"], "notesTh": ["ราคารวม VAT 7% และค่าติดตั้งในเขตกรุงเทพฯ เท่านั้น","ระบบมอเตอร์รวมรีโมทและไฟเส้น LED Warm White 3000K และ Cool White 4000K","ต้านลมได้ประมาณ 100 กม./ชม.","ก้านหมุนยาว 1.20 ม."],"notesEn": ["Price included VAT 7% and installation fee in Bangkok only.","Motorized system includes remote and LED Strip Light Warm White 3000K & Cool White 4000K.","Wind resistant estimate: 100 km/h.","Manual crank length: 1.20 m."],"notes": ["Price included VAT 7% and installation fee in Bangkok only.", "Motorized system includes remote and LED Strip Light Warm White 3000K & Cool White 4000K.", "Wind resistant estimate: 100 km/h.", "Manual crank length: 1.20 m."]};
 const SIZES = PRODUCT.items || [];
 const SYSTEMS = PRODUCT.systemOptions || [{id:'single', label:PRODUCT.systemText || 'Motorized', labelTh:PRODUCT.systemText || 'ระบบมอเตอร์'}];
 let resultLanguage = 'th';
@@ -175,6 +176,12 @@ function getLocalizedNote(note){
     .split('\u0e1a\u0e32\u0e17').join('THB')
     .split('\u0e23\u0e35\u0e42\u0e21\u0e17').join('remote')
     .split('\u0e27\u0e31\u0e19').join('days');
+}
+function getProductNotes(){
+  // หมายเหตุเก็บแยกไทย/อังกฤษ ไม่ได้แปลด้วยการแทนคำ
+  // notes are stored per language, not word-swapped
+  if (resultLanguage === 'en') return PRODUCT.notesEn || PRODUCT.notes || [];
+  return PRODUCT.notesTh || PRODUCT.notes || [];
 }
 function setResultLanguage(lang){
   resultLanguage = lang === 'en' ? 'en' : 'th';
@@ -293,9 +300,10 @@ function calculate(){
     lines.push(text.note + ': ' + customNote);
   }
 
-  const noteLines = [text.priceNotes + ':'].concat((PRODUCT.notes || []).map(note => '- ' + getLocalizedNote(note)));
+  const productNotes = getProductNotes();
+  const noteLines = [text.priceNotes + ':'].concat(productNotes.map(note => '- ' + getLocalizedNote(note)));
   getEl('resultLines').textContent = lines.join('\n');
-  getEl('standardNotes').innerHTML = '<span class="pill">' + escapeHtml(text.priceNotes) + '</span><ul>' + (PRODUCT.notes || []).map(note => '<li>' + escapeHtml(getLocalizedNote(note)) + '</li>').join('') + '</ul>';
+  getEl('standardNotes').innerHTML = '<span class="pill">' + escapeHtml(text.priceNotes) + '</span><ul>' + productNotes.map(note => '<li>' + escapeHtml(getLocalizedNote(note)) + '</li>').join('') + '</ul>';
   getEl('copyText').value = lines.concat([''], noteLines).join('\n').trim();
 }
 function escapeHtml(str){
@@ -313,18 +321,20 @@ async function copyQuotation(){
     alert('Copy อัตโนมัติไม่สำเร็จ กรุณาคัดลอกจากกล่องข้อความด้านล่าง');
   }
 }
-function resetForm(){
-  getEl('sizeSelect').selectedIndex = 0;
-  getEl('systemSelect').value = PRODUCT.defaultSystem || SYSTEMS[0].id;
-  getEl('frameColor').selectedIndex = 0;
-  if (PRODUCT.fabricOptions && PRODUCT.fabricOptions.length) getEl('fabricOption').selectedIndex = 0;
-  getEl('qty').value = 1;
-  getEl('discountPercent').value = 0;
-  getEl('specialDiscount').value = 0;
-  getEl('customNote').value = '';
-  calculate();
-}
+
 window.addEventListener('DOMContentLoaded', init);
+</script>
+<!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline.
+     ทำงานเฉพาะบน HTTPS (เช่น Cloudflare Pages) ไม่ทำงานกับ file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
 </script>
 </body>
 </html>

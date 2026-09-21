@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
 <title>iPergo PERGO-R500 Calculator</title>
 <style>
 :root{
@@ -68,7 +70,6 @@ label{display:block;font-weight:800;font-size:14px;margin:14px 0 7px;color:#1f29
     <textarea id="customNote" placeholder="ใส่หมายเหตุเพิ่มเติมสำหรับลูกค้า เช่น สี, เงื่อนไขหน้างาน, ระยะเวลาสั่งสินค้า..."></textarea>
 
     <button class="button" type="button" onclick="copyQuotation()">Copy Quotation</button>
-    <button class="button secondary" type="button" onclick="resetForm()">Reset</button>
   </section>
 
   <section class="card">
@@ -759,18 +760,20 @@ async function copyQuotation(){
     alert('Copy อัตโนมัติไม่สำเร็จ กรุณาคัดลอกจากกล่องข้อความด้านล่าง');
   }
 }
-function resetForm(){
-  getEl('sizeSelect').selectedIndex = 0;
-  getEl('systemSelect').value = PRODUCT.defaultSystem || SYSTEMS[0].id;
-  getEl('frameColor').selectedIndex = 0;
-  if (PRODUCT.fabricOptions && PRODUCT.fabricOptions.length) getEl('fabricOption').selectedIndex = 0;
-  getEl('qty').value = 1;
-  getEl('discountPercent').value = 0;
-  getEl('specialDiscount').value = 0;
-  getEl('customNote').value = '';
-  calculate();
-}
+
 window.addEventListener('DOMContentLoaded', init);
+</script>
+<!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline.
+     ทำงานเฉพาะบน HTTPS (เช่น Cloudflare Pages) ไม่ทำงานกับ file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
 </script>
 </body>
 </html>

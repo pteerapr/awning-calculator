@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><title>TERRA Extent - MA3 - Structure Price Calculator</title>
+<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366"><title>TERRA Extent - MA3 - Structure Price Calculator</title>
 <style>
 :root {
   --primary:#003366;
@@ -160,6 +162,7 @@ table.ref td.hit{ background:#fff3cd; font-weight:800; outline:2px solid #f0ad4e
 <div class="terms" id="terms"></div>
 
 <script src="prices.js"></script>
+<script src="i18n.js"></script>
 <script>
 const P = {"label": "TERRA Extent - MA3", "labelTh": "เทอร่า รุ่น เอ็มเอ 3", "system": "ระบบมือหมุน (Manual System)", "mode": "arm", "netPrice": false, "widths": [[2.0, 2.5], [2.51, 3.0], [3.01, 3.5], [3.51, 4.0], [4.01, 4.5], [4.51, 5.0], [5.01, 5.5], [5.51, 6.0], [6.01, 6.5], [6.51, 7.0], [7.01, 7.5], [7.51, 8.0]], "rows": [{"key": 1.5, "label": "1.50 เมตร", "prices": [14870, 15800, 17220, 18540, 20350, 21280, 25810, 30950, 32460, 36800, 37730, 39090]}, {"key": 2.0, "label": "2.00 เมตร", "prices": [null, 16370, 17780, 19110, 20910, 21840, 26370, 31790, 33300, 37930, 38860, 40220]}, {"key": 2.5, "label": "2.50 เมตร", "prices": [null, null, 18220, 19480, 21220, 22150, 26680, 32320, 33830, 35290, 39600, 40970]}, {"key": 3.0, "label": "3.00 เมตร", "prices": [null, null, null, 20040, 21790, 22720, 27240, 29500, 34680, 36140, 40730, 42090]}, {"key": 3.5, "label": "3.50 เมตร", "prices": [null, null, null, null, null, 27420, 30850, 34270, 41670, 43100, 44030, 51380]}], "arms": [[null, null, null, null, null, null, null, 3, 3, 4, 4, 4], [null, null, null, null, null, null, null, 3, 3, 4, 4, 4], [null, null, null, null, null, null, null, 3, 3, 3, 4, 4], [null, null, null, null, null, null, null, 2, 3, 3, 4, 4], [null, null, null, null, null, null, null, 2, 3, 3, 3, 4]], "hasTube": false, "terms": ["ราคาเฉพาะโครงสร้าง ไม่รวมราคาผ้า", "ราคาไม่รวมภาษีมูลค่าเพิ่ม (Price Excluded VAT.)", "ตัวเลขในวงเล็บ ( ) = จำนวนแขน (No. of Arms)"]};
 const isArm = P.mode === 'arm';
@@ -367,7 +370,15 @@ function calculatePrice(){
 
 /* ---- TH/EN result language toggle ---- */
 let resultLanguage = 'th';
-const RESULT_EN_REPLACEMENTS = [["ราคาเฉพาะโครงสร้าง ไม่รวมราคาผ้า", "Structure price only, fabric not included"], ["ราคาไม่รวมภาษีมูลค่าเพิ่ม (Price Excluded VAT.)", "Price excluded VAT"], ["ราคาขายสุทธิแล้ว (ไม่มีส่วนลด)", "Net selling price (no further discount)"], ["ขนาดกว้าง 2 - 4.50 เมตร ใช้ท่อกลมกัลวาไนซ์ 70 mm. / ขนาดกว้าง 4.51 - 5.00 เมตร ใช้ท่อกลม 78 mm.", "Width 2 - 4.50 m uses 70 mm galvanised round tube / Width 4.51 - 5.00 m uses 78 mm round tube"], ["ตัวเลขในวงเล็บ ( ) = จำนวนแขน (No. of Arms)", "Number in brackets ( ) = number of arms"], ["ขนาดนี้ไม่มีในตารางราคา (ช่อง x) กรุณาติดต่อฝ่ายขาย", "This size is not available in the pricelist. Please contact sales."], ["ความกว้างอยู่นอกช่วงตารางราคา", "Width is outside the pricelist range"], ["ความสูง (Drop) อยู่นอกช่วงตารางราคา", "Drop is outside the pricelist range"], ["กรุณาเลือกระยะแขนยื่นจากรายการ", "Please select an arm projection from the list"], ["Customer copy text / ข้อความสำหรับส่งลูกค้า", "Customer copy text"], ["ท่อกลมกัลวาไนซ์ 70 mm.", "70 mm galvanised round tube"], ["ท่อกลม 78 mm.", "78 mm round tube"], ["ระบบมือหมุน (Manual System)", "Manual System"], ["ระบบมอเตอร์", "Motor system"], ["อุปกรณ์เสริมมอเตอร์", "Motor accessory"], ["ราคามอเตอร์", "Motor price"],["กันสาดแนวตั้ง (Vertical Drop Awning)", "Vertical Drop Awning"], ["ราคารวมก่อนส่วนลด", "Total before discount"], ["ราคารวม (ไม่รวม VAT)", "Total (excl. VAT)"], ["ราคารวม VAT", "Total incl. VAT"], ["ระยะแขนยื่น", "Arm projection"], ["ท่อโครงสร้าง", "Structure tube"], ["อุปกรณ์เสริมเพิ่มเติม", "Additional accessories"], ["ความสูง Drop", "Drop height"], ["ผลการคำนวณ", "Result"], ["ส่วนลดพิเศษ", "Special discount"], ["ราคาต่อชุด", "Price per set"], ["จำนวนแขน", "Number of arms"], ["ความกว้าง", "Width"], ["เงื่อนไข", "Condition"], ["ส่วนลด", "Discount"], ["หมายเหตุ", "Note"], ["จำนวน", "Quantity"], ["ระบบ", "System"], ["ช่วง", "range"], ["รุ่น", "Model"], ["แขน", "arms"], ["บาท", "THB"], ["ชุด", "set"], ["ม.", "m."]];
+// คำแปลเฉพาะของไฟล์นี้ / wording specific to this calculator.
+// คำที่ใช้ร่วมกับไฟล์อื่นในกลุ่มอยู่ใน i18n.js — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์.
+// รายการข้างล่างนี้ถูกใช้ก่อนเสมอ (this list wins over the shared one).
+const RESULT_EN_OVERRIDES = [
+
+];
+const RESULT_EN_REPLACEMENTS = window.SANGTHONG_I18N
+  ? window.SANGTHONG_I18N.merge(RESULT_EN_OVERRIDES, 'STRUCTURE')
+  : RESULT_EN_OVERRIDES;
 
 function localizeResultText(text){
   if (resultLanguage !== 'en') return String(text || '');
@@ -462,5 +473,17 @@ $('copyResult').onclick = () => {
 };
 
 calculatePrice();
+</script>
+<!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline.
+     ทำงานเฉพาะบน HTTPS (เช่น Cloudflare Pages) ไม่ทำงานกับ file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
 </script>
 </body></html>

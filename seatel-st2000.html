@@ -1,6 +1,8 @@
 <!-- Sangthong Calculator Package Version: clean-v1 | Packaged: 2026-05-13 | Source file: seatel-st2000.html -->
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><style>
+<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366"><style>
 :root {
   --primary:#003366;
   --accent:#007bff;
@@ -85,9 +87,12 @@ th{background:#f3f4f6;}
 <h2>เครื่องคำนวณราคากันสาด SEATEL ST2000 (<a href="index.html">Back to Index</a>)</h2>
 <label>ความกว้าง (เมตร)</label>
 <input id="width" placeholder="เช่น 2.4" type="number" value="3.00"/>
+<!-- ติ๊กเพื่อแบ่งผ้าเป็น 2 ชิ้นที่ความกว้างเท่าใดก็ได้
+     ถ้ากว้างเกิน 5.00 ม. (เกินตารางราคา) ระบบจะติ๊กให้เองและล็อกไม่ให้ปลด -->
+<label style="display:block; margin-top:8px; font-weight:normal;"><input id="chkSplitFabric" type="checkbox"/> แบ่งผ้าเป็น 2 ชิ้น / Split fabric into 2 panels</label>
 <div id="splitFabricBox" class="split-box" style="display:none; margin-top:12px; padding:12px; background:#eef5ff; border-radius:10px; border:1px solid #cfe2ff;">
   <strong>ระบบแบ่งผ้า / Split Fabric</strong>
-  <p style="margin:6px 0 8px; font-size:13px; color:#374151;">ถ้าความกว้างเกิน 5.00 เมตร ระบบจะคิดราคาผ้าเป็น 2 ชิ้น แต่ใช้มอเตอร์ 1 ตัวเท่านั้น</p>
+  <p style="margin:6px 0 8px; font-size:13px; color:#374151;">คิดราคาผ้าเป็น 2 ชิ้น (บวกกัน) แต่ใช้มอเตอร์ 1 ตัวเท่านั้น — ความกว้างเกิน 5.00 เมตร ระบบจะบังคับแบ่งผ้าเสมอ</p>
   <label for="piece1">ความกว้างผ้าชิ้นที่ 1 (เมตร)</label>
   <input id="piece1" placeholder="เช่น 3.00" type="number" min="0" step="0.01"/>
   <label for="piece2">ความกว้างผ้าชิ้นที่ 2 (เมตร)</label>
@@ -182,144 +187,67 @@ th{background:#f3f4f6;}
 </div>
 </div>
 <script src="prices.js"></script>
+<script src="i18n.js"></script>
 <script>
 let resultLanguage = 'th';
 
-const RESULT_EN_REPLACEMENTS = [
-  ['\u0e43\u0e19\u0e01\u0e23\u0e13\u0e35\u0e43\u0e0a\u0e49', 'when using'],
-  ['\u0e43\u0e0a\u0e49', 'using'],
-
-  ['\u0e0a\u0e19\u0e34\u0e14\u0e1c\u0e49\u0e32\u0e43\u0e1a', 'Fabric'],
-
-  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e14\u0e36\u0e07', 'Manual Pull System'],
-  ['\u0e21\u0e37\u0e2d\u0e14\u0e36\u0e07', 'Manual pull'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d\u0e15\u0e23\u0e21', 'Rate per sqm'],
-  ['\u0e15\u0e23\u0e21', 'sqm'],
-  ['\u0e1c\u0e49\u0e32\u0e43\u0e1a\u0e42\u0e0b\u0e25\u0e48\u0e32\u0e41\u0e0b\u0e19\u0e14\u0e4c', 'Solar Sand Fabric'],
-  ['\u0e1c\u0e49\u0e32 Acrylic', 'Acrylic Fabric'],
-  ['\u0e1c\u0e49\u0e32\u0e43\u0e1a', 'Fabric'],
-  ['\u0e1c\u0e49\u0e32', 'Fabric'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d\u0e0a\u0e38\u0e14\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Unit Price Before Discount'],
-  ['//\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d\u0e0a\u0e38\u0e14\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Unit Price Before Discount'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e48\u0e2d', 'Unit Price'],
-  ['\u0e01\u0e48\u0e2d\u0e19', 'Before'],
-  ['\u0e0a\u0e48\u0e2d\u0e07', 'channel'],
-  ['\u0e43\u0e19\u0e01\u0e23\u0e13\u0e35', 'for'],
-  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19', 'Warranty'],
-  ['\u0e1b\u0e35', 'years'],
-  ['\u0e23\u0e30\u0e1a\u0e1a', 'System'],
-  ['\u0e23\u0e27\u0e21', 'Total'],
-  ['\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'for manual system'],
-  ['\u0e41\u0e02\u0e19\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e44\u0e1f', 'arms with LED'],
-  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21', 'Accessories'],
-  ['Customer copy text / \u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32', 'Customer copy text'],
-  ['Quotation Preview / \u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32', 'Quotation Preview'],
-  ['\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32', 'Customer copy text'],
-  ['\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32', 'Customer copy text'],
-  ['\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e04\u0e33\u0e19\u0e27\u0e13\u0e23\u0e32\u0e04\u0e32', 'Price Calculation Result'],
-  ['\u0e1c\u0e25\u0e01\u0e32\u0e23\u0e04\u0e33\u0e19\u0e27\u0e13', 'Calculation Result'],
-  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c RTS + \u0e23\u0e35\u0e42\u0e21\u0e17 + LED Lighting', 'RTS motor system + remote + LED lighting'],
-  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c RTS + \u0e23\u0e35\u0e42\u0e21\u0e17', 'RTS motor system + remote'],
-  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c: 50/12 \u0e40\u0e17\u0e48\u0e32\u0e19\u0e31\u0e49\u0e19', 'Motor system: 50/12 only'],
-  ['\u0e23\u0e38\u0e48\u0e19\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19 + \u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c RTS \u0e44\u0e21\u0e48\u0e21\u0e35\u0e44\u0e1f LED', 'Standard model + RTS motor without LED'],
-  ['\u0e23\u0e38\u0e48\u0e19\u0e1e\u0e23\u0e35\u0e40\u0e21\u0e35\u0e48\u0e22\u0e21 + \u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c RTS \u0e44\u0e21\u0e48\u0e21\u0e35\u0e44\u0e1f LED', 'Premium model + RTS motor without LED'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e4d\u0e32/\u0e40\u0e17\u0e32 \u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e32\u0e27 , Waterproof Cover', 'Black/gray or white frame, waterproof cover'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e33/\u0e40\u0e17\u0e32 \u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e32\u0e27 , Waterproof Cover', 'Black/gray or white frame, waterproof cover'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e4d\u0e32/\u0e40\u0e17\u0e32 \u0e21\u0e35\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e4d\u0e49\u0e32', 'Black/gray frame with waterproof cover'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e33/\u0e40\u0e17\u0e32 \u0e21\u0e35\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e49\u0e33', 'Black/gray frame with waterproof cover'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e4d\u0e32/\u0e40\u0e17\u0e32 \u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e32\u0e27', 'Black/gray or white frame'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e14\u0e33/\u0e40\u0e17\u0e32 \u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e32\u0e27', 'Black/gray or white frame'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2d\u0e25\u0e39\u0e21\u0e34\u0e40\u0e19\u0e35\u0e22\u0e21 \u0e40\u0e04\u0e25\u0e37\u0e2d\u0e1a Powder Coated', 'Powder-coated aluminum structure'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19\u0e15\u0e32\u0e21\u0e23\u0e38\u0e48\u0e19 MA4', 'Standard frame structure for MA4 model'],
-  ['\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e2a\u0e35\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19\u0e15\u0e32\u0e21\u0e23\u0e38\u0e48\u0e19\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32', 'Standard frame color for this model'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e19\u0e35\u0e49\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e23\u0e27\u0e21\u0e07\u0e32\u0e19\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e1e\u0e34\u0e40\u0e28\u0e29 \u0e2b\u0e32\u0e01\u0e21\u0e35', 'This price excludes additional structural work, if any'],
-  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19 + 1 \u0e01\u0e49\u0e32\u0e19\u0e2b\u0e21\u0e38\u0e19 / \u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e4d\u0e49\u0e32', 'Motor with manual override + 1 crank handle / waterproof cover'],
-  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19 + 1 \u0e01\u0e49\u0e32\u0e19\u0e2b\u0e21\u0e38\u0e19', 'Motor with manual override + 1 crank handle'],
-  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'Motor with manual override'],
-  ['Crank Size: \u0e01\u0e49\u0e32\u0e19\u0e2b\u0e21\u0e38\u0e19\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e44\u0e14\u0e49', 'Crank size: selectable'],
-  ['\u0e01\u0e49\u0e32\u0e19\u0e2b\u0e21\u0e38\u0e19\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e44\u0e14\u0e49', 'selectable crank handle'],
-  ['\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32 Pre-Order \u0e23\u0e2d\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32', 'Pre-order product, lead time'],
-  ['\u0e23\u0e2d\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32', 'lead time'],
-  ['\u0e23\u0e35\u0e42\u0e21\u0e17', 'Remote'],
-  ['\u0e44\u0e21\u0e48\u0e21\u0e35\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19\u0e43\u0e19\u0e02\u0e19\u0e32\u0e14\u0e19\u0e35\u0e49', 'No price found for manual system at this size'],
-  ['\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e23\u0e32\u0e04\u0e32\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e02\u0e19\u0e32\u0e14\u0e19\u0e35\u0e49', 'No motorized price found for this size'],
-  ['\u0e01\u0e23\u0e38\u0e13\u0e32\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19\u0e2b\u0e23\u0e37\u0e2d\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e2d\u0e22\u0e48\u0e32\u0e07\u0e19\u0e49\u0e2d\u0e22 1 \u0e23\u0e30\u0e1a\u0e1a', 'Please select at least one system: manual or motorized'],
-  ['\u0e01\u0e23\u0e38\u0e13\u0e32\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e2d\u0e22\u0e48\u0e32\u0e07\u0e19\u0e49\u0e2d\u0e22 1 \u0e23\u0e30\u0e1a\u0e1a: \u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19 \u0e2b\u0e23\u0e37\u0e2d \u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Please select at least one system: manual or motorized'],
-  ['\u0e44\u0e21\u0e48\u0e21\u0e35\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e02\u0e19\u0e32\u0e14\u0e19\u0e35\u0e49', 'No price found for this size'],
-  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e2d\u0e25\u0e39\u0e21\u0e34\u0e40\u0e19\u0e35\u0e22\u0e21', 'Aluminum cover'],
-  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e2a\u0e35\u0e02\u0e32\u0e27', 'White cover'],
-  ['\u0e44\u0e21\u0e48\u0e21\u0e35\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a', 'No cover'],
-  ['\u0e04\u0e34\u0e14\u0e08\u0e32\u0e01\u0e01\u0e27\u0e49\u0e32\u0e07\u0e23\u0e27\u0e21', 'calculated from total width'],
-  ['\u0e01\u0e27\u0e49\u0e32\u0e07\u0e23\u0e27\u0e21', 'Total width'],
-  ['\u0e41\u0e1a\u0e48\u0e07\u0e1c\u0e49\u0e32', 'Fabric split'],
-  ['\u0e0a\u0e34\u0e49\u0e19\u0e17\u0e35\u0e48 1', 'Panel 1'],
-  ['\u0e0a\u0e34\u0e49\u0e19\u0e17\u0e35\u0e48 2', 'Panel 2'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e1c\u0e49\u0e32\u0e0a\u0e34\u0e49\u0e19\u0e17\u0e35\u0e48 1', 'Panel 1 fabric price'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e1c\u0e49\u0e32\u0e0a\u0e34\u0e49\u0e19\u0e17\u0e35\u0e48 2', 'Panel 2 fabric price'],
-  ['\u0e23\u0e27\u0e21\u0e23\u0e32\u0e04\u0e32\u0e1c\u0e49\u0e32 2 \u0e0a\u0e34\u0e49\u0e19', 'Total fabric price for 2 panels'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e1c\u0e49\u0e32/\u0e42\u0e04\u0e23\u0e07\u0e15\u0e48\u0e2d\u0e0a\u0e38\u0e14', 'Fabric/frame price per set'],
-  ['\u0e23\u0e32\u0e22\u0e25\u0e30\u0e40\u0e2d\u0e35\u0e22\u0e14\u0e23\u0e32\u0e04\u0e32', 'Price details'],
-  ['\u0e23\u0e39\u0e1b\u0e41\u0e1a\u0e1a', 'Format'],
-  ['\u0e1c\u0e49\u0e32\u0e0a\u0e34\u0e49\u0e19\u0e40\u0e14\u0e35\u0e22\u0e27', 'Single fabric panel'],
-  ['\u0e41\u0e1a\u0e48\u0e07\u0e1c\u0e49\u0e32 2 \u0e0a\u0e34\u0e49\u0e19\u0e43\u0e19\u0e23\u0e30\u0e1a\u0e1a\u0e40\u0e14\u0e35\u0e22\u0e27', 'Split into 2 fabric panels in one system'],
-  ['\u0e01\u0e32\u0e23\u0e43\u0e0a\u0e49\u0e07\u0e32\u0e19\u0e41\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'Manual operation'],
-  ['\u0e04\u0e34\u0e14\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 1 \u0e15\u0e31\u0e27\u0e15\u0e48\u0e2d\u0e23\u0e30\u0e1a\u0e1a', 'one motor per system'],
-  ['\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38*-', 'Notes:'],
-  ['* \u0e23\u0e32\u0e04\u0e32\u0e17\u0e35\u0e48\u0e41\u0e08\u0e49\u0e07\u0e40\u0e1b\u0e47\u0e19\u0e01\u0e32\u0e23\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13\u0e01\u0e32\u0e23 \u0e23\u0e32\u0e04\u0e32\u0e2d\u0e32\u0e08\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\u0e41\u0e1b\u0e25\u0e07\u0e44\u0e14\u0e49\u0e40\u0e21\u0e37\u0e48\u0e2d\u0e2a\u0e33\u0e23\u0e27\u0e08\u0e2b\u0e19\u0e49\u0e32\u0e07\u0e32\u0e19\u0e08\u0e23\u0e34\u0e07', '* This is an initial estimate and may change after the site survey'],
-  ['* \u0e23\u0e32\u0e04\u0e32\u0e17\u0e35\u0e48\u0e41\u0e08\u0e49\u0e07\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e23\u0e27\u0e21\u0e20\u0e32\u0e29\u0e35\u0e21\u0e39\u0e25\u0e04\u0e48\u0e32\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e41\u0e25\u0e49\u0e27', '* VAT is included'],
-  ['* \u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07 \u0e41\u0e15\u0e48\u0e44\u0e21\u0e48\u0e04\u0e23\u0e2d\u0e1a\u0e04\u0e25\u0e38\u0e21\u0e15\u0e31\u0e27\u0e1c\u0e49\u0e32\u0e43\u0e1a1 \u0e1b\u0e35,\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e01\u0e32\u0e23\u0e17\u0e33\u0e07\u0e32\u0e19\u0e02\u0e2d\u0e07\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 2 \u0e1b\u0e35  (\u0e40\u0e1b\u0e47\u0e19\u0e44\u0e1b\u0e15\u0e32\u0e21\u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02\u0e02\u0e2d\u0e07\u0e17\u0e32\u0e07\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17)', '* Structure and installation warranty: 1 year, excluding fabric. Motor warranty: 2 years, subject to company terms.'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e1b\u0e23\u0e30\u0e40\u0e21\u0e34\u0e19\u0e40\u0e1a\u0e37\u0e49\u0e2d\u0e07\u0e15\u0e49\u0e19 \u0e2d\u0e32\u0e08\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\u0e41\u0e1b\u0e25\u0e07\u0e2b\u0e25\u0e31\u0e07\u0e2a\u0e33\u0e23\u0e27\u0e08\u0e2b\u0e19\u0e49\u0e32\u0e07\u0e32\u0e19\u0e08\u0e23\u0e34\u0e07', 'This is an initial estimate and may change after the site survey'],
-  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07 1 \u0e1b\u0e35', 'Structure and installation warranty: 1 year'],
-  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e01\u0e32\u0e23\u0e17\u0e33\u0e07\u0e32\u0e19\u0e02\u0e2d\u0e07\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 2 \u0e1b\u0e35 \u0e15\u0e32\u0e21\u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17', 'Motor warranty: 2 years, subject to company terms'],
-  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e01\u0e32\u0e23\u0e17\u0e33\u0e07\u0e32\u0e19\u0e02\u0e2d\u0e07\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c 2 \u0e1b\u0e35', 'Motor warranty: 2 years'],
-  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19\u0e42\u0e04\u0e23\u0e07\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07', 'Structure and installation warranty'],
-  ['\u0e44\u0e21\u0e48\u0e04\u0e23\u0e2d\u0e1a\u0e04\u0e25\u0e38\u0e21\u0e15\u0e31\u0e27\u0e1c\u0e49\u0e32\u0e43\u0e1a', 'excluding fabric'],
-  ['\u0e40\u0e1b\u0e47\u0e19\u0e44\u0e1b\u0e15\u0e32\u0e21\u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02\u0e02\u0e2d\u0e07\u0e17\u0e32\u0e07\u0e1a\u0e23\u0e34\u0e29\u0e31\u0e17', 'subject to company terms'],
-  ['\u0e0a\u0e19\u0e34\u0e14\u0e1c\u0e49\u0e32', 'Fabric'],
-  ['\u0e02\u0e19\u0e32\u0e14', 'Size'],
-  ['\u0e01\u0e27\u0e49\u0e32\u0e07', 'Width'],
-  ['\u0e23\u0e30\u0e22\u0e30\u0e22\u0e37\u0e48\u0e19', 'Projection'],
-  ['\u0e22\u0e37\u0e48\u0e19', 'Projection'],
-  ['\u0e2a\u0e39\u0e07', 'Height'],
-  ['\u0e22\u0e32\u0e27', 'Length'],
-  ['\u0e08\u0e33\u0e19\u0e27\u0e19', 'Quantity'],
-  ['\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14\u0e1e\u0e34\u0e40\u0e28\u0e29', 'Special Discount'],
-  ['\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Discount'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Before Discount'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Total Before Discount'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e38\u0e17\u0e18\u0e34', 'Net Total'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21\u0e2a\u0e38\u0e17\u0e18\u0e34', 'Net Total'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21', 'Total'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e23\u0e38\u0e1b', 'Final Price'],
-  ['\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38', 'Note'],
-  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Motor'],
-  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e49\u0e33', 'Waterproof Cover'],
-  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a', 'Cover'],
-  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e15\u0e34\u0e21', 'Additional Accessories'],
-  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Motor Accessories'],
-  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e2d\u0e37\u0e48\u0e19 \u0e46', 'Other Accessories'],
-  ['\u0e2a\u0e35\u0e02\u0e32\u0e27', 'white'],
-  ['\u0e2d\u0e25\u0e39\u0e21\u0e34\u0e40\u0e19\u0e35\u0e22\u0e21', 'aluminum'],
-  ['\u0e44\u0e21\u0e48\u0e21\u0e35', 'None'],
-  ['\u0e40\u0e21\u0e15\u0e23', 'm'],
-  ['\u0e27\u0e31\u0e19', 'days'],
-  ['???', 'Height'],
-  ['???', 'Length'],
-  ['???', 'days'],
-
+// คำแปลเฉพาะของไฟล์นี้ / wording specific to this calculator.
+// คำที่ใช้ร่วมกับไฟล์อื่นในกลุ่มอยู่ใน i18n.js — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์.
+// รายการข้างล่างนี้ถูกใช้ก่อนเสมอ (this list wins over the shared one).
+const RESULT_EN_OVERRIDES = [
+  ['รับประกัน', 'Warranty'],
+  ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
+  ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
+  ['กว้างรวม', 'Total width'],
+  ['แบ่งผ้า', 'Fabric split'],
+  ['ชิ้นที่ 1', 'Panel 1'],
+  ['ชิ้นที่ 2', 'Panel 2'],
+  ['ราคาผ้าชิ้นที่ 1', 'Panel 1 fabric price'],
+  ['ราคาผ้าชิ้นที่ 2', 'Panel 2 fabric price'],
+  ['รวมราคาผ้า 2 ชิ้น', 'Total fabric price for 2 panels'],
+  ['ราคาผ้า/โครงต่อชุด', 'Fabric/frame price per set'],
+  ['รายละเอียดราคา', 'Price details'],
+  ['รูปแบบ', 'Format'],
+  ['ผ้าชิ้นเดียว', 'Single fabric panel'],
+  ['แบ่งผ้า 2 ชิ้นในระบบเดียว', 'Split into 2 fabric panels in one system'],
+  ['การใช้งานแบบมือหมุน', 'Manual operation'],
+  ['คิดมอเตอร์ 1 ตัวต่อระบบ', 'one motor per system'],
+  ['หมายเหตุ*-', 'Notes:'],
+  ['รับประกันการทำงานของมอเตอร์ 2 ปี', 'Motor warranty: 2 years'],
+  ['รับประกันโครงสร้างและการติดตั้ง', 'Structure and installation warranty'],
+  ['ไม่ครอบคลุมตัวผ้าใบ', 'excluding fabric'],
+  ['เป็นไปตามเงื่อนไขของทางบริษัท', 'subject to company terms'],
+  ['ชนิดผ้า', 'Fabric'],
+  ['ขนาด', 'Size'],
+  ['กว้าง', 'Width'],
+  ['ระยะยื่น', 'Projection'],
+  ['ยื่น', 'Projection'],
+  ['ยาว', 'Length'],
+  ['จำนวน', 'Quantity'],
+  ['ส่วนลดพิเศษ', 'Special Discount'],
+  ['ส่วนลด', 'Discount'],
+  ['ราคาก่อนส่วนลด', 'Before Discount'],
+  ['ราคารวมก่อนส่วนลด', 'Total Before Discount'],
+  ['ราคาสุทธิ', 'Net Total'],
+  ['ราคารวมสุทธิ', 'Net Total'],
+  ['ราคารวม', 'Total'],
+  ['ราคาสรุป', 'Final Price'],
+  ['หมายเหตุ', 'Note'],
+  ['มอเตอร์', 'Motor'],
+  ['ฝาครอบกันน้ำ', 'Waterproof Cover'],
+  ['ฝาครอบ', 'Cover'],
+  ['อุปกรณ์เสริมมอเตอร์', 'Motor Accessories'],
+  ['อุปกรณ์เสริมอื่น ๆ', 'Other Accessories'],
+  ['สีขาว', 'white'],
+  ['อลูมิเนียม', 'aluminum'],
+  ['วัน', 'days'],
   ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
   ['Manual Operation / ระบบมือหมุน', 'Manual Operation'],
   ['Motorized System / ระบบมอเตอร์', 'Motorized System'],
   ['ราคาสรุประบบมือหมุน', 'Manual System Final Price'],
   ['ราคาสรุประบบมอเตอร์', 'Motorized System Final Price'],
   ['ขนาด: กว้าง', 'Size: Width'],
-  ['สูง', 'Height'],
-  ['อุปกรณ์เสริมเพิ่มเติม', 'Additional Accessories'],
   ['อุปกรณ์เสริมมอเตอร์', 'Motor Accessories'],
-  ['ราคาประเมินเบื้องต้น อาจเปลี่ยนแปลงหลังสำรวจหน้างานจริง', 'This is an initial estimate and may change after the site survey'],
-  ['รับประกันโครงสร้างและการติดตั้ง 1 ปี', 'Structure and installation warranty: 1 year'],
-  ['รับประกันการทำงานของมอเตอร์ 2 ปี ตามเงื่อนไขบริษัท', 'Motor warranty: 2 years, subject to company terms'],
-  ['ไม่มี', 'None'],
   ['รูปแบบ', 'Format'],
   ['แบ่งผ้า 2 ชิ้นในระบบเดียว', 'Split into 2 fabric panels in one system'],
   ['ผ้าชิ้นเดียว', 'Single fabric panel'],
@@ -338,40 +266,31 @@ const RESULT_EN_REPLACEMENTS = [
   ['ราคารวมสุทธิก่อนสํารวจหน้างาน', 'Net Total Before Site Survey'],
   ['ราคารวมสุทธิก่อนสำรวจหน้างาน', 'Net Total Before Site Survey'],
   ['หมายเหตุ*-', 'Notes:'],
-  ['* ราคาที่แจ้งเป็นการประมาณการ ราคาอาจเปลี่ยนแปลงได้เมื่อสำรวจหน้างานจริง', '* This is an initial estimate and may change after the site survey'],
-  ['* ราคาที่แจ้งสินค้ารวมภาษีมูลค่าเพิ่มแล้ว', '* VAT is included'],
-  ['* รับประกันโครงสร้างและการติดตั้ง แต่ไม่ครอบคลุมตัวผ้าใบ1 ปี,รับประกันการทำงานของมอเตอร์ 2 ปี  (เป็นไปตามเงื่อนไขของทางบริษัท)', '* Structure and installation warranty: 1 year, excluding fabric. Motor warranty: 2 years, subject to company terms.'],
   ['ยาว', 'Height'],
-  ['เมตร', 'm'],
-  ['\u0e0a\u0e19\u0e34\u0e14\u0e1c\u0e49\u0e32', 'Fabric'],
-  ['\u0e01\u0e27\u0e49\u0e32\u0e07', 'Width'],
-  ['\u0e22\u0e37\u0e48\u0e19', 'Projection'],
-  ['\u0e23\u0e30\u0e22\u0e30\u0e22\u0e37\u0e48\u0e19', 'Drop'],
-  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e37\u0e2d\u0e2b\u0e21\u0e38\u0e19', 'Manual System'],
-  ['\u0e23\u0e30\u0e1a\u0e1a\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Motor System'],
-  ['\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Motor'],
-  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e21\u0e2d\u0e40\u0e15\u0e2d\u0e23\u0e4c', 'Motor Accessories'],
-  ['\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e40\u0e2a\u0e23\u0e34\u0e21\u0e2d\u0e37\u0e48\u0e19 \u0e46', 'Other Accessories'],
-  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a\u0e01\u0e31\u0e19\u0e19\u0e49\u0e33', 'Waterproof Cover'],
-  ['\u0e1d\u0e32\u0e04\u0e23\u0e2d\u0e1a', 'Cover'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e01\u0e48\u0e2d\u0e19\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Before Discount'],
-  ['\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14\u0e1e\u0e34\u0e40\u0e28\u0e29', 'Special Discount'],
-  ['\u0e2a\u0e48\u0e27\u0e19\u0e25\u0e14', 'Discount'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e23\u0e38\u0e1b', 'Final Price'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e38\u0e17\u0e18\u0e34', 'Net Total'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e23\u0e27\u0e21', 'Total'],
-  ['\u0e08\u0e33\u0e19\u0e27\u0e19', 'Quantity'],
-  ['\u0e2b\u0e21\u0e32\u0e22\u0e40\u0e2b\u0e15\u0e38', 'Note'],
-  ['\u0e23\u0e27\u0e21 VAT 7% \u0e41\u0e25\u0e49\u0e27', 'VAT 7% included'],
-  ['\u0e23\u0e32\u0e04\u0e32\u0e15\u0e34\u0e14\u0e15\u0e31\u0e49\u0e07\u0e20\u0e32\u0e22\u0e43\u0e19\u0e01\u0e23\u0e38\u0e07\u0e40\u0e17\u0e1e\u0e2f \u0e41\u0e25\u0e30\u0e1b\u0e23\u0e34\u0e21\u0e13\u0e11\u0e25', 'Installation within Bangkok and Vicinity'],
-  ['\u0e23\u0e31\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e31\u0e19', 'Warranty'],
-  ['\u0e01\u0e23\u0e38\u0e13\u0e32\u0e01\u0e23\u0e2d\u0e01', 'Please enter'],
-  ['\u0e02\u0e19\u0e32\u0e14\u0e2d\u0e22\u0e39\u0e48\u0e19\u0e2d\u0e01\u0e0a\u0e48\u0e27\u0e07\u0e21\u0e32\u0e15\u0e23\u0e10\u0e32\u0e19', 'Size is outside the standard range'],
-  ['\u0e44\u0e21\u0e48\u0e1e\u0e1a\u0e23\u0e32\u0e04\u0e32\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e02\u0e19\u0e32\u0e14\u0e19\u0e35\u0e49', 'No price found for this size'],
-  ['\u0e1a\u0e32\u0e17', 'THB'],
-  ['\u0e0a\u0e38\u0e14', 'set'],
-  ['\u0e21.', 'm.']
+  ['ชนิดผ้า', 'Fabric'],
+  ['กว้าง', 'Width'],
+  ['ยื่น', 'Projection'],
+  ['ระยะยื่น', 'Drop'],
+  ['มอเตอร์', 'Motor'],
+  ['อุปกรณ์เสริมมอเตอร์', 'Motor Accessories'],
+  ['อุปกรณ์เสริมอื่น ๆ', 'Other Accessories'],
+  ['ฝาครอบกันน้ำ', 'Waterproof Cover'],
+  ['ฝาครอบ', 'Cover'],
+  ['ราคาก่อนส่วนลด', 'Before Discount'],
+  ['ส่วนลดพิเศษ', 'Special Discount'],
+  ['ส่วนลด', 'Discount'],
+  ['ราคาสรุป', 'Final Price'],
+  ['ราคาสุทธิ', 'Net Total'],
+  ['ราคารวม', 'Total'],
+  ['จำนวน', 'Quantity'],
+  ['หมายเหตุ', 'Note'],
+  ['รับประกัน', 'Warranty'],
+  ['ขนาดอยู่นอกช่วงมาตรฐาน', 'Size is outside the standard range'],
+  ['ไม่พบราคาสำหรับขนาดนี้', 'No price found for this size']
 ];
+const RESULT_EN_REPLACEMENTS = window.SANGTHONG_I18N
+  ? window.SANGTHONG_I18N.merge(RESULT_EN_OVERRIDES, 'AWNING')
+  : RESULT_EN_OVERRIDES;
 function localizeResultText(text){
   if (resultLanguage !== 'en') return String(text || '');
   let output = String(text || '');
@@ -1252,14 +1171,27 @@ function calculatePrice(){
   err.style.display=res.style.display='none';
   if(diag) diag.style.display='none';
 
+  // แบ่งผ้า / Split fabric — ผู้ใช้ติ๊กเองได้ทุกความกว้าง
+  // แต่ถ้ากว้างเกิน 5.00 ม. (เกินตารางราคา) ต้องแบ่งเสมอ จึงบังคับติ๊กและล็อกช่องไว้
+  const splitBox=document.getElementById('splitFabricBox');
+  const splitChk=document.getElementById('chkSplitFabric');
+  const forceSplit = w > 5.00;
+  if(splitChk){
+    if(forceSplit) splitChk.checked = true;
+    splitChk.disabled = forceSplit;
+  }
+  const mustSplit = forceSplit || !!(splitChk && splitChk.checked);
+  if(splitBox) splitBox.style.display = mustSplit ? 'block' : 'none';
+  // ไม่ได้แบ่งผ้า = ล้างช่องผ้าทั้งสอง เพื่อให้เริ่มกรอกจากค่าว่างทุกครั้งที่เปิดใช้ใหม่
+  if(!mustSplit){
+    document.getElementById('piece1').value='';
+    document.getElementById('piece2').value='';
+  }
+
   if(isNaN(w)||isNaN(d)||qty<1){err.innerText='กรุณากรอกค่าความกว้าง ความสูง และจำนวนให้ถูกต้อง';err.style.display='block';res.style.display='none';return;}
 
-  // Split fabric: when total width exceeds 5.00 m the fabric is built as 2 pieces
-  // (each priced from the table) but driven by a single motor.
-  const splitBox=document.getElementById('splitFabricBox');
-  const mustSplit = w > 5.00;
-  if(splitBox) splitBox.style.display = mustSplit ? 'block' : 'none';
-
+  // Split fabric: the fabric is built as 2 pieces (each priced from the table,
+  // the two prices added together) but driven by a single motor.
   let price=0;            // fabric/frame base price (single panel or sum of 2 pieces)
   let sizeText='กว้าง '+w.toFixed(2)+' x สูง '+d.toFixed(2)+' m';
   let splitPieces=null;   // {p1,p2,price1,price2,band1,band2} when split
@@ -1267,7 +1199,7 @@ function calculatePrice(){
   if(mustSplit){
     const p1=parseFloat(document.getElementById('piece1').value);
     const p2=parseFloat(document.getElementById('piece2').value);
-    if(isNaN(p1)||isNaN(p2)||p1<=0||p2<=0){err.innerText='ความกว้างเกิน 5.00 เมตร ต้องกรอกความกว้างผ้าชิ้นที่ 1 และชิ้นที่ 2';err.style.display='block';res.style.display='none';return;}
+    if(isNaN(p1)||isNaN(p2)||p1<=0||p2<=0){err.innerText='เมื่อแบ่งผ้า ต้องกรอกความกว้างผ้าชิ้นที่ 1 และชิ้นที่ 2';err.style.display='block';res.style.display='none';return;}
     const sumPieces=Math.round((p1+p2)*100)/100;
     if(Math.abs(sumPieces-w)>0.01){err.innerText='ความกว้างผ้าสองชิ้นรวมกันต้องเท่ากับความกว้างรวม ('+w.toFixed(2)+' ม.) ตอนนี้รวมได้ '+sumPieces.toFixed(2)+' ม.';err.style.display='block';res.style.display='none';return;}
     if(p1>5||p2>5){err.innerText='ผ้าแต่ละชิ้นต้องไม่เกิน 5.00 เมตร ตามตารางราคา';err.style.display='block';res.style.display='none';return;}
@@ -1395,6 +1327,8 @@ function clearAll(){
   document.getElementById('width').value='';
   document.getElementById('piece1').value='';
   document.getElementById('piece2').value='';
+  const splitChk=document.getElementById('chkSplitFabric');
+  if(splitChk){ splitChk.checked=false; splitChk.disabled=false; }
   document.getElementById('splitFabricBox').style.display='none';
   document.getElementById('drop').value='';
   document.getElementById('fabric').selectedIndex=0;
@@ -1411,6 +1345,7 @@ function clearAll(){
 // --- auto calculate after user input ---
 [
   'width',
+  'chkSplitFabric',
   'piece1',
   'piece2',
   'drop',
@@ -1501,4 +1436,16 @@ document.getElementById('copyResult').onclick = () => {
 };
 
 
-</script></body></html>
+</script><!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline.
+     ทำงานเฉพาะบน HTTPS (เช่น Cloudflare Pages) ไม่ทำงานกับ file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
+</script>
+</body></html>

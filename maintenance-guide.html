@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
 <title>Sangthong Calculator Maintenance Guide</title>
 <style>
 body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f8fafc;color:#111827;margin:0;padding:24px;line-height:1.65}
@@ -46,4 +48,16 @@ th,td{border:1px solid #e5e7eb;padding:8px;text-align:left} th{background:#f1f5f
 <li><span class="warn">Do not:</span> Do not change price tables and calculation logic in the same edit unless necessary.</li>
 </ul>
 <p><a href="index.html">Back to calculator hub</a></p>
-</div></body></html>
+</div><!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline.
+     ทำงานเฉพาะบน HTTPS (เช่น Cloudflare Pages) ไม่ทำงานกับ file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
+</script>
+</body></html>

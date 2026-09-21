@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
 <title>ZIPGUIDE Ultra Outdoor Blind Calculator</title>
 <style>
 :root {
@@ -550,8 +552,17 @@ function buildThaiLines(state) {
   if (state.jobNote) lines.push("หมายเหตุ: " + state.jobNote);
   lines.push("");
   lines.push("รวม VAT 7% แล้ว");
+  lines.push("ราคาที่แจ้งเป็นการประมาณการ ราคาอาจเปลี่ยนแปลงได้เมื่อสำรวจหน้างานจริง");
+  lines.push("ราคานี้รวมค่าติดตั้งในเขตกรุงเทพฯ และปริมณฑล");
   lines.push("สินค้า Pre-order ระยะเวลาประมาณ 30-45 วัน");
   lines.push("สีโครงอลูมิเนียมมาตรฐาน: Black or White");
+  // สเปคมอเตอร์ PROSENSE - ขึ้นเฉพาะตอนเลือก PROSENSE (เลือก Somfy จะไม่ขึ้น)
+  if (state.motorType === "prosense") {
+    lines.push("");
+    lines.push("ข้อมูลมอเตอร์ PROSENSE");
+    lines.push("คุณสมบัติ: ป้องกันลมแรง · ทำงานเงียบ · ตรวจจับสิ่งกีดขวาง · กันน้ำ IP66 · ปรับความตึงผ้าอัตโนมัติ · ตั้งเวลาทำงาน");
+    lines.push("สเปค: แรงบิด 20 / 40 N.m · ความเร็ว 12-18 rpm · กำลังไฟ 150-200 W · ไฟเข้า AC 240 V");
+  }
   return lines;
 }
 
@@ -574,8 +585,17 @@ function buildEnglishLines(state) {
   if (state.jobNote) lines.push("Note: " + state.jobNote);
   lines.push("");
   lines.push("VAT 7% included");
+  lines.push("The price quoted is an estimate and may change after an actual site survey");
+  lines.push("This price includes installation within Bangkok and Vicinity");
   lines.push("Pre-order product, approximate lead time 30-45 days");
   lines.push("Standard aluminium frame colors: Black or White");
+  // PROSENSE motor spec - only shown when PROSENSE is the selected motor
+  if (state.motorType === "prosense") {
+    lines.push("");
+    lines.push("PROSENSE Motor Details");
+    lines.push("Features: Wind Protection · Silent Operation · Obstacle Detection · IP66 Weatherproof · Auto-Tensioning · Schedule Timer");
+    lines.push("Specification: Rated Torque 20 / 40 N.m · Rated Speed 12-18 rpm · Power 150-200 W · Input Voltage AC 240 V");
+  }
   return lines;
 }
 
@@ -649,6 +669,18 @@ function bindEvents() {
 populateSelects();
 bindEvents();
 calculate();
+</script>
+<!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline.
+     ทำงานเฉพาะบน HTTPS (เช่น Cloudflare Pages) ไม่ทำงานกับ file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
 </script>
 </body>
 </html>
