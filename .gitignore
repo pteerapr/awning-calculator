@@ -19,5 +19,9 @@ Desktop.ini
 # --- Cloudflare Wrangler local state (not for the repo) ---
 .wrangler/
 
+# --- โฟลเดอร์ชั่วคราวที่ deploy.ps1 สร้างขึ้นตอนส่งเว็บ ---
+# (staging folder built by deploy.ps1 - rebuilt every deploy, never committed)
+.deploy/
+
 # NOTE: the manual backup files (_backup_before_*, *bak*, *_original*, indexbak.html)
 # are intentionally NOT ignored yet — they stay tracked until we decide to remove them.
