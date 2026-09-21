@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<!--
+  iZip Zip Screen — Pricelist Zip-71201 (Import) XL Size
+  ---------------------------------------------------------------------------
+  คนละราคากับ izip-screen.html และ izip-screen-71101-L.html ห้ามเอาราคามาปนกัน
+  ต่างจากตัว L 2 อย่าง: ราคาต่อ ตร.ม. สูงกว่า และสูงได้ถึง 4.80 ม. (L ได้ 3.80 ม.)
+  (XL differs from the L sheet in two ways: higher per-sq.m. rates, and a
+   maximum height of 4.80 m instead of 3.80 m — never mix the rate tables)
+
+  ราคาทั้งหมดในไฟล์นี้มาจากใบราคา Zip-71201 (Import) XL Size เท่านั้น
+  ไม่ได้ใช้ prices.js เพราะเป็นราคาเฉพาะรุ่นนี้ ไม่ได้ใช้ร่วมกับเครื่องคำนวณตัวอื่น
+  (self-contained prices; nothing here is shared with other calculators)
+
+  วิธีคิดราคา / how a price is worked out:
+    1. พื้นที่ = กว้าง x สูง
+    2. คิดขั้นต่ำ 3 ตร.ม. (ต่ำกว่านั้นคิดเท่ากับ 3 ตร.ม.)
+    3. เปิดตารางหาราคาต่อ ตร.ม. ตามพื้นที่และชนิดผ้า
+    4. ถ้า "กว้างเกิน 3 ม. และ สูงเกิน 3 ม." บวกเพิ่ม 1,000 บาท/ตร.ม.
+    5. ราคาโครง+ผ้า = ราคาต่อ ตร.ม. x พื้นที่ที่คิดเงิน
+    6. บวกราคาระบบ (มือดึง หรือ มอเตอร์)
+-->
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
+<title>iZip Zip Screen 71201 XL Calculator</title>
+<style>
+:root {
+  --navy: #003366;
+  --navy-hover: #0b4a86;
+  --navy-soft: #e8eef5;
+  --ink: #16202b;
+  --muted: #5b6878;
+  --ground: #f5f7fa;
+  --paper: #ffffff;
+  --rule: #d9e1ea;
+  --control: #c5d0dc;
+  --ok-ink: #0f5132;
+  --ok-bg: #e6f4ec;
+  --warn-ink: #8a5a00;
+  --warn-bg: #fff3d6;
+  --bad-ink: #b42318;
+  --bad-bg: #fdecea;
+  --radius: 12px;
+  --font: "Leelawadee UI", "Sukhumvit Set", Thonburi, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--font); }
+a { color: var(--navy); }
+.page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 48px; }
+
+.page-head { margin-bottom: 20px; }
+.crumbs { margin: 0 0 4px; font-size: 14px; color: var(--muted); }
+h1 { margin: 0; font-size: 28px; line-height: 1.2; color: var(--navy); text-wrap: balance; }
+h1 span { display: block; font-size: 18px; font-weight: 600; color: var(--ink); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; }
+.section { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+.section:last-child { margin-bottom: 0; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 14px; }
+h2 { margin: 0; font-size: 20px; line-height: 1.3; color: var(--navy); }
+.section-head p { margin: 0; font-size: 14px; color: var(--muted); }
+
+.field { display: grid; gap: 6px; align-content: start; }
+.field label { font-size: 14px; font-weight: 700; }
+.field small { font-size: 12px; color: var(--muted); }
+input, select { font: inherit; font-size: 16px; color: var(--ink); background: #fff; border: 1px solid var(--control); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+input[type="number"] { font-variant-numeric: tabular-nums; text-align: right; }
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 3px solid rgba(0,51,102,.35); outline-offset: 2px; border-color: var(--navy); }
+select:disabled { background: var(--ground); color: var(--muted); cursor: not-allowed; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+button { font: inherit; cursor: pointer; }
+.btn { border-radius: 8px; padding: 10px 14px; font-size: 14px; font-weight: 700; border: 1px solid transparent; }
+.btn-primary { background: var(--navy); color: #fff; }
+.btn-primary:hover { background: var(--navy-hover); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* แถบบอกพื้นที่และกฎที่กำลังใช้ / live area readout and which rules are in play */
+.readout { margin-top: 14px; padding: 12px 14px; background: var(--navy-soft); border-radius: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.readout .area { font-size: 20px; font-weight: 800; color: var(--navy); font-variant-numeric: tabular-nums; }
+.readout .band { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; font-weight: 700; line-height: 1.4; border-radius: 999px; padding: 3px 10px; }
+.chip-warn { color: var(--warn-ink); background: var(--warn-bg); }
+.chip-ok { color: var(--ok-ink); background: var(--ok-bg); }
+.limits { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+
+.summary { position: sticky; top: 16px; display: grid; gap: 14px; background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: 0 12px 30px rgba(15,35,60,.10); padding: 16px; }
+.brandbar { background: var(--navy); color: #fff; border-radius: 10px; padding: 10px 14px; text-align: center; }
+.brandbar b { display: block; font-size: 15px; letter-spacing: .14em; }
+.brandbar span { font-size: 12px; opacity: .85; }
+.languageToggle { display: inline-flex; border: 1px solid var(--control); border-radius: 999px; background: #fff; padding: 3px; width: fit-content; }
+.languageToggle button { border: 0; border-radius: 999px; background: transparent; color: #475569; font-size: 13px; font-weight: 900; padding: 8px 12px; }
+.languageToggle button.active { background: var(--navy); color: #fff; }
+.totals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.total-card { display: grid; gap: 2px; background: var(--ok-bg); border-radius: 10px; padding: 12px; }
+.total-card .label { font-size: 12px; font-weight: 700; color: var(--ok-ink); }
+.total-card .big { font-size: 20px; font-weight: 800; color: var(--ok-ink); font-variant-numeric: tabular-nums; }
+.total-card .sub { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.blocked { background: var(--bad-bg); color: var(--bad-ink); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+.copy-label { margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--navy); }
+.quote-text { margin: 0; padding: 12px; max-height: 440px; overflow: auto; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; white-space: pre-wrap; font: 14px/1.6 var(--font); font-variant-numeric: tabular-nums; }
+.quote-text.is-empty { color: var(--muted); }
+.copy-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.copy-row .btn { flex: 1; }
+.copy-status { font-size: 14px; font-weight: 700; color: var(--ok-ink); }
+
+.ratecard { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ratecard th, .ratecard td { border-bottom: 1px solid var(--rule); padding: 7px 8px; text-align: right; font-variant-numeric: tabular-nums; }
+.ratecard th:first-child, .ratecard td:first-child { text-align: left; }
+.ratecard th { font-size: 12px; color: var(--muted); }
+.ratecard tr.is-active td { background: var(--navy-soft); font-weight: 700; color: var(--navy); }
+.remark { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+.remark li { margin-bottom: 3px; }
+
+@media (max-width: 1040px) {
+  .layout { grid-template-columns: 1fr; }
+  .summary { position: static; }
+}
+@media (max-width: 640px) {
+  .page { padding: 16px 16px 40px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .totals { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-head">
+    <p class="crumbs"><a href="index.html">หน้ารวมเครื่องคำนวณ</a> / <a href="izip-screen-71101-L.html">Zip-71101 L Size</a></p>
+    <h1>iZip Zip Screen <span>Pricelist Zip-71201 (Import) · XL Size</span></h1>
+  </header>
+
+  <div class="layout">
+    <main>
+      <section class="section">
+        <div class="section-head">
+          <h2>ขนาดและผ้า</h2>
+          <p>กว้าง 0.70–4.00 ม. · สูง 0.85–4.80 ม.</p>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label for="width">ความกว้าง (เมตร)</label>
+            <input id="width" type="number" min="0.7" max="4" step="0.01" inputmode="decimal" value="2.00">
+          </div>
+          <div class="field">
+            <label for="height">ความสูง (เมตร)</label>
+            <input id="height" type="number" min="0.85" max="4.8" step="0.01" inputmode="decimal" value="2.00">
+          </div>
+          <div class="field">
+            <label for="fabric">ชนิดผ้า</label>
+            <select id="fabric">
+              <option value="f0">Sunscreen 0% Black out</option>
+              <option value="f1">Sunscreen 1% Openness</option>
+              <option value="f5">Sunscreen 5% Openness</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="readout">
+          <span class="area" id="areaText">—</span>
+          <span class="band" id="bandText"></span>
+          <span class="chips" id="areaChips"></span>
+        </div>
+        <p class="limits">ขนาดมาตรฐานที่ผลิตได้: กว้าง 0.70–4.00 ม. · สูง 0.85–4.80 ม. · พื้นที่ต่ำกว่า 3 ตร.ม. คิดเท่ากับ 3 ตร.ม.</p>
+
+        <div class="field" style="margin-top:14px;">
+          <label for="frameColour">สีโครงอลูมิเนียม</label>
+          <select id="frameColour">
+            <option value="RAL9016 White">RAL9016 White (ขาว)</option>
+            <option value="RAL7016 Grey">RAL7016 Grey (เทา)</option>
+          </select>
+          <small>ราคาเท่ากันทั้ง 2 สี</small>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>ระบบมือดึง</h2>
+          <p>เลือก 1 ระบบ</p>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="manualSystem">ระบบ</label>
+            <select id="manualSystem">
+              <option value="pushpull">Push &amp; Pull ผลัก-ดึง (+3,800 บาท)</option>
+              <option value="chain">Chain โซ่ดึง (+4,200 บาท)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="hookPole">มือเกี่ยว (ก้านดึง)</label>
+            <select id="hookPole">
+              <option value="0">ไม่ใช้</option>
+              <option value="820">ยาว 0.7 ม. (+820 บาท)</option>
+              <option value="950">ยาว 1.2 ม. (+950 บาท)</option>
+              <option value="1200">ยาว 1.5 ม. (+1,200 บาท)</option>
+            </select>
+            <small id="hookNote">มือเกี่ยวใช้กับระบบ Push &amp; Pull เท่านั้น</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>จำนวนและส่วนลด</h2>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label for="qty">จำนวน (ชุด)</label>
+            <input id="qty" type="number" min="1" step="1" inputmode="numeric" value="1">
+          </div>
+          <div class="field">
+            <label for="specialDiscount">ส่วนลดพิเศษ (บาท)</label>
+            <input id="specialDiscount" type="number" min="0" step="1" value="0">
+          </div>
+          <div class="field">
+            <label for="discount">ส่วนลด (%)</label>
+            <input id="discount" type="number" min="0" max="100" step="0.1" value="0">
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label for="jobNote">หมายเหตุ</label>
+          <input id="jobNote" type="text" placeholder="เช่น ติดตั้งชั้น 2 ต้องใช้นั่งร้าน">
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>ตารางราคา</h2>
+          <p>ราคาโครงสร้าง + ผ้า ต่อ ตร.ม. (บาท)</p>
+        </div>
+        <table class="ratecard">
+          <thead>
+            <tr><th scope="col">พื้นที่ (ตร.ม.)</th><th scope="col">0%</th><th scope="col">1%</th><th scope="col">5%</th></tr>
+          </thead>
+          <tbody id="rateBody"></tbody>
+        </table>
+        <p class="limits">ขนาดกว้างเกิน 3 ม. <strong>และ</strong> สูงเกิน 3 ม. บวกเพิ่ม 1,000 บาท/ตร.ม.</p>
+        <ol class="remark" style="margin-top:12px;">
+          <li>Aluminum Profile, Powder coated print</li>
+          <li>ผ้า Sunscreen 0% Black out / 1% Openness / 5% Openness</li>
+          <li>ราคารวม VAT 7% และค่าติดตั้งแล้ว</li>
+          <li>สีโครง RAL9016 White, RAL7016 Grey</li>
+          <li>สินค้า Pre-Order รอสินค้า 90-120 วัน</li>
+        </ol>
+      </section>
+    </main>
+
+    <aside class="summary">
+      <div class="brandbar"><b>SANGTHONG CREATION</b><span>Price presented by Sangthong Creation</span></div>
+      <div class="languageToggle" aria-label="Result language">
+        <button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button>
+        <button type="button" data-result-lang="en" aria-pressed="false">EN</button>
+      </div>
+
+      <div id="blocked" class="blocked" role="alert" hidden></div>
+
+      <div id="totals" class="totals">
+        <div class="total-card">
+          <span class="label">ระบบมือดึง</span>
+          <span id="manualTotal" class="big"></span>
+          <span id="manualSub" class="sub"></span>
+        </div>
+        <div class="total-card">
+          <span class="label">ระบบมอเตอร์</span>
+          <span id="motorTotal" class="big"></span>
+          <span id="motorSub" class="sub"></span>
+        </div>
+      </div>
+
+      <div>
+        <div class="copy-label">ข้อความสำหรับส่งลูกค้า</div>
+        <pre id="copyPreview" class="quote-text"></pre>
+        <div class="copy-row">
+          <button type="button" id="copyBtn" class="btn btn-primary">คัดลอกข้อความ</button>
+          <span id="copyStatus" class="copy-status" role="status"></span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script src="i18n.js"></script>
+<script>
+// ===========================================================================
+// ราคาจากใบราคา Zip-71201 (Import) XL Size / prices from the Zip-71201 sheet
+// ===========================================================================
+
+// ราคาโครงสร้าง+ผ้า ต่อ ตร.ม. แยกตามพื้นที่และชนิดผ้า
+// ใบราคาเขียนช่วงไว้เป็น 3-4.99 / 5-6.99 / 7-8.99 / 9-10.99 / เกิน 11
+// โค้ดใช้ "น้อยกว่า" เพื่อไม่ให้มีช่องโหว่ เช่น 4.995 ตร.ม. ที่ตกร่องระหว่างช่วง
+// (bands are treated as continuous so no area falls between two rows)
+const RATE_TABLE = [
+  { label: '3 – 4.99',  under: 5,        f0: 6600, f1: 6400, f5: 6200 },
+  { label: '5 – 6.99',  under: 7,        f0: 6200, f1: 6100, f5: 5800 },
+  { label: '7 – 8.99',  under: 9,        f0: 5800, f1: 5600, f5: 5400 },
+  { label: '9 – 10.99', under: 11,       f0: 5400, f1: 5300, f5: 5000 },
+  { label: '11 ขึ้นไป', under: Infinity, f0: 5300, f1: 5000, f5: 4800 }
+];
+
+const MIN_AREA = 3;              // พื้นที่ขั้นต่ำที่คิดเงิน / minimum billable area
+const OVERSIZE_LIMIT = 3.00;     // ต้องเกินทั้งกว้างและสูง จึงบวกเพิ่ม
+const OVERSIZE_RATE = 1000;      // บาท/ตร.ม. ที่บวกเพิ่ม
+const LIMIT = { wMin: 0.70, wMax: 4.00, hMin: 0.85, hMax: 4.80 };
+const MANUAL_SYSTEMS = {
+  pushpull: { price: 3800, th: 'Push & Pull ผลัก-ดึง', allowsHook: true },
+  chain:    { price: 4200, th: 'Chain โซ่ดึง',         allowsHook: false }
+};
+const MOTOR_AOK = 9000;          // ระบบมอเตอร์ A-ok (กว้างไม่เกิน 4.00 ม. ใช้ราคาเดียว)
+const FABRIC_LABELS = { f0: 'Sunscreen 0% Black out', f1: 'Sunscreen 1% Openness', f5: 'Sunscreen 5% Openness' };
+
+// ===========================================================================
+// คำแปลอังกฤษ / English wording
+// คำที่ใช้ร่วมกับไฟล์อื่นอยู่ใน i18n.js กลุ่ม AWNING — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์
+// รายการข้างล่างนี้เป็นคำเฉพาะของรุ่นนี้ และถูกใช้ก่อนเสมอ
+// ===========================================================================
+let resultLanguage = 'th';
+const RESULT_EN_OVERRIDES = [
+  ['พื้นที่ต่ำกว่า 3 ตร.ม. คิดเท่ากับ 3 ตร.ม.', 'areas under 3 sq.m. are billed as 3 sq.m.'],
+  ['รวมส่วนเพิ่ม กว้างและสูงเกิน 3 ม. บวกเพิ่ม', 'includes surcharge for width and height both over 3 m:'],
+  ['ราคาโครงสร้าง + ผ้า', 'Structure + screen fabric'],
+  ['ขนาดอยู่นอกช่วงที่ผลิตได้', 'Size is outside the standard production range'],
+  ['ราคาสรุประบบมือดึง', 'Manual system total'],
+  ['ราคาสรุประบบมอเตอร์', 'Motorized system total'],
+  ['ระบบมอเตอร์ A-ok', 'A-ok Motorized System'],
+  ['พื้นที่ที่คิดเงิน', 'Billable area'],
+  ['สีโครงอลูมิเนียม', 'Aluminum frame colour'],
+  ['หมายเหตุเพิ่มเติม', 'Additional note'],
+  ['ราคาต่อ ตร.ม.', 'Price per sq.m.'],
+  // คำที่ต้องแปลทั้งวลี ไม่งั้นกฎคำสั้นใน i18n.js จะไปตัดคำยาวขาด
+  // เช่น 'ผ้า' -> Fabric จะทำให้ 'ชนิดผ้า' กลายเป็น 'ชนิดFabric' ให้ลูกค้าเห็น
+  // (whole-phrase entries: a short shared rule would otherwise cut these in half)
+  ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
+  ['ราคาก่อนส่วนลด', 'Before discount'],
+  ['ส่วนลดพิเศษ', 'Special discount'],
+  ['ชนิดผ้า', 'Fabric'],
+  ['ส่วนลด', 'Discount'],
+  ['วัน', 'days'],
+  ['Push & Pull ผลัก-ดึง', 'Push & Pull'],
+  ['มอเตอร์ A-ok', 'A-ok motor'],
+  ['Chain โซ่ดึง', 'Chain'],
+  ['มือเกี่ยว', 'Hook pole'],
+  ['ตร.ม.', 'sq.m.'],
+  ['ไม่ใช้', 'None'],
+  ['ขนาด', 'Size'],
+  ['กว้าง', 'Width'],
+  ['ยาว', 'Length'],
+  ['จำนวน', 'Quantity']
+];
+const RESULT_EN_REPLACEMENTS = window.SANGTHONG_I18N
+  ? window.SANGTHONG_I18N.merge(RESULT_EN_OVERRIDES, 'AWNING')
+  : RESULT_EN_OVERRIDES;
+// เรียงจากคำยาวไปสั้นครั้งเดียวตอนโหลด ไม่ต้องเรียงใหม่ทุกครั้งที่พิมพ์
+// (sorted once at load: a short word must never cut a longer phrase in half)
+const SORTED_REPLACEMENTS = RESULT_EN_REPLACEMENTS.slice().sort((a, b) => b[0].length - a[0].length);
+
+function localizeResultText(text) {
+  if (resultLanguage !== 'en') return String(text || '');
+  let output = String(text || '');
+  SORTED_REPLACEMENTS.forEach(function (pair) { output = output.split(pair[0]).join(pair[1]); });
+  return output.replace(/\s+THB/g, ' THB').trim();
+}
+
+// ===========================================================================
+// ตัวช่วย / helpers
+// ===========================================================================
+const $ = id => document.getElementById(id);
+const bahtText = n => Math.round(Number(n) || 0).toLocaleString('th-TH') + ' บาท';
+const sqm = n => (Math.round(n * 100) / 100).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+let latestQuote = '';
+
+function getBand(area) {
+  return RATE_TABLE.find(b => area < b.under) || RATE_TABLE[RATE_TABLE.length - 1];
+}
+
+// ส่วนลด: หักส่วนลดพิเศษก่อน (ไม่เกินยอด) แล้วคิด % จากยอดที่เหลือ
+// เหมือนเครื่องคำนวณตัวอื่นทุกตัว / same order as every other calculator
+function applyDiscounts(subtotal, specialInput, percent) {
+  const special = Math.min(specialInput, subtotal);
+  const base = Math.max(subtotal - special, 0);
+  const percentAmount = base * (percent / 100);
+  return { subtotal: subtotal, special: special, percentAmount: percentAmount, total: base - percentAmount };
+}
+
+// คิดราคาโครง+ผ้า 1 ชุด / price the structure + fabric for one set
+function priceOneSet(w, h, fabricKey) {
+  if (isNaN(w) || isNaN(h)) return { ok: false, error: 'กรุณากรอกความกว้างและความสูง' };
+  if (w < LIMIT.wMin || w > LIMIT.wMax || h < LIMIT.hMin || h > LIMIT.hMax) {
+    return {
+      ok: false,
+      error: 'ขนาดอยู่นอกช่วงที่ผลิตได้ (กว้าง ' + LIMIT.wMin.toFixed(2) + '–' + LIMIT.wMax.toFixed(2) +
+             ' ม. · สูง ' + LIMIT.hMin.toFixed(2) + '–' + LIMIT.hMax.toFixed(2) + ' ม.)'
+    };
+  }
+  const area = w * h;
+  const billable = Math.max(area, MIN_AREA);
+  const band = getBand(billable);
+  const baseRate = band[fabricKey];
+  // บวกเพิ่มเมื่อ "กว้างเกิน 3 ม. และ สูงเกิน 3 ม." เท่านั้น (ต้องเกินทั้งคู่)
+  // surcharge only when BOTH width and height exceed 3 m
+  const oversize = w > OVERSIZE_LIMIT && h > OVERSIZE_LIMIT;
+  const rate = baseRate + (oversize ? OVERSIZE_RATE : 0);
+  return {
+    ok: true,
+    area: area,
+    billable: billable,
+    band: band,
+    baseRate: baseRate,
+    rate: rate,
+    oversize: oversize,
+    minApplied: area < MIN_AREA,
+    base: rate * billable
+  };
+}
+
+// ===========================================================================
+// หน้าจอ / screen
+// ===========================================================================
+function renderRateTable(activeBand) {
+  $('rateBody').innerHTML = RATE_TABLE.map(function (b) {
+    return '<tr' + (b === activeBand ? ' class="is-active"' : '') + '>' +
+      '<td>' + b.label + '</td>' +
+      '<td>' + b.f0.toLocaleString('th-TH') + '</td>' +
+      '<td>' + b.f1.toLocaleString('th-TH') + '</td>' +
+      '<td>' + b.f5.toLocaleString('th-TH') + '</td></tr>';
+  }).join('');
+}
+
+function calculate() {
+  const w = parseFloat($('width').value);
+  const h = parseFloat($('height').value);
+  const fabricKey = $('fabric').value;
+  const fabricLabel = FABRIC_LABELS[fabricKey];
+  const frameColour = $('frameColour').value;
+  const system = MANUAL_SYSTEMS[$('manualSystem').value];
+  const qty = Math.max(1, parseInt($('qty').value, 10) || 1);
+  const specialInput = parseFloat($('specialDiscount').value) || 0;
+  const percent = parseFloat($('discount').value) || 0;
+  const jobNote = ($('jobNote').value || '').trim();
+
+  // มือเกี่ยวใช้ได้เฉพาะ Push & Pull — เลือก Chain แล้วต้องปิดและล้างค่า
+  // the hook pole belongs to Push & Pull only; Chain is a different system
+  const hookSel = $('hookPole');
+  hookSel.disabled = !system.allowsHook;
+  if (!system.allowsHook) hookSel.value = '0';
+  $('hookNote').textContent = system.allowsHook
+    ? 'มือเกี่ยวใช้กับระบบ Push & Pull เท่านั้น'
+    : 'ระบบ Chain โซ่ดึง ไม่ใช้มือเกี่ยว';
+  const hook = parseFloat(hookSel.value) || 0;
+  const hookLabel = hook ? hookSel.options[hookSel.selectedIndex].text.replace(/\s*\(.*\)\s*$/, '').trim() : '';
+
+  const r = priceOneSet(w, h, fabricKey);
+
+  if (!r.ok) {
+    $('areaText').textContent = '—';
+    $('bandText').textContent = '';
+    $('areaChips').innerHTML = '';
+    renderRateTable(null);
+    $('blocked').textContent = r.error;
+    $('blocked').hidden = false;
+    $('totals').hidden = true;
+    latestQuote = '';
+    $('copyPreview').textContent = localizeResultText('ยังคำนวณราคาไม่ได้ — ' + r.error);
+    $('copyPreview').classList.add('is-empty');
+    $('copyBtn').disabled = true;
+    return;
+  }
+
+  $('blocked').hidden = true;
+  $('totals').hidden = false;
+  $('copyBtn').disabled = false;
+  $('copyPreview').classList.remove('is-empty');
+
+  $('areaText').textContent = sqm(r.area) + ' ตร.ม.';
+  $('bandText').textContent = 'ช่วง ' + r.band.label + ' ตร.ม. · ' + r.rate.toLocaleString('th-TH') + ' บาท/ตร.ม.';
+  const chips = [];
+  if (r.minApplied) chips.push('<span class="chip chip-warn">คิดขั้นต่ำ 3 ตร.ม.</span>');
+  if (r.oversize) chips.push('<span class="chip chip-warn">กว้างและสูงเกิน 3 ม. +1,000 บาท/ตร.ม.</span>');
+  if (!chips.length) chips.push('<span class="chip chip-ok">ราคาตามตาราง</span>');
+  $('areaChips').innerHTML = chips.join('');
+  renderRateTable(r.band);
+
+  const manualUnit = r.base + system.price + hook;
+  const motorUnit = r.base + MOTOR_AOK;
+  const manual = applyDiscounts(manualUnit * qty, specialInput, percent);
+  const motorized = applyDiscounts(motorUnit * qty, specialInput, percent);
+  const hasDiscount = manual.special > 0 || percent > 0;
+
+  $('manualTotal').textContent = bahtText(manual.total);
+  $('manualSub').textContent = hasDiscount ? 'ก่อนส่วนลด ' + bahtText(manual.subtotal) : (qty > 1 ? qty + ' ชุด' : 'ต่อ 1 ชุด');
+  $('motorTotal').textContent = bahtText(motorized.total);
+  $('motorSub').textContent = hasDiscount ? 'ก่อนส่วนลด ' + bahtText(motorized.subtotal) : (qty > 1 ? qty + ' ชุด' : 'ต่อ 1 ชุด');
+
+  // เขียนข้อความส่งลูกค้าด้วย lines.push ทีละบรรทัดเหมือนไฟล์อื่น ๆ
+  // เพราะ check.js อ่านเฉพาะรูปแบบ lines.push("...") ถ้าเขียนแบบอื่น
+  // ตัวตรวจจะมองไม่เห็นไฟล์นี้เลย และคำไทยหลุดไปโหมด EN ได้โดยไม่มีใครรู้
+  // (check.js only scans lines.push("...") literals — keep this shape so the
+  //  EN check and the standard-note check actually cover this file)
+  function pushDiscountLines(lines, d) {
+    if (d.special > 0) lines.push('ส่วนลดพิเศษ: -' + bahtText(d.special));
+    if (percent > 0) lines.push('ส่วนลด: ' + percent + '% = -' + bahtText(d.percentAmount));
+  }
+
+  const lines = [];
+  lines.push('iZip Zip Screen (Zip-71201 XL Size)');
+  lines.push('ชนิดผ้า: ' + fabricLabel);
+  lines.push('สีโครงอลูมิเนียม: ' + frameColour);
+  lines.push('ขนาด: กว้าง ' + w.toFixed(2) + ' x สูง ' + h.toFixed(2) + ' ม. = ' + sqm(r.area) + ' ตร.ม.');
+  if (r.minApplied) lines.push('พื้นที่ที่คิดเงิน: ' + sqm(r.billable) + ' ตร.ม. (พื้นที่ต่ำกว่า 3 ตร.ม. คิดเท่ากับ 3 ตร.ม.)');
+  lines.push('ราคาต่อ ตร.ม.: ' + bahtText(r.rate) + (r.oversize ? ' (รวมส่วนเพิ่ม กว้างและสูงเกิน 3 ม. บวกเพิ่ม ' + bahtText(OVERSIZE_RATE) + ')' : ''));
+  lines.push('ราคาโครงสร้าง + ผ้า: ' + bahtText(r.base));
+  lines.push('จำนวน: ' + qty + ' ชุด');
+  lines.push('');
+  lines.push('ระบบมือดึง');
+  lines.push(system.th + ': +' + bahtText(system.price));
+  if (hook) lines.push('มือเกี่ยว ' + hookLabel + ': +' + bahtText(hook));
+  lines.push('ราคาก่อนส่วนลด: ' + bahtText(manual.subtotal));
+  pushDiscountLines(lines, manual);
+  lines.push('ราคาสรุประบบมือดึง: ' + bahtText(manual.total));
+  lines.push('');
+  lines.push('ระบบมอเตอร์ A-ok');
+  lines.push('มอเตอร์ A-ok: +' + bahtText(MOTOR_AOK));
+  lines.push('ราคาก่อนส่วนลด: ' + bahtText(motorized.subtotal));
+  pushDiscountLines(lines, motorized);
+  lines.push('ราคาสรุประบบมอเตอร์: ' + bahtText(motorized.total));
+  if (jobNote) {
+    lines.push('');
+    lines.push('หมายเหตุเพิ่มเติม: ' + jobNote);
+  }
+  lines.push('');
+  lines.push('รวม VAT 7% แล้ว');
+  lines.push('ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล');
+  lines.push('ราคาประเมินเบื้องต้น อาจเปลี่ยนแปลงหลังสำรวจหน้างานจริง');
+  lines.push('สินค้า Pre-Order รอสินค้า 90-120 วัน');
+  lines.push('รับประกันโครงสร้างและการติดตั้ง 1 ปี');
+  lines.push('รับประกันการทำงานของมอเตอร์ 2 ปี ตามเงื่อนไขบริษัท');
+
+  latestQuote = lines.join('\n');
+  $('copyPreview').textContent = localizeResultText(latestQuote);
+}
+
+function setResultLanguage(lang) {
+  resultLanguage = lang === 'en' ? 'en' : 'th';
+  document.querySelectorAll('[data-result-lang]').forEach(function (button) {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  calculate();
+}
+
+async function copyQuote() {
+  const text = localizeResultText(latestQuote);
+  if (!text) return;
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(text);
+    copied = true;
+  } catch (e) {
+    // เปิดไฟล์จากเครื่องบางเบราว์เซอร์ไม่ให้ใช้ clipboard API จึงสำรองด้วยวิธีเดิม
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    copied = document.execCommand('copy');
+    ta.remove();
+  }
+  const status = $('copyStatus');
+  status.textContent = copied ? 'คัดลอกแล้ว' : 'คัดลอกไม่ได้ ให้เลือกข้อความแล้วกด Ctrl+C';
+  clearTimeout(copyQuote.timer);
+  copyQuote.timer = setTimeout(function () { status.textContent = ''; }, 2500);
+}
+
+function init() {
+  ['width', 'height', 'fabric', 'frameColour', 'manualSystem', 'hookPole', 'qty', 'specialDiscount', 'discount', 'jobNote']
+    .forEach(function (id) {
+      $(id).addEventListener('input', calculate);
+      $(id).addEventListener('change', calculate);
+    });
+  document.querySelectorAll('[data-result-lang]').forEach(function (button) {
+    button.addEventListener('click', function () { setResultLanguage(button.dataset.resultLang); });
+  });
+  $('copyBtn').addEventListener('click', copyQuote);
+  renderRateTable(null);
+  calculate();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+<!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline. -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
+</script>
+</body>
+</html>

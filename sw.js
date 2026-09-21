@@ -10,13 +10,14 @@
   IMPORTANT: bump CACHE_NAME (v1 -> v2 ...) whenever you change any cached file,
   so visitors get the new version instead of the old cached copy.
 */
-const CACHE_NAME = 'sangthong-awning-v24';
+const CACHE_NAME = 'sangthong-awning-v43';
 
 const ASSETS = [
   './',
   './manifest.json',
   './icon.svg',
   './prices.js',
+  './i18n.js',
   './aland_retractable_arm_awning.html',
   './canopy-calculator.html',
   './chill-d1.html',
@@ -48,12 +49,15 @@ const ASSETS = [
   './ipergo-t600-cwm.html',
   './ipergo-t600-cwmd.html',
   './izip-screen.html',
+  './izip-screen-71101-L.html',
+  './izip-screen-71201-XL.html',
   './ma4-calculator.html',
   './ma4-calculator-structure.html',
   './rv-awning.html',
   './maintenance-guide.html',
   './seatel-st1000e-vertical-awning.html',
   './seatel-st2000.html',
+  './seatel-st2000-multiple.html',
   './seatel-st2000-structure.html',
   './solidux.html',
   './spettmann-star.html',
