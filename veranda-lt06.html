@@ -267,6 +267,11 @@
             <input id="discount" type="number" min="0" max="100" value="0" />
           </div>
         </div>
+
+        <div class="check-row mt">
+          <input id="importFee" type="checkbox" />
+          <label for="importFee">ค่าธรรมเนียมนำเข้า Pre-Order = 15,000 บาท (คิดครั้งเดียวต่อ 1 ยอดสั่งซื้อ ไม่คูณจำนวนชุด)</label>
+        </div>
 <div id="warning" class="warning">
           No price found for this size. This size was grey/blank in the VERANDA LT06 table.
         </div>
@@ -369,6 +374,7 @@ const RESULT_EN_OVERRIDES = [
   ['กรุณาเลือก', 'Please select'],
   ['โครงสร้างสี Dark Grey และ White เป็นมาตรฐาน', 'Color Frame is Dark Grey & White is standard.'],
   ['ราคารวมโครงสร้างและผ้า + มอเตอร์ RTS + รีโมท', 'Motor system: Price included structure & Acrylic Fabric'],
+  ['ค่าธรรมเนียมนำเข้า (ต่อ 1 ยอดสั่งซื้อ)', 'Import fee (per order)'],
   ['สินค้า Pre-Order สั่งตัดพิเศษ รอสินค้า 60-90 วัน (ไม่มีสต็อกในไทย)', 'Pre-order, special made-to-order, 60-90 days lead time (not stocked in Thailand)'],
   ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
   ['หมายเหตุ', 'Note'],
@@ -534,7 +540,13 @@ const subtotal = unitSubtotal * awningQty;
 const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
       const discountBase = Math.max(subtotal - specialDiscountAmount, 0);
       const discountAmount = discountBase * (discountPercent / 100);
-      const grandTotal = Math.max(discountBase - discountAmount, 0);
+      // ค่าธรรมเนียมนำเข้าสินค้า Pre-Order 15,000 บาท
+      // คิด "ครั้งเดียวต่อ 1 ยอดสั่งซื้อ" จึงไม่คูณจำนวนชุด
+      // และบวกหลังหักส่วนลด เพราะเป็นค่าใช้จ่ายที่ต้องจ่ายจริง ไม่ใช่ราคาสินค้าที่ลดได้
+      // (charged once per order: never multiplied by quantity, and added after the
+      //  discounts because it is a pass-through cost, not part of the product price)
+      const importFee = document.getElementById("importFee").checked ? 15000 : 0;
+      const grandTotal = Math.max(discountBase - discountAmount, 0) + importFee;
       document.getElementById("warning").style.display = basePrice === 0 ? "block" : "none";
 
       const lines = [];
@@ -548,6 +560,7 @@ const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
       lines.push(`ราคาก่อนส่วนลด: ${money(subtotal)}`);
       if (specialDiscountAmount > 0) lines.push(`ส่วนลดพิเศษ: -${money(specialDiscountAmount)}`);
       lines.push(`ส่วนลด: ${discountPercent}% = ${money(discountAmount)}`);
+      if (importFee) lines.push(`ค่าธรรมเนียมนำเข้า (ต่อ 1 ยอดสั่งซื้อ): +${money(importFee)}`);
       lines.push(`ราคารวม: ${money(grandTotal)}`);
       if (jobNote) lines.push(`Note/หมายเหตุ: ${jobNote}`);
       lines.push("รวม VAT 7% แล้ว");
@@ -586,6 +599,7 @@ lines.push("ราคาที่แจ้งเป็นราคาเบื�
     document.getElementById("specialDiscount").addEventListener("input", calculate);
       document.getElementById("discount").addEventListener("input", calculate);
     document.getElementById("jobNote").addEventListener("input", calculate);
+    document.getElementById("importFee").addEventListener("change", calculate);
 
     calculate();
   
