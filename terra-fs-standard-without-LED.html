@@ -264,6 +264,10 @@
 <input id="windSunSensor" type="checkbox"/>
 <label for="windSunSensor">Wind-Sun Sensor = 6,600 B.</label>
 </div>
+<div class="check-row">
+<input id="extraArm" type="checkbox"/>
+<label for="extraArm">ซื้อแขนเพิ่ม 1 ข้าง = +10% จากราคา/ชุด (มาตรฐาน 2 แขนต่อชุด)</label>
+</div>
 </div>
 <div class="warning" id="warning">
           No price found for this size. This size was grey/blank in the original table.
@@ -293,6 +297,7 @@ let resultLanguage = 'th';
 // คำที่ใช้ร่วมกับไฟล์อื่นในกลุ่มอยู่ใน i18n.js — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์.
 // รายการข้างล่างนี้ถูกใช้ก่อนเสมอ (this list wins over the shared one).
 const RESULT_EN_OVERRIDES = [
+  ['ซื้อแขนเพิ่ม 1 ข้าง', 'Extra arm (1 side)'],
   ['รับประกัน', 'Warranty'],
   ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
   ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
@@ -429,36 +434,36 @@ initResultLanguageToggle();
 
 
     const PRICE_ROWS = [
-      { width: 3.0, projection: 1.5, price: 37020 },
-      { width: 3.5, projection: 1.5, price: 42310 },
-      { width: 4.0, projection: 1.5, price: 47600 },
-      { width: 4.5, projection: 1.5, price: 52890 },
-      { width: 5.0, projection: 1.5, price: 58170 },
-      { width: 5.5, projection: 1.5, price: 63460 },
-      { width: 6.0, projection: 1.5, price: 68750 },
+      { width: 3.0, projection: 1.5, price: 51000 },
+      { width: 3.5, projection: 1.5, price: 58300 },
+      { width: 4.0, projection: 1.5, price: 71900 },
+      { width: 4.5, projection: 1.5, price: 80000 },
+      { width: 5.0, projection: 1.5, price: 87300 },
+      { width: 5.5, projection: 1.5, price: 95400 },
+      { width: 6.0, projection: 1.5, price: 102700 },
 
-      { width: 3.0, projection: 2.0, price: 47600 },
-      { width: 3.5, projection: 2.0, price: 51560 },
-      { width: 4.0, projection: 2.0, price: 55530 },
-      { width: 4.5, projection: 2.0, price: 59500 },
-      { width: 5.0, projection: 2.0, price: 63460 },
-      { width: 5.5, projection: 2.0, price: 68750 },
-      { width: 6.0, projection: 2.0, price: 72720 },
+      { width: 3.0, projection: 2.0, price: 64900 },
+      { width: 3.5, projection: 2.0, price: 70500 },
+      { width: 4.0, projection: 2.0, price: 82400 },
+      { width: 4.5, projection: 2.0, price: 88700 },
+      { width: 5.0, projection: 2.0, price: 94300 },
+      { width: 5.5, projection: 2.0, price: 102400 },
+      { width: 6.0, projection: 2.0, price: 107900 },
 
-      { width: 3.0, projection: 2.5, price: 55530 },
-      { width: 3.5, projection: 2.5, price: 58170 },
-      { width: 4.0, projection: 2.5, price: 63460 },
-      { width: 4.5, projection: 2.5, price: 66110 },
-      { width: 5.0, projection: 2.5, price: 70070 },
-      { width: 5.5, projection: 2.5, price: 75360 },
-      { width: 6.0, projection: 2.5, price: 79330 },
+      { width: 3.0, projection: 2.5, price: 75400 },
+      { width: 3.5, projection: 2.5, price: 79200 },
+      { width: 4.0, projection: 2.5, price: 92900 },
+      { width: 4.5, projection: 2.5, price: 97500 },
+      { width: 5.0, projection: 2.5, price: 103000 },
+      { width: 5.5, projection: 2.5, price: 111100 },
+      { width: 6.0, projection: 2.5, price: 116700 },
 
-      { width: 3.5, projection: 3.0, price: 66150 },
-      { width: 4.0, projection: 3.0, price: 68750 },
-      { width: 4.5, projection: 3.0, price: 71390 },
-      { width: 5.0, projection: 3.0, price: 76680 },
-      { width: 5.5, projection: 3.0, price: 79570 },
-      { width: 6.0, projection: 3.0, price: 85940 }
+      { width: 3.5, projection: 3.0, price: 89700 },
+      { width: 4.0, projection: 3.0, price: 99900 },
+      { width: 4.5, projection: 3.0, price: 104500 },
+      { width: 5.0, projection: 3.0, price: 111800 },
+      { width: 5.5, projection: 3.0, price: 116400 },
+      { width: 6.0, projection: 3.0, price: 125400 }
     ];
 
     function cleanNumber(value) {
@@ -490,7 +495,11 @@ initResultLanguageToggle();
       const optionalExtras = tuyaWifi + windSunSensor;
 
       const basePrice = getBasePrice();
-      const unitSubtotal = basePrice + optionalExtras;
+      // ซื้อแขนเพิ่ม 1 ข้าง = บวก 10% ของราคาต่อชุด (ตามใบราคา มาตรฐาน 2 แขนต่อชุด)
+      // คิดจากราคาตั้งต่อชุดเท่านั้น ไม่รวมอุปกรณ์เสริมอื่น
+      // (extra arm: +10% of the table price per set, not of the other add-ons)
+      const extraArm = document.getElementById("extraArm").checked ? Math.round(basePrice * 0.10) : 0;
+      const unitSubtotal = basePrice + optionalExtras + extraArm;
       const subtotal = unitSubtotal * awningQty;
       const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
       const discountBase = Math.max(subtotal - specialDiscountAmount, 0);
@@ -507,6 +516,7 @@ initResultLanguageToggle();
       lines.push(`ยื่น: ${projection.toFixed(2)} m`);  //lines.push(`ราคาตั้งต่อชุด: ${basePrice ? money(basePrice) : "No price found"}`);
       if (tuyaWifi) lines.push(`Tuya Wifi: +${money(tuyaWifi)}`);
       if (windSunSensor) lines.push(`Wind-Sun Sensor: +${money(windSunSensor)}`);
+      if (extraArm) lines.push(`ซื้อแขนเพิ่ม 1 ข้าง: +${money(extraArm)}`);
       //lines.push(`//ราคาต่อชุดก่อนส่วนลด: ${basePrice ? money(unitSubtotal) : "No price found"}`);
       lines.push(`จำนวน: ${awningQty}`);
       lines.push(`ราคาก่อนส่วนลด: ${basePrice ? money(subtotal) : "No price found"}`);
@@ -521,7 +531,7 @@ lines.push("ราคาที่แจ้งเป็นราคาเบื�
       lines.push("Crank Size: ก้านหมุนเลือกได้ 1.00 m, 1.50 m, 2.00 m");
       lines.push("สินค้า Pre-Order รอสินค้า 60-90 วัน");
       // อุปกรณ์เสริมที่สั่งเพิ่มได้ / optional add-ons quoted for the customer
-      lines.push("Optional Extras: Tuya Wifi = 9,000 B. / Wind-Sun Sensor = 6,600 B.");
+      lines.push("Optional Extras: Tuya Wifi = 9,000 B. / Wind-Sun Sensor = 6,600 B. / Extra arm 1 side = +10% per set");
 
       setLocalizedCopyPreview(lines.join("\n"));
     }
@@ -555,6 +565,7 @@ lines.push("ราคาที่แจ้งเป็นราคาเบื�
     document.getElementById("jobNote").addEventListener("input", calculate);
     document.getElementById("tuyaWifi").addEventListener("change", calculate);
     document.getElementById("windSunSensor").addEventListener("change", calculate);
+    document.getElementById("extraArm").addEventListener("change", calculate);
 
     calculate();
   
