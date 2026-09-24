@@ -375,6 +375,8 @@ const RESULT_EN_OVERRIDES = [
   ['โครงสร้างสี Dark Grey และ White เป็นมาตรฐาน', 'Color Frame is Dark Grey & White is standard.'],
   ['ราคารวมโครงสร้างและผ้า + มอเตอร์ RTS + รีโมท', 'Motor system: Price included structure & Acrylic Fabric'],
   ['ค่าธรรมเนียมนำเข้า (ต่อ 1 ยอดสั่งซื้อ)', 'Import fee (per order)'],
+  ['ราคาไม่รวมโครงสร้าง, ขายึด เพิ่มเติมเพื่อรับม่าน Veranda', 'Price excludes the additional structure and brackets required to carry the Veranda awning'],
+  ['ราคาไม่รวมฝาครอบกันน้ำ (ถ้ามี)', 'Price excludes the waterproof cover, if required'],
   ['สินค้า Pre-Order สั่งตัดพิเศษ รอสินค้า 60-90 วัน (ไม่มีสต็อกในไทย)', 'Pre-order, special made-to-order, 60-90 days lead time (not stocked in Thailand)'],
   ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
   ['หมายเหตุ', 'Note'],
@@ -567,6 +569,8 @@ const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
       lines.push("ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล");
 lines.push("ราคาที่แจ้งเป็นราคาเบื้องต้นเท่านั้น ราคาที่แท้จริงสามารถแจ้งได้หลังสํารวจหน้างาน");lines.push("โครงสร้างสี Dark Grey และ White เป็นมาตรฐาน");
       lines.push("ราคารวมโครงสร้างและผ้า + มอเตอร์ RTS + รีโมท");
+      lines.push("ราคาไม่รวมโครงสร้าง, ขายึด เพิ่มเติมเพื่อรับม่าน Veranda");
+      lines.push("ราคาไม่รวมฝาครอบกันน้ำ (ถ้ามี)");
       lines.push("สินค้า Pre-Order สั่งตัดพิเศษ รอสินค้า 60-90 วัน (ไม่มีสต็อกในไทย)");
 
       setLocalizedCopyPreview(lines.join("\n"));
