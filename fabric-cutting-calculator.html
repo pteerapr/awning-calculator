@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<!--
+  สูตรการตัดผ้า / Fabric cutting calculator
+  ---------------------------------------------------------------------------
+  แปลงมาจากไฟล์ FabricCalculationDealerVersion.xlsx (4 ชีท: ST2000 · Spettmann
+  · MA3 · Chill D1) ตัวเลขทุกตัวดึงออกมาจากไฟล์ Excel โดยตรง ไม่ได้พิมพ์เอง
+  (every number below was extracted from the workbook, not retyped)
+
+  ไฟล์นี้คำนวณ "วิธีตัดผ้า" ไม่ใช่ราคา — ไม่เกี่ยวกับ prices.js
+  (this works out how to cut the fabric; it has nothing to do with pricing)
+
+  ต่างจากไฟล์ Excel 3 อย่าง / three deliberate differences from the workbook:
+    1. เลือกระบบได้ทีละ 1 อย่างเท่านั้น (ใน Excel ติ๊กหลายอันได้ แล้วลบความกว้าง
+       ซ้อนกันจนได้ค่าที่ผิดโดยไม่มีใครรู้)
+    2. ยังไม่เลือกระบบ = ยังไม่คำนวณ (ใน Excel ถ้าไม่ติ๊กเลย จะไม่ลบอะไรเลย
+       แล้วได้ขนาดที่ผิดแบบดูเผิน ๆ เหมือนถูก)
+    3. บอกจำนวนผ้าที่ต้องสั่งและเศษผ้าที่เหลือเพิ่มให้ (Excel ไม่ได้บอก)
+-->
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
+<title>Fabric Cutting Calculator</title>
+<style>
+:root {
+  --navy: #003366;
+  --navy-hover: #0b4a86;
+  --navy-soft: #e8eef5;
+  --ink: #16202b;
+  --muted: #5b6878;
+  --ground: #f5f7fa;
+  --paper: #ffffff;
+  --rule: #d9e1ea;
+  --control: #c5d0dc;
+  --ok-ink: #0f5132;
+  --ok-bg: #e6f4ec;
+  --warn-ink: #8a5a00;
+  --warn-bg: #fff3d6;
+  --bad-ink: #b42318;
+  --bad-bg: #fdecea;
+  --radius: 12px;
+  --font: "Leelawadee UI", "Sukhumvit Set", Thonburi, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--font); }
+a { color: var(--navy); }
+.page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 48px; }
+
+.page-head { margin-bottom: 20px; }
+.crumbs { margin: 0 0 4px; font-size: 14px; color: var(--muted); }
+h1 { margin: 0; font-size: 28px; line-height: 1.2; color: var(--navy); text-wrap: balance; }
+h1 span { display: block; font-size: 18px; font-weight: 600; color: var(--ink); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; }
+.section { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+.section:last-child { margin-bottom: 0; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 14px; }
+h2 { margin: 0; font-size: 20px; line-height: 1.3; color: var(--navy); }
+.section-head p { margin: 0; font-size: 14px; color: var(--muted); }
+
+.field { display: grid; gap: 6px; align-content: start; }
+.field label { font-size: 14px; font-weight: 700; }
+.field small { font-size: 12px; color: var(--muted); }
+input, select { font: inherit; font-size: 16px; color: var(--ink); background: #fff; border: 1px solid var(--control); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+input[type="number"] { font-variant-numeric: tabular-nums; text-align: right; }
+input:focus-visible, select:focus-visible, button:focus-visible, .choice input:focus-visible { outline: 3px solid rgba(0,51,102,.35); outline-offset: 2px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+/* ตัวเลือกระบบ / ส่วนเผื่อ — กดได้ทั้งแถบ */
+.choices { display: grid; gap: 8px; }
+.choice { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 10px; cursor: pointer; font-size: 15px; }
+.choice:hover { background: var(--navy-soft); }
+.choice input { width: 18px; height: 18px; margin: 0; accent-color: var(--navy); flex: none; }
+.choice.is-on { background: var(--navy-soft); border-color: #9fb8d4; font-weight: 700; }
+.choice .cm { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+button { font: inherit; cursor: pointer; }
+.btn { border-radius: 8px; padding: 10px 14px; font-size: 14px; font-weight: 700; border: 1px solid transparent; }
+.btn-primary { background: var(--navy); color: #fff; }
+.btn-primary:hover { background: var(--navy-hover); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* แถบแสดงวิธีคิด ทีละขั้น */
+.steps { margin-top: 14px; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+.step { display: grid; grid-template-columns: 54px 1fr auto; gap: 10px; align-items: baseline; padding: 9px 12px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.step:last-child { border-bottom: 0; }
+.step:nth-child(odd) { background: #fbfcfe; }
+.step .no { font-size: 12px; font-weight: 700; color: var(--muted); }
+.step .how { color: var(--muted); font-variant-numeric: tabular-nums; }
+.step .val { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.summary { position: sticky; top: 16px; display: grid; gap: 14px; background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: 0 12px 30px rgba(15,35,60,.10); padding: 16px; }
+.brandbar { background: var(--navy); color: #fff; border-radius: 10px; padding: 10px 14px; text-align: center; }
+.brandbar b { display: block; font-size: 15px; letter-spacing: .14em; }
+.brandbar span { font-size: 12px; opacity: .85; }
+.totals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.total-card { display: grid; gap: 2px; background: var(--ok-bg); border-radius: 10px; padding: 12px; }
+.total-card .label { font-size: 12px; font-weight: 700; color: var(--ok-ink); }
+.total-card .big { font-size: 22px; font-weight: 800; color: var(--ok-ink); font-variant-numeric: tabular-nums; }
+.total-card .sub { font-size: 12px; color: var(--muted); }
+.extra { border: 1px dashed #9fb2c6; border-radius: 10px; padding: 12px; display: grid; gap: 6px; font-size: 14px; }
+.extra .tag { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--muted); }
+.extra .row { display: flex; justify-content: space-between; gap: 10px; font-variant-numeric: tabular-nums; }
+.extra .row b { font-weight: 700; }
+.blocked { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+.note-seam { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.5; }
+.copy-label { margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--navy); }
+.sheet { margin: 0; padding: 12px; max-height: 300px; overflow: auto; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; white-space: pre-wrap; font: 13px/1.6 var(--font); font-variant-numeric: tabular-nums; }
+.copy-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.copy-row .btn { flex: 1; }
+.copy-status { font-size: 14px; font-weight: 700; color: var(--ok-ink); }
+.limits { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+
+@media (max-width: 1040px) {
+  .layout { grid-template-columns: 1fr; }
+  .summary { position: static; }
+}
+@media (max-width: 640px) {
+  .page { padding: 16px 16px 40px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .totals { grid-template-columns: 1fr; }
+  .step { grid-template-columns: 42px 1fr; }
+  .step .val { grid-column: 2; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-head">
+    <p class="crumbs"><a href="index.html">หน้ารวมเครื่องคำนวณ</a></p>
+    <h1>สูตรการตัดผ้า <span>คำนวณจำนวนแถบและความยาวผ้าที่ต้องตัด</span></h1>
+  </header>
+
+  <div class="layout">
+    <main>
+      <section class="section">
+        <div class="section-head">
+          <h2>สินค้าและขนาด</h2>
+          <p>ทุกช่องเป็นเซนติเมตร</p>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label for="product">ชนิดสินค้า</label>
+            <select id="product"></select>
+          </div>
+          <div class="field">
+            <label for="width">ขนาดกันสาด กว้าง (ซม.)</label>
+            <input id="width" type="number" min="1" step="0.5" inputmode="decimal" value="500">
+          </div>
+          <div class="field">
+            <label for="sets">จำนวนชุด</label>
+            <input id="sets" type="number" min="1" step="1" inputmode="numeric" value="1">
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:14px;">
+          <div class="field">
+            <label for="fabric">ชนิดผ้า</label>
+            <select id="fabric"></select>
+            <small id="fabricNote"></small>
+          </div>
+          <div class="field">
+            <label for="drop" id="dropLabel">ความสูงของกันสาด (ซม.)</label>
+            <input id="drop" type="number" min="1" step="0.5" inputmode="decimal" value="400">
+            <small id="dropNote"></small>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>ระบบ</h2>
+          <p>เลือก 1 อย่าง</p>
+        </div>
+        <div class="choices" id="systemList"></div>
+        <p class="limits">ตัวเลขท้ายบรรทัดคือความกว้างที่ต้องลด เพราะอุปกรณ์กินเนื้อที่เข้าไป</p>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2 id="allowHead">ส่วนเผื่อความยาว</h2>
+          <p id="allowHint"></p>
+        </div>
+        <div class="choices" id="allowList"></div>
+      </section>
+    </main>
+
+    <aside class="summary">
+      <div class="brandbar"><b>SANGTHONG CREATION</b><span>สูตรการตัดผ้า สำหรับช่าง</span></div>
+
+      <div id="blocked" class="blocked" role="alert" hidden></div>
+
+      <div id="results" hidden>
+        <div class="totals">
+          <div class="total-card">
+            <span class="label">จำนวนแถบทั้งหมด</span>
+            <span id="totalStrips" class="big"></span>
+            <span id="stripsSub" class="sub"></span>
+          </div>
+          <div class="total-card">
+            <span class="label">ความยาวผ้าที่ต้องตัด</span>
+            <span id="cutLength" class="big"></span>
+            <span id="lengthSub" class="sub"></span>
+          </div>
+        </div>
+
+        <div class="extra" style="margin-top:14px;">
+          <span class="tag">เพิ่มเติม (ไม่มีในไฟล์ Excel)</span>
+          <div class="row"><span>ผ้าที่ต้องใช้ทั้งหมด</span><b id="totalFabric"></b></div>
+          <div class="row"><span>เศษผ้าด้านกว้าง ต่อชุด</span><b id="offcut"></b></div>
+        </div>
+
+        <div id="seamNote" class="note-seam" style="margin-top:14px;" hidden></div>
+
+        <div style="margin-top:14px;">
+          <div class="copy-label">ใบสั่งตัดผ้า</div>
+          <pre id="sheetText" class="sheet"></pre>
+          <div class="copy-row">
+            <button type="button" id="copyBtn" class="btn btn-primary">คัดลอกใบสั่งตัด</button>
+            <span id="copyStatus" class="copy-status" role="status"></span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+// ===========================================================================
+// ข้อมูลจากไฟล์ FabricCalculationDealerVersion.xlsx
+// ดึงออกมาจากสูตรและป้ายของ checkbox ในไฟล์โดยตรง ไม่ได้พิมพ์ใหม่
+// (extracted from the workbook's formulas and checkbox captions)
+// ===========================================================================
+const PRODUCTS = [
+  {
+    "key": "st2000",
+    "sheet": "ST2000",
+    "label": "กันสาดแนวดิ่ง ST2000",
+    "dimLabel": "ความสูงของกันสาด",
+    "lengthMode": "one",
+    "doubleLength": false,
+    "systems": [
+      {
+        "label": "เกียร์ 9:1",
+        "deduct": 9
+      },
+      {
+        "label": "เกียร์ 13:1",
+        "deduct": 11
+      },
+      {
+        "label": "มอเตอร์Somfy / Strong up",
+        "deduct": 8
+      },
+      {
+        "label": "มอเตอร์ Spettmann",
+        "deduct": 9
+      },
+      {
+        "label": "มอเตอร์+เกียร์",
+        "deduct": 9.5
+      }
+    ],
+    "allowances": [
+      {
+        "label": "ผ้าโซล่าสกรีน บวก 50 ซม.",
+        "add": 50
+      },
+      {
+        "label": "ผ้าอื่นๆ บวก 60 ซม.",
+        "add": 60
+      }
+    ],
+    "fabrics": [
+      {
+        "name": "Solar Screen 2.50 meter",
+        "width": 250
+      },
+      {
+        "name": "Solar Screen 3.00 meter",
+        "width": 300
+      },
+      {
+        "name": "Solar Sand 2.00 meter",
+        "width": 200
+      },
+      {
+        "name": "Solar View 1.50 meter",
+        "width": 150
+      },
+      {
+        "name": "Acrylic 1.20 meter",
+        "width": 120
+      },
+      {
+        "name": "Suntex 2.50 meter",
+        "width": 250
+      },
+      {
+        "name": "Suntex 3.00 meter",
+        "width": 300
+      }
+    ]
+  },
+  {
+    "key": "spettmann",
+    "sheet": "Spettmann",
+    "label": "พับเก็บได้ Spettmann",
+    "dimLabel": "ความยื่นของกันสาด",
+    "lengthMode": "many",
+    "doubleLength": false,
+    "systems": [
+      {
+        "label": "เกียร์ 9:1",
+        "deduct": 12
+      },
+      {
+        "label": "เกียร์ 13:1",
+        "deduct": 14
+      },
+      {
+        "label": "มอเตอร์Somfy / Strong up",
+        "deduct": 11
+      },
+      {
+        "label": "มอเตอร์ Spettmann",
+        "deduct": 12
+      },
+      {
+        "label": "มอเตอร์+เกียร์",
+        "deduct": 12.5
+      }
+    ],
+    "allowances": [
+      {
+        "label": "ม้วนในท่อบวก 30 ซม.",
+        "add": 30
+      },
+      {
+        "label": "ระบายบวก 20 ซม.",
+        "add": 20
+      },
+      {
+        "label": "พับริมใส่เชือกบวก 30 ซม.",
+        "add": 30
+      }
+    ],
+    "fabrics": [
+      {
+        "name": "Solar Screen 2.50 meter",
+        "width": 250
+      },
+      {
+        "name": "Solar Screen 3.00 meter",
+        "width": 300
+      },
+      {
+        "name": "Solar Sand 2.00 meter",
+        "width": 200
+      },
+      {
+        "name": "Solar View 1.50 meter",
+        "width": 150
+      },
+      {
+        "name": "Acrylic 1.20 meter",
+        "width": 120
+      },
+      {
+        "name": "Suntex 2.50 meter",
+        "width": 250
+      },
+      {
+        "name": "Suntex 3.00 meter",
+        "width": 300
+      },
+      {
+        "name": "PVC HC 1.13 meter",
+        "width": 113
+      }
+    ]
+  },
+  {
+    "key": "ma3",
+    "sheet": "MA3",
+    "label": "พับเก็บได้ MA3",
+    "dimLabel": "ความยื่นของกันสาด",
+    "lengthMode": "many",
+    "doubleLength": false,
+    "systems": [
+      {
+        "label": "เกียร์ 9:1",
+        "deduct": 15
+      },
+      {
+        "label": "เกียร์ 13:1",
+        "deduct": 17
+      },
+      {
+        "label": "มอเตอร์Somfy / Strong up",
+        "deduct": 13
+      },
+      {
+        "label": "มอเตอร์ Spettmann",
+        "deduct": 13
+      },
+      {
+        "label": "มอเตอร์+เกียร์",
+        "deduct": 14
+      }
+    ],
+    "allowances": [
+      {
+        "label": "ม้วนในท่อบวก 30 ซม.",
+        "add": 30
+      },
+      {
+        "label": "ระบายบวก 20 ซม.",
+        "add": 20
+      },
+      {
+        "label": "พับริมใส่เชือกบวก 30 ซม.",
+        "add": 30
+      }
+    ],
+    "fabrics": [
+      {
+        "name": "Solar Screen 2.50 meter",
+        "width": 250
+      },
+      {
+        "name": "Solar Screen 3.00 meter",
+        "width": 300
+      },
+      {
+        "name": "Solar Sand 2.00 meter",
+        "width": 200
+      },
+      {
+        "name": "Solar View 1.50 meter",
+        "width": 150
+      },
+      {
+        "name": "Acrylic 1.20 meter",
+        "width": 120
+      },
+      {
+        "name": "Suntex 2.50 meter",
+        "width": 250
+      },
+      {
+        "name": "Suntex 3.00 meter",
+        "width": 300
+      },
+      {
+        "name": "PVC HC 1.13 meter",
+        "width": 113
+      }
+    ]
+  },
+  {
+    "key": "chill-d1",
+    "sheet": "Chill D1",
+    "label": "แขนตรง Chill D1",
+    "dimLabel": "ความยื่นของกันสาด",
+    "lengthMode": "many",
+    "doubleLength": true,
+    "systems": [
+      {
+        "label": "เกียร์ 9:1",
+        "deduct": 11
+      },
+      {
+        "label": "เกียร์ 13:1",
+        "deduct": 13
+      },
+      {
+        "label": "มอเตอร์ Somfy",
+        "deduct": 10
+      },
+      {
+        "label": "มอเตอร์ Spettmann",
+        "deduct": 11
+      },
+      {
+        "label": "มอเตอร์ Strong Up",
+        "deduct": 10.5
+      },
+      {
+        "label": "มอเตอร์+เกียร์",
+        "deduct": 12
+      }
+    ],
+    "allowances": [
+      {
+        "label": "ม้วนในท่อบวก 30 ซม.",
+        "add": 30
+      },
+      {
+        "label": "ระบายบวก 20 ซม.",
+        "add": 20
+      },
+      {
+        "label": "พับริมใส่เชือกบวก 30 ซม.",
+        "add": 30
+      }
+    ],
+    "fabrics": [
+      {
+        "name": "Solar Screen 2.50 meter",
+        "width": 250
+      },
+      {
+        "name": "Solar Screen 3.00 meter",
+        "width": 300
+      },
+      {
+        "name": "Solar Sand 2.00 meter",
+        "width": 200
+      },
+      {
+        "name": "Solar View 1.50 meter",
+        "width": 150
+      },
+      {
+        "name": "Acrylic 1.20 meter",
+        "width": 120
+      },
+      {
+        "name": "Suntex 2.50 meter",
+        "width": 250
+      },
+      {
+        "name": "Suntex 3.00 meter",
+        "width": 300
+      },
+      {
+        "name": "PVC HC 1.13 meter",
+        "width": 113
+      }
+    ]
+  }
+];
+
+const HEM = 6;          // พับริมซ้ายขวา ข้างละ 3 ซม. / 3 cm hem each side
+const $ = id => document.getElementById(id);
+const num = n => Number(n).toLocaleString('th-TH', { maximumFractionDigits: 2 });
+let latestSheet = '';
+
+function product() {
+  return PRODUCTS.find(p => p.key === $('product').value) || PRODUCTS[0];
+}
+
+// ----- วาดตัวเลือกตามสินค้าที่เลือก / redraw the options for this product -----
+function renderProduct() {
+  const p = product();
+
+  $('fabric').innerHTML = p.fabrics
+    .map(f => `<option value="${f.width}">${f.name}</option>`).join('');
+  $('fabricNote').textContent = 'หน้ากว้างผ้า ' + p.fabrics.length + ' แบบตามไฟล์ต้นฉบับ';
+
+  $('dropLabel').textContent = p.dimLabel + ' (ซม.)';
+  $('dropNote').textContent = p.doubleLength
+    ? 'รุ่นนี้คิดความยาวผ้า = ความยื่น × 2 (ปิดม่านคลุมหน้าต่าง)'
+    : '';
+
+  // ระบบ: radio เสมอ เลือกได้ทีละ 1 อย่าง
+  $('systemList').innerHTML = p.systems.map((s, i) => `
+    <label class="choice" data-kind="system">
+      <input type="radio" name="system" value="${i}">
+      <span>${s.label}</span>
+      <span class="cm">− ${s.deduct} ซม.</span>
+    </label>`).join('');
+
+  const one = p.lengthMode === 'one';
+  $('allowHint').textContent = one ? 'เลือก 1 อย่าง' : 'เลือกได้หลายอย่าง';
+  $('allowList').innerHTML = p.allowances.map((a, i) => `
+    <label class="choice" data-kind="allow">
+      <input type="${one ? 'radio' : 'checkbox'}" name="allow" value="${i}">
+      <span>${a.label}</span>
+      <span class="cm">+ ${a.add} ซม.</span>
+    </label>`).join('');
+
+  calculate();
+}
+
+function pickedSystem() {
+  const el = $('systemList').querySelector('input:checked');
+  return el ? product().systems[Number(el.value)] : null;
+}
+function pickedAllowances() {
+  return [...$('allowList').querySelectorAll('input:checked')]
+    .map(el => product().allowances[Number(el.value)]);
+}
+
+// ===========================================================================
+// การคำนวณ — ตามไฟล์ Excel ทุกขั้น
+// ===========================================================================
+function calculate() {
+  // ไฮไลต์แถวที่ถูกเลือก
+  document.querySelectorAll('.choice').forEach(c =>
+    c.classList.toggle('is-on', !!c.querySelector('input:checked')));
+
+  const p = product();
+  const width = parseFloat($('width').value);
+  const sets = parseInt($('sets').value, 10);
+  const roll = parseFloat($('fabric').value);
+  const drop = parseFloat($('drop').value);
+  const system = pickedSystem();
+  const allows = pickedAllowances();
+
+  const missing = [];
+  if (!(width > 0)) missing.push('ความกว้างกันสาด');
+  if (!(sets >= 1)) missing.push('จำนวนชุด');
+  if (!(drop > 0)) missing.push(p.dimLabel);
+  if (!system) missing.push('ระบบ (เลือก 1 อย่าง)');
+
+  if (missing.length) {
+    $('blocked').innerHTML = '<strong>ยังคำนวณไม่ได้</strong><br>ต้องกรอก/เลือก: ' + missing.join(' · ');
+    $('blocked').hidden = false;
+    $('results').hidden = true;
+    latestSheet = '';
+    return;
+  }
+  $('blocked').hidden = true;
+  $('results').hidden = false;
+
+  // ข้อ 1 — ขนาดผลิต (D) = ความกว้าง − ส่วนที่อุปกรณ์กิน
+  const finished = width - system.deduct;
+  // ข้อ 2 — ขนาดตัดผ้าก่อนเย็บ (E) = D + พับริม
+  const cut = finished + HEM;
+  // ข้อ 3 — จำนวนแถบต่อชุด (F) = ปัดขึ้น(E ÷ หน้ากว้างผ้า)
+  const stripsPerSet = Math.ceil(cut / roll);
+  // ข้อ 4 — จำนวนแถบทั้งหมด (G)
+  const totalStrips = stripsPerSet * sets;
+  // ข้อ 5 — ความยาวผ้าที่ต้องตัด (I)
+  const baseLength = p.doubleLength ? drop * 2 : drop;
+  const addTotal = allows.reduce((s, a) => s + a.add, 0);
+  const length = baseLength + addTotal;
+
+  // เพิ่มเติม: ผ้าที่ต้องใช้ และเศษด้านกว้าง (ไฟล์ Excel ไม่ได้คิดให้)
+  const fabricCm = totalStrips * length;
+  const offcut = stripsPerSet * roll - cut;
+
+  // ----- แสดงวิธีคิดทีละขั้น -----
+  const steps = [
+    ['ข้อ 1', 'ขนาดผลิต — ' + system.label + ' ลด ' + system.deduct + ' ซม.',
+      num(width) + ' − ' + system.deduct + ' = ' + num(finished) + ' ซม.'],
+    ['ข้อ 2', 'ขนาดตัดผ้าก่อนเย็บ — พับริมข้างละ 3 ซม.',
+      num(finished) + ' + ' + HEM + ' = ' + num(cut) + ' ซม.'],
+    ['ข้อ 3', 'จำนวนแถบต่อชุด — หารหน้ากว้างผ้า ' + num(roll) + ' ซม. แล้วปัดขึ้น',
+      num(cut) + ' ÷ ' + num(roll) + ' → ' + stripsPerSet + ' แถบ'],
+    ['ข้อ 4', 'จำนวนแถบทั้งหมด — คูณจำนวนชุด',
+      stripsPerSet + ' × ' + sets + ' = ' + totalStrips + ' แถบ'],
+    ['ข้อ 5', 'ความยาวผ้าที่ต้องตัด' + (p.doubleLength ? ' — ความยื่น × 2 ก่อน' : '') +
+      (allows.length ? ' — เผื่อ ' + allows.map(a => a.add).join(' + ') + ' ซม.' : ' — ไม่เผื่อ'),
+      (p.doubleLength ? num(drop) + ' × 2' : num(drop)) +
+      (addTotal ? ' + ' + addTotal : '') + ' = ' + num(length) + ' ซม.']
+  ];
+  const stepsHtml = '<div class="steps">' + steps.map(s =>
+    `<div class="step"><span class="no">${s[0]}</span><span class="how">${s[1]}</span><span class="val">${s[2]}</span></div>`
+  ).join('') + '</div>';
+  const holder = $('systemList').closest('section').parentElement;
+  let box = document.getElementById('stepsBox');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'stepsBox';
+    holder.querySelector('section').appendChild(box);
+  }
+  box.innerHTML = stepsHtml;
+
+  // ----- ผลลัพธ์ -----
+  $('totalStrips').textContent = totalStrips + ' แถบ';
+  $('stripsSub').textContent = stripsPerSet + ' แถบ/ชุด × ' + sets + ' ชุด';
+  $('cutLength').textContent = num(length) + ' ซม.';
+  $('lengthSub').textContent = 'ต่อ 1 แถบ';
+  $('totalFabric').textContent = num(fabricCm / 100) + ' ม. (' + totalStrips + ' × ' + num(length) + ' ซม.)';
+  $('offcut').textContent = num(offcut) + ' ซม.';
+
+  const seam = $('seamNote');
+  if (stripsPerSet > 1) {
+    seam.hidden = false;
+    seam.innerHTML = '<strong>ต้องต่อผ้า ' + (stripsPerSet - 1) + ' รอยต่อ ต่อชุด</strong><br>' +
+      'ไฟล์ Excel ต้นฉบับไม่ได้เผื่อระยะทับกันของรอยต่อไว้ ถ้าต้องเผื่อ ให้บวกเพิ่มเอง';
+  } else {
+    seam.hidden = true;
+  }
+
+  // ----- ใบสั่งตัดผ้า -----
+  const lines = [];
+  lines.push('ใบสั่งตัดผ้า — ' + p.label);
+  lines.push('ชนิดผ้า: ' + $('fabric').options[$('fabric').selectedIndex].text);
+  lines.push('ขนาดกันสาด: กว้าง ' + num(width) + ' ซม. × ' + p.dimLabel + ' ' + num(drop) + ' ซม.');
+  lines.push('จำนวน: ' + sets + ' ชุด');
+  lines.push('ระบบ: ' + system.label);
+  lines.push('');
+  lines.push('ขนาดผลิต (เย็บเสร็จแล้ว): ' + num(finished) + ' ซม.');
+  lines.push('ขนาดตัดผ้าก่อนเย็บ: ' + num(cut) + ' ซม.');
+  lines.push('จำนวนแถบ: ' + stripsPerSet + ' แถบ/ชุด รวม ' + totalStrips + ' แถบ');
+  lines.push('ความยาวผ้าที่ต้องตัด: ' + num(length) + ' ซม. ต่อแถบ');
+  if (allows.length) lines.push('เผื่อความยาว: ' + allows.map(a => a.label).join(' + '));
+  lines.push('');
+  lines.push('ผ้าที่ต้องใช้ทั้งหมด: ' + num(fabricCm / 100) + ' ม.');
+  lines.push('เศษผ้าด้านกว้าง: ' + num(offcut) + ' ซม. ต่อชุด');
+  if (stripsPerSet > 1) lines.push('หมายเหตุ: ต้องต่อผ้า ' + (stripsPerSet - 1) + ' รอยต่อ ต่อชุด (ยังไม่เผื่อระยะทับ)');
+  latestSheet = lines.join('\n');
+  $('sheetText').textContent = latestSheet;
+}
+
+async function copySheet() {
+  if (!latestSheet) return;
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(latestSheet);
+    copied = true;
+  } catch (e) {
+    // เปิดไฟล์จากเครื่องบางเบราว์เซอร์ไม่ให้ใช้ clipboard API จึงสำรองด้วยวิธีเดิม
+    const ta = document.createElement('textarea');
+    ta.value = latestSheet;
+    document.body.appendChild(ta);
+    ta.select();
+    copied = document.execCommand('copy');
+    ta.remove();
+  }
+  const s = $('copyStatus');
+  s.textContent = copied ? 'คัดลอกแล้ว' : 'คัดลอกไม่ได้ ให้เลือกข้อความแล้วกด Ctrl+C';
+  clearTimeout(copySheet.timer);
+  copySheet.timer = setTimeout(() => { s.textContent = ''; }, 2500);
+}
+
+function init() {
+  $('product').innerHTML = PRODUCTS.map(p => `<option value="${p.key}">${p.label}</option>`).join('');
+  $('product').addEventListener('change', renderProduct);
+  ['width', 'sets', 'fabric', 'drop'].forEach(id => {
+    $(id).addEventListener('input', calculate);
+    $(id).addEventListener('change', calculate);
+  });
+  $('systemList').addEventListener('change', calculate);
+  $('allowList').addEventListener('change', calculate);
+  $('copyBtn').addEventListener('click', copySheet);
+  renderProduct();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+<!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     หน้านี้ไม่ได้อยู่ในรายการ pre-cache ของ sw.js (ตั้งใจไม่ประกาศ URL ไว้ที่นั่น)
+     แต่เปิดครั้งแรกตอนออนไลน์แล้ว service worker จะเก็บไว้ให้ใช้ออฟไลน์เอง -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
+</script>
+</body>
+</html>

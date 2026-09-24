@@ -265,6 +265,10 @@
 <input id="windSunSensor" type="checkbox"/>
 <label for="windSunSensor">Wind-Sun Sensor = 6,600 B.</label>
 </div>
+<div class="check-row">
+<input id="extraArm" type="checkbox"/>
+<label for="extraArm">ซื้อแขนเพิ่ม 1 ข้าง = +10% จากราคา/ชุด (มาตรฐาน 2 แขนต่อชุด)</label>
+</div>
 </div>
 <div class="warning" id="warning">
           ขนาดนี้ไม่มีในตารางราคา / This size is not available in the price table.
@@ -294,6 +298,7 @@ let resultLanguage = 'th';
 // คำที่ใช้ร่วมกับไฟล์อื่นในกลุ่มอยู่ใน i18n.js — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์.
 // รายการข้างล่างนี้ถูกใช้ก่อนเสมอ (this list wins over the shared one).
 const RESULT_EN_OVERRIDES = [
+  ['ซื้อแขนเพิ่ม 1 ข้าง', 'Extra arm (1 side)'],
   ['รับประกัน', 'Warranty'],
   ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
   ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
@@ -430,42 +435,42 @@ initResultLanguageToggle();
 
 
     const PRICE_ROWS = [
-      { width: 3.0, projection: 1.5, price: 50300 },
-      { width: 3.5, projection: 1.5, price: 55600 },
-      { width: 4.0, projection: 1.5, price: 63500 },
-      { width: 4.5, projection: 1.5, price: 70100 },
-      { width: 5.0, projection: 1.5, price: 76700 },
-      { width: 5.5, projection: 1.5, price: 83300 },
-      { width: 6.0, projection: 1.5, price: 89900 },
+      { width: 3.0, projection: 1.5, price: 68400 },
+      { width: 3.5, projection: 1.5, price: 75700 },
+      { width: 4.0, projection: 1.5, price: 92900 },
+      { width: 4.5, projection: 1.5, price: 103000 },
+      { width: 5.0, projection: 1.5, price: 112000 },
+      { width: 5.5, projection: 1.5, price: 122000 },
+      { width: 6.0, projection: 1.5, price: 131000 },
 
-      { width: 3.0, projection: 2.0, price: 60900 },
-      { width: 3.5, projection: 2.0, price: 67500 },
-      { width: 4.0, projection: 2.0, price: 72800 },
-      { width: 4.5, projection: 2.0, price: 78000 },
-      { width: 5.0, projection: 2.0, price: 83300 },
-      { width: 5.5, projection: 2.0, price: 89900 },
-      { width: 6.0, projection: 2.0, price: 95200 },
+      { width: 3.0, projection: 2.0, price: 82400 },
+      { width: 3.5, projection: 2.0, price: 91500 },
+      { width: 4.0, projection: 2.0, price: 106000 },
+      { width: 4.5, projection: 2.0, price: 114000 },
+      { width: 5.0, projection: 2.0, price: 121000 },
+      { width: 5.5, projection: 2.0, price: 131000 },
+      { width: 6.0, projection: 2.0, price: 138000 },
 
-      { width: 3.0, projection: 2.5, price: 74700 },
-      { width: 3.5, projection: 2.5, price: 80700 },
-      { width: 4.0, projection: 2.5, price: 87300 },
-      { width: 4.5, projection: 2.5, price: 93900 },
-      { width: 5.0, projection: 2.5, price: 101000 },
-      { width: 5.5, projection: 2.5, price: 106000 },
-      { width: 6.0, projection: 2.5, price: 113000 },
+      { width: 3.0, projection: 2.5, price: 101000 },
+      { width: 3.5, projection: 2.5, price: 109000 },
+      { width: 4.0, projection: 2.5, price: 125000 },
+      { width: 4.5, projection: 2.5, price: 135000 },
+      { width: 5.0, projection: 2.5, price: 144000 },
+      { width: 5.5, projection: 2.5, price: 152000 },
+      { width: 6.0, projection: 2.5, price: 161000 },
 
-      { width: 3.5, projection: 3.0, price: 90600 },
-      { width: 4.0, projection: 3.0, price: 96600 },
-      { width: 4.5, projection: 3.0, price: 103000 },
-      { width: 5.0, projection: 3.0, price: 109000 },
-      { width: 5.5, projection: 3.0, price: 121000 },
-      { width: 6.0, projection: 3.0, price: 126000 },
+      { width: 3.5, projection: 3.0, price: 123000 },
+      { width: 4.0, projection: 3.0, price: 137000 },
+      { width: 4.5, projection: 3.0, price: 146000 },
+      { width: 5.0, projection: 3.0, price: 154000 },
+      { width: 5.5, projection: 3.0, price: 171000 },
+      { width: 6.0, projection: 3.0, price: 178000 },
 
-      { width: 4.0, projection: 3.5, price: 98000 },
-      { width: 4.5, projection: 3.5, price: 106000 },
-      { width: 5.0, projection: 3.5, price: 113000 },
-      { width: 5.5, projection: 3.5, price: 123000 },
-      { width: 6.0, projection: 3.5, price: 130000 }
+      { width: 4.0, projection: 3.5, price: 144000 },
+      { width: 4.5, projection: 3.5, price: 152000 },
+      { width: 5.0, projection: 3.5, price: 161000 },
+      { width: 5.5, projection: 3.5, price: 175000 },
+      { width: 6.0, projection: 3.5, price: 184000 }
     ];
 
     function cleanNumber(value) {
@@ -497,7 +502,11 @@ initResultLanguageToggle();
       const optionalExtras = tuyaWifi + windSunSensor;
 
       const basePrice = getBasePrice();
-      const unitSubtotal = basePrice + optionalExtras;
+      // ซื้อแขนเพิ่ม 1 ข้าง = บวก 10% ของราคาต่อชุด (ตามใบราคา มาตรฐาน 2 แขนต่อชุด)
+      // คิดจากราคาตั้งต่อชุดเท่านั้น ไม่รวมอุปกรณ์เสริมอื่น
+      // (extra arm: +10% of the table price per set, not of the other add-ons)
+      const extraArm = document.getElementById("extraArm").checked ? Math.round(basePrice * 0.10) : 0;
+      const unitSubtotal = basePrice + optionalExtras + extraArm;
       const subtotal = unitSubtotal * awningQty;
       const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
       const discountBase = Math.max(subtotal - specialDiscountAmount, 0);
@@ -541,6 +550,7 @@ initResultLanguageToggle();
       lines.push(`ยื่น: ${projection.toFixed(2)} m`);  //lines.push(`ราคาตั้งต่อชุด: ${basePrice ? money(basePrice) : "No price found"}`);
       if (tuyaWifi) lines.push(`Tuya Wifi: +${money(tuyaWifi)}`);
       if (windSunSensor) lines.push(`Wind-Sun Sensor: +${money(windSunSensor)}`);
+      if (extraArm) lines.push(`ซื้อแขนเพิ่ม 1 ข้าง: +${money(extraArm)}`);
       //lines.push(`//ราคาต่อชุดก่อนส่วนลด: ${basePrice ? money(unitSubtotal) : "No price found"}`);
       lines.push(`จำนวน: ${awningQty}`);
       lines.push(`ราคาก่อนส่วนลด: ${basePrice ? money(subtotal) : "No price found"}`);
@@ -555,7 +565,7 @@ lines.push("ราคาที่แจ้งเป็นราคาเบื�
       lines.push("Crank Size: ก้านหมุนเลือกได้ 1.00 m, 1.50 m, 2.00 m");
       lines.push("สินค้า Pre-Order รอสินค้า 60-90 วัน");
       // อุปกรณ์เสริมที่สั่งเพิ่มได้ / optional add-ons quoted for the customer
-      lines.push("Optional Extras: Tuya Wifi = 9,000 B. / Wind-Sun Sensor = 6,600 B.");
+      lines.push("Optional Extras: Tuya Wifi = 9,000 B. / Wind-Sun Sensor = 6,600 B. / Extra arm 1 side = +10% per set");
 
       setLocalizedCopyPreview(lines.join("\n"));
     }
@@ -590,6 +600,7 @@ lines.push("ราคาที่แจ้งเป็นราคาเบื�
       document.getElementById("jobNote").addEventListener("input", calculate);
       document.getElementById("tuyaWifi").addEventListener("change", calculate);
       document.getElementById("windSunSensor").addEventListener("change", calculate);
+      document.getElementById("extraArm").addEventListener("change", calculate);
 
       calculate();
     });
