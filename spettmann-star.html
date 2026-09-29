@@ -109,10 +109,10 @@ label input[type="checkbox"] {
 </select>
 <label for="qty">จำนวน (ชุด)</label>
 <input id="qty" min="1" step="1" type="number" value="1" oninput="calc()"/>
-<h4>ระบบมือหมุน</h4>
-<label><input checked="" id="manualCheck" type="checkbox" onchange="calc()"/> คิดราคาระบบมือหมุน</label>
-<h4>ระบบมอเตอร์</h4>
-<label><input checked="" id="motorCheck" type="checkbox" onchange="calc()"/> คิดราคาระบบมอเตอร์</label>
+<h4 id="manualSystemHead">ระบบมือหมุน</h4>
+<label><input checked="" id="manualCheck" type="checkbox" onchange="calc()"/> <span id="manualCheckLabel">คิดราคาระบบมือหมุน</span></label>
+<h4>ระบบมอเตอร์ Strong Up</h4>
+<label><input checked="" id="motorCheck" type="checkbox" onchange="calc()"/> คิดราคาระบบมอเตอร์ Strong Up</label>
 <label>
   <input id="manualOverride50" type="checkbox" onchange="calc()"/>
   เพิ่ม Manual Override สำหรับ Strong Up 50/12 (+2,000 บาท)
@@ -134,7 +134,7 @@ label input[type="checkbox"] {
 <label><input id="chkStrongLanBridge" type="checkbox" onchange="calc()"/> Lan Smart Bridge 1.20 m (+9,000 บาท)</label>
 <div class="note">หมายเหตุ: อุปกรณ์เสริม Strong Up จะแสดงและคำนวณเฉพาะในกล่องผลลัพธ์ระบบมอเตอร์ Strong Up เท่านั้น</div>
 </div>
-	<h4>Somfy Motor Option สำหรับระบบมือหมุน</h4>
+	<h4>Somfy Motor Option</h4>
 <label><input id="chkSomfy50" type="checkbox" onchange="handleSomfyMotorOption('chkSomfy50')"/> Somfy Altus 50/12 (+26,800 บาท)</label>
 <label><input id="chkSomfy85" type="checkbox" onchange="handleSomfyMotorOption('chkSomfy85')"/> Somfy Altus 85/17 (+32,800 บาท)</label><div class="note">หมายเหตุ: ราคา Somfy จะแสดงและคำนวณเฉพาะในกล่องผลลัพธ์ระบบมือหมุนเท่านั้น เพื่อไม่ให้รวมกับราคามอเตอร์ Strong Up</div>
 
@@ -943,11 +943,20 @@ function getStrongUpAccessoryDetailHtml() {
       lines.push(`ขนาด: กว้าง ${w.toFixed(2)} × ยื่น ${p} ม.`);
       lines.push(`จำนวน: ${qty} ชุด`);
 
+      // เลือกมอเตอร์ Somfy แล้ว กล่องนี้ไม่ใช่ "ระบบมือหมุน" อีกต่อไป
+      // เปลี่ยนป้ายบนหน้าจอให้ตรงกับข้อความในใบเสนอราคาที่เปลี่ยนอยู่แล้ว
+      // (the quote text already switched; the on-screen labels now follow)
+      const somfyLabel = somfyIsSelected ? 'ระบบมอเตอร์ Somfy' : 'ระบบมือหมุน';
+      const headEl = document.getElementById('manualSystemHead');
+      const checkEl = document.getElementById('manualCheckLabel');
+      if (headEl) headEl.textContent = somfyLabel;
+      if (checkEl) checkEl.textContent = 'คิดราคา' + somfyLabel;
+
       let optionNo = 1;
 
       if (includeManual) {
         const base = manualSet[p] ? manualSet[p][idx] : null;
-        const manualLabel = somfyIsSelected ? 'ระบบมอเตอร์ Somfy' : 'ระบบมือหมุน';
+        const manualLabel = somfyLabel;
         addOption(
           lines,
           optionNo,
