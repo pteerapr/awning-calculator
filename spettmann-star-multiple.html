@@ -199,18 +199,18 @@ button { font: inherit; cursor: pointer; }
             </select>
           </div>
           <div class="field">
-            <label for="somfyMotor">มอเตอร์ Somfy (คิดในระบบมือหมุน)</label>
+            <label for="somfyMotor">มอเตอร์ Somfy</label>
             <select id="somfyMotor">
               <option value="none" selected>ไม่ใช้</option>
               <option value="somfyAltus50_12">Somfy Altus 50/12</option>
               <option value="somfyAltus85_17">Somfy Altus 85/17</option>
             </select>
-            <small>ราคา Somfy คิดรวมในกล่องระบบมือหมุนเท่านั้น เหมือนหน้าขนาดเดียว</small>
+            <small>เลือกแล้วกล่องซ้ายจะเปลี่ยนเป็น "ระบบมอเตอร์ Somfy" (ราคาฐานคิดจากตารางมือหมุน เหมือนหน้าขนาดเดียว)</small>
           </div>
         </div>
         <div class="grid-3" style="margin-top:14px;">
-          <label class="check" id="wrapManual"><input id="manualCheck" type="checkbox" checked> คิดราคาระบบมือหมุน</label>
-          <label class="check" id="wrapMotor"><input id="motorCheck" type="checkbox" checked> คิดราคาระบบมอเตอร์</label>
+          <label class="check" id="wrapManual"><input id="manualCheck" type="checkbox" checked> <span id="manualCheckLabel">คิดราคาระบบมือหมุน</span></label>
+          <label class="check" id="wrapMotor"><input id="motorCheck" type="checkbox" checked> คิดราคาระบบมอเตอร์ Strong Up</label>
           <label class="check" id="wrapOverride"><input id="manualOverride50" type="checkbox"> เพิ่มมือหมุนให้ Strong Up 50/12 (+2,000 บาท/ชุด)</label>
         </div>
       </section>
@@ -233,7 +233,7 @@ button { font: inherit; cursor: pointer; }
                 <th scope="col">ยื่น (ม.)</th>
                 <th scope="col" class="t-right">จำนวน</th>
                 <th scope="col">สถานะ</th>
-                <th scope="col" class="t-right">ราคา (มือหมุน)</th>
+                <th scope="col" class="t-right" id="priceColHead">ราคา (มือหมุน)</th>
                 <th scope="col"><span hidden>ลบ</span></th>
               </tr>
             </thead>
@@ -254,10 +254,10 @@ button { font: inherit; cursor: pointer; }
             <!-- อุปกรณ์เสริม Strong Up = คิดในระบบมอเตอร์เท่านั้น
                  อุปกรณ์เสริม Somfy    = คิดในระบบมือหมุนเท่านั้น
                  (เหมือนหน้าขนาดเดียว: ของ Somfy อยู่กล่องมือหมุน ของ Strong Up อยู่กล่องมอเตอร์) -->
-            <p class="acc-note" id="accNoteStrong"><strong>อุปกรณ์เสริม Strong Up</strong> — คิดในระบบมอเตอร์เท่านั้น</p>
+            <p class="acc-note" id="accNoteStrong"><strong>อุปกรณ์เสริม Strong Up</strong> — คิดในระบบมอเตอร์ Strong Up เท่านั้น</p>
             <ul id="accListStrong" class="acc-list"></ul>
             <div id="somfyAccBlock" hidden style="margin-top:14px;">
-              <p class="acc-note" id="accNoteSomfy"><strong>อุปกรณ์เสริม Somfy</strong> — คิดในระบบมือหมุนเท่านั้น · มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว</p>
+              <p class="acc-note" id="accNoteSomfy"><strong>อุปกรณ์เสริม Somfy</strong> — คิดในระบบ Somfy เท่านั้น · มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว</p>
               <ul id="accListSomfy" class="acc-list"></ul>
             </div>
           </div>
@@ -311,12 +311,12 @@ button { font: inherit; cursor: pointer; }
 
       <div id="totals" class="totals">
         <div class="total-card" id="manualCard">
-          <span class="label">ระบบมือหมุน</span>
+          <span class="label" id="manualCardLabel">ระบบมือหมุน</span>
           <span id="manualTotal" class="big"></span>
           <span id="manualSub" class="sub"></span>
         </div>
         <div class="total-card" id="motorCard">
-          <span class="label">ระบบมอเตอร์</span>
+          <span class="label" id="motorCardLabel">ระบบมอเตอร์ Strong Up</span>
           <span id="motorTotal" class="big"></span>
           <span id="motorSub" class="sub"></span>
         </div>
@@ -722,6 +722,7 @@ let nextRowId = 1;
 let accCounts = {};
 let somfyAccShown = null;   // อุปกรณ์เสริม Somfy กำลังแสดงอยู่หรือไม่
 let latestQuote = '';
+let systemLabel = 'ระบบมือหมุน';   // เปลี่ยนเป็น 'ระบบมอเตอร์ Somfy' เมื่อเลือก Somfy
 
 const PROJECTIONS = ['1.50', '2.00', '2.50', '3.00', '3.50'];
 
@@ -787,7 +788,7 @@ function syncRowUi(row, r, coverRate, wantManual) {
   }
   if (r.manualBase == null || r.motorBase == null) {
     chip.className = 'chip chip-warn';
-    chip.textContent = r.manualBase == null ? 'มีเฉพาะราคาระบบมอเตอร์' : 'มีเฉพาะราคาระบบมือหมุน';
+    chip.textContent = r.manualBase == null ? 'มีเฉพาะราคาระบบมอเตอร์ Strong Up' : 'มีเฉพาะราคา' + systemLabel;
   } else {
     chip.className = 'chip chip-ok';
     chip.textContent = 'มอเตอร์อัตโนมัติ: ' + r.motorLabel;
@@ -852,6 +853,7 @@ function recalc() {
   const somfyKey = somfySel.value;
   const somfyName = somfySel.options[somfySel.selectedIndex].text;
   const somfyPrice = somfyKey === 'none' ? 0 : window.getCatalogPrice(somfyKey);
+  systemLabel = somfyPrice ? 'ระบบมอเตอร์ Somfy' : 'ระบบมือหมุน';
 
   // เลือกมอเตอร์ Somfy แล้วจึงจะเพิ่มอุปกรณ์เสริม Somfy ได้
   // ไม่ได้เลือก = ล้างจำนวนของ Somfy ทิ้ง กันไม่ให้คิดเงินของที่ซ่อนอยู่
@@ -880,7 +882,7 @@ function recalc() {
   if (problems.length || !rows.length || (!wantManual && !wantMotor)) {
     const list = problems.map(x =>
       `<li>ขนาดที่ ${x.i + 1}${x.row.location.trim() ? ' (' + escapeHtml(x.row.location.trim()) + ')' : ''}: ${escapeHtml(x.r.error)}</li>`);
-    if (!wantManual && !wantMotor) list.push('<li>กรุณาเลือกระบบมือหมุนหรือระบบมอเตอร์อย่างน้อย 1 ระบบ</li>');
+    if (!wantManual && !wantMotor) list.push('<li>กรุณาเลือกอย่างน้อย 1 ระบบ: ' + systemLabel + ' หรือ ระบบมอเตอร์ Strong Up</li>');
     $('blockedList').innerHTML = list.join('');
     $('blocked').hidden = false;
     $('totals').hidden = true;
@@ -931,10 +933,20 @@ function recalc() {
   // ไม่งั้นราคาจะหายไปเงียบ ๆ โดยที่คนทำใบเสนอราคาไม่รู้ตัว
   // (warn when something is selected but its system is not being quoted,
   //  otherwise its price disappears without anyone noticing)
+  // เลือกมอเตอร์ Somfy แล้ว กล่องนี้ไม่ใช่ "ระบบมือหมุน" อีกต่อไป แต่เป็นระบบมอเตอร์ Somfy
+  // (ราคาฐานยังคิดจากตารางมือหมุนเหมือนหน้าขนาดเดียว เปลี่ยนแค่ชื่อที่ลูกค้าเห็น)
+  // (with a Somfy motor this box is no longer a hand-crank system; only the
+  //  label changes, the base price still comes from the manual table)
+  const manualSystemLabel = systemLabel;
+  $('manualCardLabel').textContent = manualSystemLabel;
+  $('manualCheckLabel').textContent = 'คิดราคา' + manualSystemLabel;
+  $('priceColHead').textContent = somfyPrice ? 'ราคา (Somfy)' : 'ราคา (มือหมุน)';
+  document.querySelectorAll('.c-price').forEach(td => td.setAttribute('data-label', $('priceColHead').textContent));
+
   const warnings = [];
-  if (!wantManual && somfyPrice) warnings.push('เลือกมอเตอร์ ' + somfyName + ' ไว้ แต่ไม่ได้คิดราคาระบบมือหมุน — ราคา Somfy จึงยังไม่ถูกรวมในใบเสนอราคานี้');
-  if (!wantManual && somfyAccTotal) warnings.push('เลือกอุปกรณ์เสริม Somfy ไว้ แต่ไม่ได้คิดราคาระบบมือหมุน — ราคายังไม่ถูกรวม');
-  if (!wantMotor && strongAccTotal) warnings.push('เลือกอุปกรณ์เสริม Strong Up ไว้ แต่ไม่ได้คิดราคาระบบมอเตอร์ — ราคายังไม่ถูกรวม');
+  if (!wantManual && somfyPrice) warnings.push('เลือกมอเตอร์ ' + somfyName + ' ไว้ แต่ไม่ได้ติ๊ก "คิดราคา' + manualSystemLabel + '" — ราคา Somfy จึงยังไม่ถูกรวมในใบเสนอราคานี้');
+  if (!wantManual && somfyAccTotal) warnings.push('เลือกอุปกรณ์เสริม Somfy ไว้ แต่ไม่ได้ติ๊ก "คิดราคา' + manualSystemLabel + '" — ราคายังไม่ถูกรวม');
+  if (!wantMotor && strongAccTotal) warnings.push('เลือกอุปกรณ์เสริม Strong Up ไว้ แต่ไม่ได้คิดราคาระบบมอเตอร์ Strong Up — ราคายังไม่ถูกรวม');
   $('mismatch').innerHTML = warnings.length
     ? '<strong>ตรวจสอบก่อนส่งลูกค้า</strong><ul>' + warnings.map(w => '<li>' + w + '</li>').join('') + '</ul>'
     : '';
@@ -973,26 +985,26 @@ function recalc() {
   });
   lines.push('');
   if (wantManual) {
-    lines.push('ระบบมือหมุน');
+    lines.push(manualSystemLabel);
     if (somfyPrice) lines.push('มอเตอร์ ' + somfyName + ': +' + bahtText(somfyPrice) + ' × ' + units + ' ชุด');
     somfyPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
     if (extraAcc > 0) lines.push('อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(extraAcc) + (miscLabel && parseFloat($('accMisc').value) > 0 ? ' (รวม ' + miscLabel + ')' : ''));
-    if (manualMissing) lines.push('หมายเหตุ: มี ' + manualMissing + ' ชุดที่ไม่มีราคาระบบมือหมุน จึงยังไม่รวมในยอดนี้');
+    if (manualMissing) lines.push('หมายเหตุ: มี ' + manualMissing + ' ชุดที่ไม่มีราคา' + systemLabel + ' จึงยังไม่รวมในยอดนี้');
     lines.push('ราคาก่อนส่วนลด: ' + bahtText(manual.subtotal));
     discountLines(manual).forEach(l => lines.push(l));
-    lines.push('ราคาสรุประบบมือหมุน: ' + bahtText(manual.total));
+    lines.push('ราคาสรุป' + manualSystemLabel + ': ' + bahtText(manual.total));
     lines.push('');
   }
   if (wantMotor) {
-    lines.push('ระบบมอเตอร์');
+    lines.push('ระบบมอเตอร์ Strong Up');
     Object.keys(motorTypes).forEach(k => lines.push('มอเตอร์: ' + k + ' × ' + motorTypes[k] + ' ชุด'));
     if (overrideSets) lines.push('เพิ่มมือหมุน 50/12: +' + bahtText(MANUAL_OVERRIDE_EXTRA) + ' × ' + overrideSets + ' ชุด');
     strongPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
     if (extraAcc > 0) lines.push('อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(extraAcc));
-    if (motorMissing) lines.push('หมายเหตุ: มี ' + motorMissing + ' ชุดที่ไม่มีราคาระบบมอเตอร์ จึงยังไม่รวมในยอดนี้');
+    if (motorMissing) lines.push('หมายเหตุ: มี ' + motorMissing + ' ชุดที่ไม่มีราคาระบบมอเตอร์ Strong Up จึงยังไม่รวมในยอดนี้');
     lines.push('ราคาก่อนส่วนลด: ' + bahtText(motorized.subtotal));
     discountLines(motorized).forEach(l => lines.push(l));
-    lines.push('ราคาสรุประบบมอเตอร์: ' + bahtText(motorized.total));
+    lines.push('ราคาสรุประบบมอเตอร์ Strong Up: ' + bahtText(motorized.total));
     lines.push('');
   }
   if (jobNote) { lines.push('หมายเหตุเพิ่มเติม: ' + jobNote); lines.push(''); }
