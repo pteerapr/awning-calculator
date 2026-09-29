@@ -251,8 +251,15 @@ button { font: inherit; cursor: pointer; }
         </div>
         <div class="extras">
           <div>
-            <p id="accNote" class="acc-note"></p>
-            <ul id="accList" class="acc-list"></ul>
+            <!-- อุปกรณ์เสริม Strong Up = คิดในระบบมอเตอร์เท่านั้น
+                 อุปกรณ์เสริม Somfy    = คิดในระบบมือหมุนเท่านั้น
+                 (เหมือนหน้าขนาดเดียว: ของ Somfy อยู่กล่องมือหมุน ของ Strong Up อยู่กล่องมอเตอร์) -->
+            <p class="acc-note" id="accNoteStrong"><strong>อุปกรณ์เสริม Strong Up</strong> — คิดในระบบมอเตอร์เท่านั้น</p>
+            <ul id="accListStrong" class="acc-list"></ul>
+            <div id="somfyAccBlock" hidden style="margin-top:14px;">
+              <p class="acc-note" id="accNoteSomfy"><strong>อุปกรณ์เสริม Somfy</strong> — คิดในระบบมือหมุนเท่านั้น · มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว</p>
+              <ul id="accListSomfy" class="acc-list"></ul>
+            </div>
           </div>
           <div class="extras-fields">
             <div class="field">
@@ -299,6 +306,8 @@ button { font: inherit; cursor: pointer; }
         <strong>ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน</strong>
         <ul id="blockedList"></ul>
       </div>
+
+      <div id="mismatch" class="blocked" style="background:var(--warn-bg);color:var(--warn-ink);" role="alert" hidden></div>
 
       <div id="totals" class="totals">
         <div class="total-card" id="manualCard">
@@ -711,7 +720,7 @@ function accessoryItems(brand) {
 let rows = [];
 let nextRowId = 1;
 let accCounts = {};
-let currentBrand = null;
+let somfyAccShown = null;   // อุปกรณ์เสริม Somfy กำลังแสดงอยู่หรือไม่
 let latestQuote = '';
 
 const PROJECTIONS = ['1.50', '2.00', '2.50', '3.00', '3.50'];
@@ -792,13 +801,8 @@ function syncRowUi(row, r, coverRate, wantManual) {
 // ===========================================================================
 // อุปกรณ์เสริม / accessories
 // ===========================================================================
-function renderAccessories() {
-  const items = accessoryItems(currentBrand);
-  $('accNote').textContent = currentBrand === 'somfy'
-    ? 'อุปกรณ์เสริม Somfy · มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว ให้เพิ่มเฉพาะที่ต้องการเพิ่ม'
-    : 'อุปกรณ์เสริม Strong Up · กดเพิ่มจำนวนตามที่ใช้ทั้งงาน';
-  $('accList').innerHTML = items.map(item => {
-    const sid = item.key.replace('.', '-');
+function accessoryListHtml(brand) {
+  return accessoryItems(brand).map(item => {
     const count = accCounts[item.key] || 0;
     return `
       <li class="acc-item${count > 0 ? ' is-picked' : ''}" data-key="${item.key}">
@@ -810,6 +814,18 @@ function renderAccessories() {
         </span>
       </li>`;
   }).join('');
+}
+
+function renderAccessories() {
+  $('accListStrong').innerHTML = accessoryListHtml('strongup');
+  $('accListSomfy').innerHTML = accessoryListHtml('somfy');
+}
+
+// รวมราคาอุปกรณ์เสริมของยี่ห้อเดียว / total for one brand's accessories
+function accessoryTotal(brand) {
+  return accessoryItems(brand)
+    .filter(item => (accCounts[item.key] || 0) > 0)
+    .map(item => Object.assign({ count: accCounts[item.key] }, item));
 }
 
 // ===========================================================================
@@ -837,9 +853,16 @@ function recalc() {
   const somfyName = somfySel.options[somfySel.selectedIndex].text;
   const somfyPrice = somfyKey === 'none' ? 0 : window.getCatalogPrice(somfyKey);
 
-  // เลือก Somfy = แสดงอุปกรณ์เสริม Somfy, ไม่เลือก = Strong Up
-  const brand = somfyKey === 'none' ? 'strongup' : 'somfy';
-  if (brand !== currentBrand) { currentBrand = brand; accCounts = {}; renderAccessories(); }
+  // เลือกมอเตอร์ Somfy แล้วจึงจะเพิ่มอุปกรณ์เสริม Somfy ได้
+  // ไม่ได้เลือก = ล้างจำนวนของ Somfy ทิ้ง กันไม่ให้คิดเงินของที่ซ่อนอยู่
+  // (Somfy add-ons need a Somfy motor; clearing them stops hidden items being charged)
+  const somfyOn = somfyKey !== 'none';
+  if (somfyOn !== somfyAccShown) {
+    somfyAccShown = somfyOn;
+    if (!somfyOn) accessoryItems('somfy').forEach(item => { delete accCounts[item.key]; });
+    renderAccessories();
+  }
+  $('somfyAccBlock').hidden = !somfyOn;
 
   const extraAcc = (parseFloat($('accCover').value) || 0) + (parseFloat($('accColor').value) || 0) + (parseFloat($('accMisc').value) || 0);
   const miscLabel = ($('accMiscLabel').value || 'อื่น ๆ').trim();
@@ -872,16 +895,19 @@ function recalc() {
   $('copyQuote').disabled = false;
   $('quoteText').classList.remove('is-empty');
 
-  const accPicked = accessoryItems(currentBrand)
-    .filter(item => (accCounts[item.key] || 0) > 0)
-    .map(item => Object.assign({ count: accCounts[item.key] }, item));
-  const accTotal = accPicked.reduce((sum, item) => sum + item.value * item.count, 0);
+  // อุปกรณ์เสริมแยกตามระบบ เหมือนหน้าขนาดเดียว:
+  //   Somfy (มอเตอร์ + อุปกรณ์)  -> คิดเฉพาะกล่องระบบมือหมุน
+  //   Strong Up (อุปกรณ์)        -> คิดเฉพาะกล่องระบบมอเตอร์
+  //   ช่องกรอกเงินเอง            -> คิดทั้งสองกล่อง
+  // (mixing these would charge Somfy parts inside a Strong Up quote and vice versa)
+  const somfyPicked = accessoryTotal('somfy');
+  const strongPicked = accessoryTotal('strongup');
+  const somfyAccTotal = somfyPicked.reduce((sum, item) => sum + item.value * item.count, 0);
+  const strongAccTotal = strongPicked.reduce((sum, item) => sum + item.value * item.count, 0);
 
   // ----- ยอดรวมของแต่ละระบบ -----
-  // มือหมุน: ราคาผ้า/โครง + ฝาครอบ  (+ มอเตอร์ Somfy ต่อชุด ถ้าเลือก — เหมือนหน้าขนาดเดียว)
-  // มอเตอร์: ราคาผ้า/โครง + ฝาครอบ  (+ เพิ่มมือหมุน 2,000 เฉพาะชุดที่ใช้ 50/12)
-  let manualSubtotal = extraAcc + accTotal;
-  let motorSubtotal = extraAcc + accTotal;
+  let manualSubtotal = extraAcc + somfyAccTotal;
+  let motorSubtotal = extraAcc + strongAccTotal;
   let manualMissing = 0, motorMissing = 0, overrideSets = 0;
   const motorTypes = {};
   results.forEach(x => {
@@ -900,6 +926,19 @@ function recalc() {
   const manual = applyDiscounts(manualSubtotal, specialInput, percent);
   const motorized = applyDiscounts(motorSubtotal, specialInput, percent);
   const hasDiscount = manual.special > 0 || percent > 0;
+
+  // เตือนเมื่อเลือกของไว้ แต่ระบบที่ของนั้นสังกัดอยู่ไม่ได้ถูกคิดราคา
+  // ไม่งั้นราคาจะหายไปเงียบ ๆ โดยที่คนทำใบเสนอราคาไม่รู้ตัว
+  // (warn when something is selected but its system is not being quoted,
+  //  otherwise its price disappears without anyone noticing)
+  const warnings = [];
+  if (!wantManual && somfyPrice) warnings.push('เลือกมอเตอร์ ' + somfyName + ' ไว้ แต่ไม่ได้คิดราคาระบบมือหมุน — ราคา Somfy จึงยังไม่ถูกรวมในใบเสนอราคานี้');
+  if (!wantManual && somfyAccTotal) warnings.push('เลือกอุปกรณ์เสริม Somfy ไว้ แต่ไม่ได้คิดราคาระบบมือหมุน — ราคายังไม่ถูกรวม');
+  if (!wantMotor && strongAccTotal) warnings.push('เลือกอุปกรณ์เสริม Strong Up ไว้ แต่ไม่ได้คิดราคาระบบมอเตอร์ — ราคายังไม่ถูกรวม');
+  $('mismatch').innerHTML = warnings.length
+    ? '<strong>ตรวจสอบก่อนส่งลูกค้า</strong><ul>' + warnings.map(w => '<li>' + w + '</li>').join('') + '</ul>'
+    : '';
+  $('mismatch').hidden = !warnings.length;
 
   $('manualCard').classList.toggle('is-off', !wantManual);
   $('motorCard').classList.toggle('is-off', !wantMotor);
@@ -936,7 +975,7 @@ function recalc() {
   if (wantManual) {
     lines.push('ระบบมือหมุน');
     if (somfyPrice) lines.push('มอเตอร์ ' + somfyName + ': +' + bahtText(somfyPrice) + ' × ' + units + ' ชุด');
-    if (accPicked.length) accPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
+    somfyPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
     if (extraAcc > 0) lines.push('อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(extraAcc) + (miscLabel && parseFloat($('accMisc').value) > 0 ? ' (รวม ' + miscLabel + ')' : ''));
     if (manualMissing) lines.push('หมายเหตุ: มี ' + manualMissing + ' ชุดที่ไม่มีราคาระบบมือหมุน จึงยังไม่รวมในยอดนี้');
     lines.push('ราคาก่อนส่วนลด: ' + bahtText(manual.subtotal));
@@ -948,7 +987,7 @@ function recalc() {
     lines.push('ระบบมอเตอร์');
     Object.keys(motorTypes).forEach(k => lines.push('มอเตอร์: ' + k + ' × ' + motorTypes[k] + ' ชุด'));
     if (overrideSets) lines.push('เพิ่มมือหมุน 50/12: +' + bahtText(MANUAL_OVERRIDE_EXTRA) + ' × ' + overrideSets + ' ชุด');
-    if (accPicked.length) accPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
+    strongPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
     if (extraAcc > 0) lines.push('อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(extraAcc));
     if (motorMissing) lines.push('หมายเหตุ: มี ' + motorMissing + ' ชุดที่ไม่มีราคาระบบมอเตอร์ จึงยังไม่รวมในยอดนี้');
     lines.push('ราคาก่อนส่วนลด: ' + bahtText(motorized.subtotal));
@@ -972,7 +1011,7 @@ function recalc() {
 // ===========================================================================
 function loadStartingJob() {
   rows = [makeRow({ width: '5.60', projection: '2.50', qty: '1' })];
-  currentBrand = 'strongup';
+  somfyAccShown = null;
   accCounts = {};
   renderAccessories();
   renderRows();
@@ -989,7 +1028,7 @@ function clearAll() {
   ['accCover', 'accColor', 'accMisc', 'specialDiscount', 'discount'].forEach(id => { $(id).value = '0'; });
   $('accMiscLabel').value = 'อื่น ๆ';
   $('jobNote').value = '';
-  currentBrand = 'strongup';
+  somfyAccShown = null;
   accCounts = {};
   renderAccessories();
   renderRows();
@@ -1044,7 +1083,7 @@ function init() {
     renderRows();
   });
 
-  $('accList').addEventListener('click', e => {
+  const onAccClick = e => {
     const btn = e.target.closest('[data-step]');
     if (!btn) return;
     const li = btn.closest('[data-key]');
@@ -1054,7 +1093,9 @@ function init() {
     li.querySelector('output').textContent = count;
     li.classList.toggle('is-picked', count > 0);
     recalc();
-  });
+  };
+  $('accListStrong').addEventListener('click', onAccClick);
+  $('accListSomfy').addEventListener('click', onAccClick);
 
   $('addRow').addEventListener('click', () => {
     const row = makeRow();
