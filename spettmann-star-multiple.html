@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<!--
+  Spettmann Star — ใบเสนอราคาหลายขนาด / multi-size quote
+  ---------------------------------------------------------------------------
+  ใช้คู่กับ spettmann-star.html (แบบขนาดเดียว ยังใช้งานได้ตามเดิม ไม่ได้แก้)
+  (runs alongside spettmann-star.html, which is unchanged)
+
+  - กรอกได้หลายขนาดในใบเสนอราคาเดียว
+  - ชนิดผ้า ฝาครอบ ระบบ เลือกครั้งเดียวใช้กับทุกขนาด
+  - อุปกรณ์เสริมและส่วนลด คิดครั้งเดียวทั้งงาน
+  - ตารางราคาและกฎการเลือกมอเตอร์ คัดลอกมาจาก spettmann-star.html
+  - ราคาฝาครอบ / มอเตอร์ / อุปกรณ์เสริม อ่านจาก prices.js
+
+  ⚠️ แก้ราคาผ้าใน spettmann-star.html แล้ว ต้องคัดลอกตารางราคามาที่ไฟล์นี้ด้วย
+     (if the fabric prices change in spettmann-star.html, copy the tables here too)
+-->
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
+<title>Spettmann Star Multi-Size Quote</title>
+<style>
+:root {
+  --navy: #003366;
+  --navy-hover: #0b4a86;
+  --navy-soft: #e8eef5;
+  --ink: #16202b;
+  --muted: #5b6878;
+  --ground: #f5f7fa;
+  --paper: #ffffff;
+  --rule: #d9e1ea;
+  --control: #c5d0dc;
+  --ok-ink: #0f5132;
+  --ok-bg: #e6f4ec;
+  --warn-ink: #8a5a00;
+  --warn-bg: #fff3d6;
+  --bad-ink: #b42318;
+  --bad-bg: #fdecea;
+  --radius: 12px;
+  --font: "Leelawadee UI", "Sukhumvit Set", Thonburi, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--font); }
+a { color: var(--navy); }
+.page { max-width: 1320px; margin: 0 auto; padding: 24px 20px 48px; }
+
+.page-head { margin-bottom: 20px; }
+.crumbs { margin: 0 0 4px; font-size: 14px; color: var(--muted); }
+h1 { margin: 0; font-size: 28px; line-height: 1.2; color: var(--navy); text-wrap: balance; }
+h1 span { display: block; font-size: 20px; font-weight: 600; color: var(--ink); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; align-items: start; }
+.work { display: grid; gap: 20px; min-width: 0; }
+.section { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; min-width: 0; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 14px; }
+h2 { margin: 0; font-size: 20px; line-height: 1.3; color: var(--navy); text-wrap: balance; }
+.section-head p { margin: 0; font-size: 14px; color: var(--muted); }
+.head-actions { display: flex; align-items: center; gap: 10px; }
+
+.field { display: grid; gap: 6px; align-content: start; }
+.field label { font-size: 14px; font-weight: 700; }
+.field small { font-size: 12px; color: var(--muted); }
+input, select { font: inherit; font-size: 16px; color: var(--ink); background: #fff; border: 1px solid var(--control); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+input[type="number"] { font-variant-numeric: tabular-nums; text-align: right; }
+input[type="checkbox"] { width: 18px; height: 18px; padding: 0; margin: 0; accent-color: var(--navy); flex: none; }
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 3px solid rgba(0, 51, 102, .35); outline-offset: 2px; border-color: var(--navy); }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.check { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 10px; font-size: 15px; cursor: pointer; }
+.check:hover { background: var(--navy-soft); }
+.check.is-on { background: var(--navy-soft); border-color: #9fb8d4; font-weight: 700; }
+
+button { font: inherit; cursor: pointer; }
+.btn { border-radius: 8px; padding: 8px 14px; font-size: 14px; font-weight: 700; border: 1px solid transparent; }
+.btn-primary { background: var(--navy); color: #fff; }
+.btn-primary:hover { background: var(--navy-hover); }
+.btn-ghost { background: #fff; color: var(--navy); border-color: var(--control); }
+.btn-ghost:hover { background: var(--navy-soft); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.table-wrap { overflow-x: auto; }
+.sizes { width: 100%; border-collapse: collapse; font-size: 14px; }
+.sizes th { font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-align: left; padding: 0 8px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.sizes th.t-right { text-align: right; }
+.sizes td { padding: 10px 8px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+.c-idx { width: 28px; color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; }
+.c-loc { min-width: 150px; }
+.c-num input { width: 86px; }
+.c-proj select { width: 92px; }
+.c-qty input { width: 62px; }
+.c-status { min-width: 140px; }
+.c-price { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.c-price strong { display: block; font-size: 15px; }
+.c-price small { display: block; font-size: 12px; color: var(--muted); }
+.c-actions { width: 40px; text-align: right; }
+.icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid transparent; background: transparent; color: var(--muted); font-size: 20px; line-height: 1; }
+.icon-btn:hover { background: var(--bad-bg); color: var(--bad-ink); }
+.chip { display: inline-block; font-size: 12px; font-weight: 700; line-height: 1.4; border-radius: 999px; padding: 3px 10px; max-width: 210px; }
+.chip-ok { color: var(--ok-ink); background: var(--ok-bg); }
+.chip-warn { color: var(--warn-ink); background: var(--warn-bg); }
+.chip-bad { color: var(--bad-ink); background: var(--bad-bg); border-radius: 8px; }
+.add-row { margin-top: 14px; width: 100%; padding: 10px; border: 1px dashed #9fb2c6; border-radius: 10px; background: transparent; color: var(--navy); font-size: 14px; font-weight: 700; }
+.add-row:hover { background: var(--navy-soft); }
+
+.extras { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; }
+.extras-fields { display: grid; gap: 14px; align-content: start; }
+.acc-note { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+.acc-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--rule); border-radius: 10px; max-height: 340px; overflow: auto; }
+.acc-list:empty { display: none; }
+.acc-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
+.acc-item:last-child { border-bottom: 0; }
+.acc-item.is-picked { background: var(--navy-soft); }
+.acc-name { font-size: 14px; }
+.acc-name small { display: block; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--control); border-radius: 8px; overflow: hidden; flex: none; background: #fff; }
+.stepper button { width: 32px; height: 32px; border: 0; background: #fff; color: var(--navy); font-size: 18px; line-height: 1; }
+.stepper button:hover { background: var(--navy-soft); }
+.stepper output { min-width: 28px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.summary { position: sticky; top: 16px; display: grid; gap: 14px; background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: 0 12px 30px rgba(15, 35, 60, .10); padding: 16px; }
+.brandbar { background: var(--navy); color: #fff; border-radius: 10px; padding: 10px 14px; text-align: center; }
+.brandbar b { display: block; font-size: 15px; letter-spacing: .14em; }
+.brandbar span { font-size: 12px; opacity: .85; }
+.summary-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.count { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.totals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.total-card { display: grid; gap: 2px; align-content: start; background: var(--ok-bg); border-radius: 10px; padding: 12px; }
+.total-card .label { font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--ok-ink); }
+.total-card .big { font-size: 20px; font-weight: 800; line-height: 1.3; color: var(--ok-ink); font-variant-numeric: tabular-nums; }
+.total-card .sub { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.total-card.is-off { background: var(--ground); }
+.total-card.is-off .label, .total-card.is-off .big { color: var(--muted); }
+.blocked { background: var(--bad-bg); color: var(--bad-ink); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+.blocked ul { margin: 6px 0 0; padding-left: 18px; }
+.copy-label { margin-bottom: 6px; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--navy); }
+.quote-text { margin: 0; padding: 12px; max-height: 440px; overflow: auto; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; white-space: pre-wrap; font: 14px/1.6 var(--font); font-variant-numeric: tabular-nums; }
+.quote-text.is-empty { color: var(--muted); }
+.copy-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.copy-row .btn { flex: 1; padding-block: 10px; }
+.copy-status { font-size: 14px; font-weight: 700; color: var(--ok-ink); }
+
+@media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .summary { position: static; } }
+@media (max-width: 860px) { .extras { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  .page { padding: 16px 16px 40px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .table-wrap { overflow: visible; }
+  .sizes thead { display: none; }
+  .sizes, .sizes tbody { display: block; }
+  .sizes tbody { display: grid; gap: 12px; }
+  .size-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; padding: 14px; border: 1px solid var(--rule); border-radius: 10px; }
+  .size-row td { display: grid; gap: 4px; padding: 0; border: 0; }
+  .size-row td::before { content: attr(data-label); font-size: 12px; font-weight: 700; color: var(--muted); }
+  .size-row .c-idx { grid-column: 1 / 2; }
+  .size-row .c-actions { grid-column: 2 / 3; grid-row: 1; justify-items: end; }
+  .size-row .c-actions::before, .size-row .c-idx::before { content: none; }
+  .size-row .c-loc, .size-row .c-status { grid-column: 1 / -1; }
+  .size-row .c-price { text-align: left; }
+  .c-num input, .c-qty input, .c-proj select { width: 100%; }
+  .totals { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-head">
+    <p class="crumbs"><a href="index.html">หน้ารวมเครื่องคำนวณ</a> / <a href="spettmann-star.html">Spettmann Star แบบขนาดเดียว</a></p>
+    <h1>Spettmann Star <span>ใบเสนอราคาหลายขนาด</span></h1>
+  </header>
+
+  <div class="layout">
+    <main class="work">
+
+      <!-- 1. ตั้งค่าที่ใช้กับทุกขนาด / job-wide settings -->
+      <section class="section" aria-labelledby="jobHead">
+        <div class="section-head">
+          <h2 id="jobHead">ตั้งค่างานนี้</h2>
+          <p>ใช้กับทุกขนาดในใบเสนอราคา</p>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label for="fabricType">ชนิดผ้าใบ</label>
+            <select id="fabricType">
+              <option value="acrylic" selected>ผ้า Acrylic</option>
+              <option value="solar">ผ้า Solar View / Solar Sand</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="coverType">ชนิดฝาครอบกันน้ำ</label>
+            <select id="coverType">
+              <option value="none">ไม่เอาฝาปิด</option>
+              <option value="aluminum" data-price-key="coverProfile.aluminum">ฝาปิดอลูมิเนียม (2,400 บาท × ความกว้าง)</option>
+              <option value="white" data-price-key="coverProfile.white">ฝาปิดสีขาว (2,900 บาท × ความกว้าง)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="somfyMotor">มอเตอร์ Somfy (คิดในระบบมือหมุน)</label>
+            <select id="somfyMotor">
+              <option value="none" selected>ไม่ใช้</option>
+              <option value="somfyAltus50_12">Somfy Altus 50/12</option>
+              <option value="somfyAltus85_17">Somfy Altus 85/17</option>
+            </select>
+            <small>ราคา Somfy คิดรวมในกล่องระบบมือหมุนเท่านั้น เหมือนหน้าขนาดเดียว</small>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-top:14px;">
+          <label class="check" id="wrapManual"><input id="manualCheck" type="checkbox" checked> คิดราคาระบบมือหมุน</label>
+          <label class="check" id="wrapMotor"><input id="motorCheck" type="checkbox" checked> คิดราคาระบบมอเตอร์</label>
+          <label class="check" id="wrapOverride"><input id="manualOverride50" type="checkbox"> เพิ่มมือหมุนให้ Strong Up 50/12 (+2,000 บาท/ชุด)</label>
+        </div>
+      </section>
+
+      <!-- 2. รายการขนาด / sizes -->
+      <section class="section" aria-labelledby="sizesHead">
+        <div class="section-head">
+          <h2 id="sizesHead">ขนาดกันสาด</h2>
+          <div class="head-actions">
+            <button type="button" id="clearAll" class="btn btn-ghost">ล้างทั้งหมด</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="sizes">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">ตำแหน่ง</th>
+                <th scope="col" class="t-right">กว้าง (ม.)</th>
+                <th scope="col">ยื่น (ม.)</th>
+                <th scope="col" class="t-right">จำนวน</th>
+                <th scope="col">สถานะ</th>
+                <th scope="col" class="t-right">ราคา (มือหมุน)</th>
+                <th scope="col"><span hidden>ลบ</span></th>
+              </tr>
+            </thead>
+            <tbody id="sizeBody"></tbody>
+          </table>
+        </div>
+        <button type="button" id="addRow" class="add-row">+ เพิ่มขนาด</button>
+      </section>
+
+      <!-- 3. อุปกรณ์เสริมและส่วนลด คิดครั้งเดียวทั้งงาน -->
+      <section class="section" aria-labelledby="extrasHead">
+        <div class="section-head">
+          <h2 id="extrasHead">อุปกรณ์เสริมและส่วนลด</h2>
+          <p>คิดครั้งเดียวทั้งงาน</p>
+        </div>
+        <div class="extras">
+          <div>
+            <p id="accNote" class="acc-note"></p>
+            <ul id="accList" class="acc-list"></ul>
+          </div>
+          <div class="extras-fields">
+            <div class="field">
+              <label for="accCover">ฝาปิดกำหนดเอง (บาท)</label>
+              <input id="accCover" type="number" min="0" step="1" value="0">
+            </div>
+            <div class="field">
+              <label for="accColor">สีพิเศษ (บาท)</label>
+              <input id="accColor" type="number" min="0" step="1" value="0">
+            </div>
+            <div class="field">
+              <label for="accMiscLabel">ชื่อรายการเพิ่มเติมอื่น ๆ</label>
+              <input id="accMiscLabel" type="text" value="อื่น ๆ" placeholder="เช่น งานเสริมเหล็ก / ค่าขนส่ง">
+            </div>
+            <div class="field">
+              <label for="accMisc">ราคารายการเพิ่มเติมอื่น ๆ (บาท)</label>
+              <input id="accMisc" type="number" min="0" step="1" value="0">
+            </div>
+            <div class="field">
+              <label for="specialDiscount">ส่วนลดพิเศษ (บาท)</label>
+              <input id="specialDiscount" type="number" min="0" step="1" value="0">
+            </div>
+            <div class="field">
+              <label for="discount">ส่วนลด (%)</label>
+              <input id="discount" type="number" min="0" max="100" step="0.1" value="0">
+            </div>
+            <div class="field">
+              <label for="jobNote">หมายเหตุ</label>
+              <input id="jobNote" type="text" placeholder="เช่น ติดตั้งชั้น 2 ต้องใช้นั่งร้าน">
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="summary" aria-labelledby="summaryHead">
+      <div class="brandbar"><b>SANGTHONG CREATION</b><span>Price presented by Sangthong Creation</span></div>
+      <div class="summary-head">
+        <h2 id="summaryHead">สรุปราคา</h2>
+        <span id="unitCount" class="count"></span>
+      </div>
+
+      <div id="blocked" class="blocked" role="alert" hidden>
+        <strong>ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน</strong>
+        <ul id="blockedList"></ul>
+      </div>
+
+      <div id="totals" class="totals">
+        <div class="total-card" id="manualCard">
+          <span class="label">ระบบมือหมุน</span>
+          <span id="manualTotal" class="big"></span>
+          <span id="manualSub" class="sub"></span>
+        </div>
+        <div class="total-card" id="motorCard">
+          <span class="label">ระบบมอเตอร์</span>
+          <span id="motorTotal" class="big"></span>
+          <span id="motorSub" class="sub"></span>
+        </div>
+      </div>
+
+      <div>
+        <div class="copy-label">ข้อความสำหรับส่งลูกค้า</div>
+        <pre id="quoteText" class="quote-text"></pre>
+        <div class="copy-row">
+          <button type="button" id="copyQuote" class="btn btn-primary">คัดลอกข้อความ</button>
+          <span id="copyStatus" class="copy-status" role="status"></span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script src="prices.js"></script>
+<script>
+// ===========================================================================
+// ตารางราคาและช่วงความกว้าง — คัดลอกมาจาก spettmann-star.html ทั้งชุด
+// ถ้าแก้ราคาที่ต้นฉบับ ต้องคัดลอกมาใหม่ที่นี่ด้วย
+// (copied verbatim from spettmann-star.html; re-copy if the original changes)
+// ===========================================================================
+const WIDTH_BANDS = [
+      { min: 2.0,  max: 2.5  }, // 2.00–2.50
+      { min: 2.51, max: 3.0  }, // 2.51–3.00
+      { min: 3.01, max: 3.5  }, // 3.01–3.50
+      { min: 3.51, max: 4.0  }, // 3.51–4.00
+      { min: 4.01, max: 4.5  }, // 4.01–4.50
+      { min: 4.51, max: 5.0  }, // 4.51–5.00
+      { min: 5.01, max: 5.5  }, // 5.01–5.50
+      { min: 5.51, max: 6.0  }, // 5.51–6.00
+      { min: 6.01, max: 6.5  }, // 6.01–6.50
+      { min: 6.51, max: 7.0  }, // 6.51–7.00
+      { min: 7.01, max: 7.5  }, // 7.01–7.50
+      { min: 7.51, max: 8.0  }  // 7.51–8.00
+    ];
+
+const PRICE_MANUAL_ACRYLIC = {
+      "1.50": [
+        29900, // 2.00–2.50
+        32310, // 2.51–3.00
+        34770, // 3.01–3.50
+        38590, // 3.51–4.00
+        41330, // 4.01–4.50
+        44870, // 4.51–5.00
+        50450, // 5.01–5.50
+        53280, // 5.51–6.00
+        62660, // 6.01–6.50
+        65560, // 6.51–7.00
+        74780, // 7.01–7.50
+        77190  // 7.51–8.00
+      ],
+      "2.00": [
+        null,  // 2.00–2.50 ไม่มี
+        36190, // 2.51–3.00
+        39030, // 3.01–3.50
+        43220, // 3.51–4.00
+        46340, // 4.01–4.50
+        50250, // 4.51–5.00
+        56210, // 5.01–5.50
+        59420, // 5.51–6.00
+        63490, // 6.01–6.50
+        73270, // 6.51–7.00
+        83680, // 7.01–7.50
+        86460  // 7.51–8.00
+      ],
+      "2.50": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        42880, // 3.01–3.50
+        47450, // 3.51–4.00
+        50940, // 4.01–4.50
+        55230, // 4.51–5.00
+        61570, // 5.01–5.50
+        65140, // 5.51–6.00
+        69600, // 6.01–6.50
+        80360, // 6.51–7.00
+        91760, // 7.01–7.50
+        94920  // 7.51–8.00
+      ],
+      "3.00": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        null,  // 3.01–3.50 ไม่มี
+        53400, // 3.51–4.00
+        57270, // 4.01–4.50
+        61930, // 4.51–5.00
+        68650, // 5.01–5.50
+        72600, // 5.51–6.00
+        77430, // 6.01–6.50
+        90040, // 6.51–7.00
+        94710, // 7.01–7.50
+        106820 // 7.51–8.00
+      ],
+      "3.50": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        null,  // 3.01–3.50 ไม่มี
+        null,  // 3.51–4.00 ไม่มี
+        62280,  // 4.01–4.50 
+        67320, // 4.51–5.00
+        74410, // 5.01–5.50
+        78730, // 5.51–6.00
+        83940, // 6.01–6.50
+        97640, // 6.51–7.00
+        102680, // 7.01–7.50
+        116100 // 7.51–8.00
+      ]
+    };
+
+const PRICE_MOTOR_ACRYLIC = {
+      "1.50": [
+        39800, // 2.00–2.50
+        42210, // 2.51–3.00
+        44670, // 3.01–3.50
+        48490, // 3.51–4.00
+        51230, // 4.01–4.50
+        54770, // 4.51–5.00
+        60350, // 5.01–5.50
+        63180, // 5.51–6.00
+        72560, // 6.01–6.50
+        81460, // 6.51–7.00
+        90680, // 7.01–7.50
+        93090  // 7.51–8.00
+      ],
+      "2.00": [
+        null,  // 2.00–2.50 ไม่มี
+        46090, // 2.51–3.00
+        48930, // 3.01–3.50
+        53120, // 3.51–4.00
+        56240, // 4.01–4.50
+        60150, // 4.51–5.00
+        66110, // 5.01–5.50
+        69320, // 5.51–6.00
+        79390, // 6.01–6.50
+        89170, // 6.51–7.00
+        99600, // 7.01–7.50
+        102360 // 7.51–8.00
+      ],
+      "2.50": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        52780, // 3.01–3.50
+        57350, // 3.51–4.00
+        60840, // 4.01–4.50
+        65130, // 4.51–5.00
+        71470, // 5.01–5.50
+        81040, // 5.51–6.00
+        85500, // 6.01–6.50
+        96260, // 6.51–7.00
+        107700, // 7.01–7.50
+        110900  // 7.51–8.00
+      ],
+      "3.00": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        null,  // 3.01–3.50 ไม่มี
+        63300, // 3.51–4.00
+        67170, // 4.01–4.50
+        71830, // 4.51–5.00
+        78550, // 5.01–5.50
+        88500, // 5.51–6.00
+        93330, // 6.01–6.50
+        106000, // 6.51–7.00
+        110700, // 7.01–7.50
+        122800 // 7.51–8.00
+      ],
+      "3.50": [
+        null,   // 2.00–2.50 ไม่มี
+        null,   // 2.51–3.00 ไม่มี
+        null,   // 3.01–3.50 ไม่มี
+        null,   // 3.51–4.00 ไม่มี
+        72180,   // 4.01–4.50 
+        77220,  // 4.51–5.00
+        84310,  // 5.01–5.50
+        94630,  // 5.51–6.00
+        99840,  // 6.01–6.50
+        113600, // 6.51–7.00
+        118600, // 7.01–7.50
+        132000  // 7.51–8.00
+      ]
+    };
+
+const PRICE_MANUAL_SOLAR = {
+      "1.50": [
+        29030, // 2.00–2.50
+        31260, // 2.51–3.00
+        33540, // 3.01–3.50
+        37190, // 3.51–4.00
+        39750, // 4.01–4.50
+        43120, // 4.51–5.00
+        48530, // 5.01–5.50
+        51180, // 5.51–6.00
+        60380, // 6.01–6.50
+        63110, // 6.51–7.00
+        72160, // 7.01–7.50
+        74380  // 7.51–8.00
+      ],
+      "2.00": [
+        null,  // 2.00–2.50 ไม่มี
+        34240, // 2.51–3.00
+        36750, // 3.01–3.50
+        40620, // 3.51–4.00
+        43410, // 4.01–4.50
+        47000, // 4.51–5.00
+        52640, // 5.01–5.50
+        55510, // 5.51–6.00
+        59270, // 6.01–6.50
+        68720, // 6.51–7.00
+        78800, // 7.01–7.50
+        81260  // 7.51–8.00
+      ],
+      "2.50": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        39560, // 3.01–3.50
+        43650, // 3.51–4.00
+        46670, // 4.01–4.50
+        50480, // 4.51–5.00
+        56340, // 5.01–5.50
+        59440, // 5.51–6.00
+        63420, // 6.01–6.50
+        73710, // 6.51–7.00
+        84640, // 7.01–7.50
+        87310  // 7.51–8.00
+      ],
+      "3.00": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        null,  // 3.01–3.50 ไม่มี
+        48400, // 3.51–4.00
+        51640, // 4.01–4.50
+        55680, // 4.51–5.00
+        61770, // 5.01–5.50
+        65100, // 5.51–6.00
+        69300, // 6.01–6.50
+        81290, // 6.51–7.00
+        85330, // 7.01–7.50
+        96820  // 7.51–8.00
+      ],
+      "3.50": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        null,  // 3.01–3.50 ไม่มี
+        null,  // 3.51–4.00 ไม่มี
+        55300,  // 4.01–4.50 ไม่มี
+        59570, // 4.51–5.00
+        65880, // 5.01–5.50
+        69430, // 5.51–6.00
+        73860, // 6.01–6.50
+        86780, // 6.51–7.00
+        91050, // 7.01–7.50
+        103690  // 7.51–8.00
+      ]
+    };
+
+const PRICE_MOTOR_SOLAR = {
+      "1.50": [
+        38930, // 2.00–2.50
+        41160, // 2.51–3.00
+        43440, // 3.01–3.50
+        47090, // 3.51–4.00
+        49650, // 4.01–4.50
+        53020, // 4.51–5.00
+        58430, // 5.01–5.50
+        61080, // 5.51–6.00
+        70280, // 6.01–6.50
+        79010, // 6.51–7.00
+        88060, // 7.01–7.50
+        90280  // 7.51–8.00
+      ],
+      "2.00": [
+        null,  // 2.00–2.50 ไม่มี
+        44140, // 2.51–3.00
+        46650, // 3.01–3.50
+        50520, // 3.51–4.00
+        53310, // 4.01–4.50
+        56900, // 4.51–5.00
+        62540, // 5.01–5.50
+        65410, // 5.51–6.00
+        75170, // 6.01–6.50
+        84620, // 6.51–7.00
+        94700, // 7.01–7.50
+        97160  // 7.51–8.00
+      ],
+      "2.50": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        49460, // 3.01–3.50
+        53550, // 3.51–4.00
+        56570, // 4.01–4.50
+        60380, // 4.51–5.00
+        66240, // 5.01–5.50
+        75340, // 5.51–6.00
+        79320, // 6.01–6.50
+        89610, // 6.51–7.00
+        100600, // 7.01–7.50
+        103300  // 7.51–8.00
+      ],
+      "3.00": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        null,  // 3.01–3.50 ไม่มี
+        58300, // 3.51–4.00
+        61540, // 4.01–4.50
+        65580, // 4.51–5.00
+        71670, // 5.01–5.50
+        81000, // 5.51–6.00
+        85200, // 6.01–6.50
+        97190, // 6.51–7.00
+        101300, // 7.01–7.50
+        112800  // 7.51–8.00
+      ],
+      "3.50": [
+        null,  // 2.00–2.50 ไม่มี
+        null,  // 2.51–3.00 ไม่มี
+        null,  // 3.01–3.50 ไม่มี
+        null,  // 3.51–4.00 ไม่มี
+        65200,  // 4.01–4.50 
+        69470, // 4.51–5.00
+        75780, // 5.01–5.50
+        85330, // 5.51–6.00
+        89760, // 6.01–6.50
+        102700, // 6.51–7.00
+        107000, // 7.01–7.50
+        119600  // 7.51–8.00
+      ]
+    };
+
+// ----- กฎการเลือกมอเตอร์อัตโนมัติ คัดลอกจาก spettmann-star.html -----
+function findWidthBand(width) {
+  for (let i = 0; i < WIDTH_BANDS.length; i++) {
+    const b = WIDTH_BANDS[i];
+    if (width >= b.min && width <= b.max) return i;
+  }
+  return -1;
+}
+function needs80Motor(width, projection) {
+  const w = parseFloat(width);
+  const p = parseFloat(projection);
+  return (w >= 5.51 && w <= 6.00 && p >= 2.50) || (w >= 6.01 && w <= 6.50 && p >= 2.00) || (w > 6.50);
+}
+function getAutoMotorType(width, projection) {
+  return needs80Motor(width, projection) ? "80_15" : "50_12";
+}
+
+const MANUAL_OVERRIDE_EXTRA = 2000;   // เพิ่มมือหมุนให้ Strong Up 50/12
+
+// ===========================================================================
+// ตัวช่วย / helpers
+// ===========================================================================
+const $ = id => document.getElementById(id);
+const bahtText = n => (Number(n) || 0).toLocaleString('th-TH') + ' บาท';
+const escapeHtml = value => String(value)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+
+// ส่วนลด: หักส่วนลดพิเศษก่อน (ไม่เกินยอด) แล้วคิด % จากยอดที่เหลือ
+// เหมือนเครื่องคำนวณตัวอื่นทุกตัว / same order as every other calculator
+function applyDiscounts(subtotal, specialInput, percent) {
+  const special = Math.min(specialInput, subtotal);
+  const base = Math.max(subtotal - special, 0);
+  const percentAmount = base * (percent / 100);
+  return { subtotal: subtotal, special: special, percentAmount: percentAmount, total: base - percentAmount };
+}
+
+// อุปกรณ์เสริมมอเตอร์ ราคาจาก prices.js / accessories, prices from prices.js
+function accessoryItems(brand) {
+  const P = window.SANGTHONG_PRICES;
+  if (brand === 'somfy') return [
+    { key: 'somfy.ondeisRain', label: 'Ondeis Rain Sensor', value: P.somfy.ondeisRain },
+    { key: 'somfy.dryContact', label: 'Dry Contact Transmitter RTS', value: P.somfy.dryContact },
+    { key: 'somfy.sunis', label: 'Sunis Sensor RTS Wirefree', value: P.somfy.sunis },
+    { key: 'somfy.eolis', label: 'Eolis Sensor RTS', value: P.somfy.eolis },
+    { key: 'somfy.eolis3D', label: 'Eolis 3D Sensor RTS', value: P.somfy.eolis3D },
+    { key: 'somfy.soliris', label: 'Soliris RTS Sensor', value: P.somfy.soliris },
+    { key: 'somfy.taHoma', label: 'TaHoma', value: P.somfy.taHoma },
+    { key: 'somfy.remote1', label: 'Somfy Remote 1 Channel / รีโมท 1 ช่อง', value: P.somfy.remote1 },
+    { key: 'somfy.remote2', label: 'Somfy Remote 2 Channel / รีโมท 2 ช่อง', value: P.somfy.remote2 },
+    { key: 'somfy.remote5', label: 'Somfy Remote 5 Channel / รีโมท 5 ช่อง', value: P.somfy.remote5 },
+    { key: 'somfy.remote6', label: 'Somfy Remote 6 Channel / รีโมท 6 ช่อง', value: P.somfy.remote6 },
+    { key: 'somfy.remote16', label: 'Somfy Remote 16 Channel / รีโมท 16 ช่อง', value: P.somfy.remote16 },
+    { key: 'somfy.smoove', label: 'Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง', value: P.somfy.smoove }
+  ];
+  return [
+    { key: 'strongUp.remote1', label: 'Transmitter 1 Channel / รีโมท 1 ช่อง', value: P.strongUp.remote1 },
+    { key: 'strongUp.remote15', label: 'Transmitter 15 Channel / รีโมท 15 ช่อง', value: P.strongUp.remote15 },
+    { key: 'strongUp.windSun', label: 'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value: P.strongUp.windSun },
+    { key: 'strongUp.wifiAdapter', label: 'Wifi Smart Bridge with Adapter', value: P.strongUp.wifiAdapter },
+    { key: 'strongUp.wifiBridge', label: 'Wifi Smart Bridge only', value: P.strongUp.wifiBridge },
+    { key: 'strongUp.usbCharger', label: 'USB Charger', value: P.strongUp.usbCharger },
+    { key: 'strongUp.lanBridge', label: 'Lan Smart Bridge 1.20 m', value: P.strongUp.lanBridge }
+  ];
+}
+
+// ===========================================================================
+// สถานะของหน้า / page state
+// ===========================================================================
+let rows = [];
+let nextRowId = 1;
+let accCounts = {};
+let currentBrand = null;
+let latestQuote = '';
+
+const PROJECTIONS = ['1.50', '2.00', '2.50', '3.00', '3.50'];
+
+function makeRow(data) {
+  return Object.assign({ id: nextRowId++, location: '', width: '', projection: '2.50', qty: '1' }, data);
+}
+
+function renderRows() {
+  $('sizeBody').innerHTML = rows.map((row, i) => {
+    const id = row.id;
+    const opts = PROJECTIONS.map(p => `<option value="${p}"${row.projection === p ? ' selected' : ''}>${p}</option>`).join('');
+    return `
+      <tr class="size-row" data-row="${id}">
+        <td class="c-idx">${i + 1}</td>
+        <td class="c-loc" data-label="ตำแหน่ง"><input id="loc-${id}" data-field="location" type="text" placeholder="เช่น หน้าบ้าน" value="${escapeHtml(row.location)}" aria-label="ตำแหน่งของขนาดที่ ${i + 1}"></td>
+        <td class="c-num" data-label="กว้าง (ม.)"><input id="w-${id}" data-field="width" type="number" min="2" max="8" step="0.01" inputmode="decimal" value="${escapeHtml(row.width)}" aria-label="ความกว้าง ขนาดที่ ${i + 1}"></td>
+        <td class="c-proj" data-label="ยื่น (ม.)"><select id="p-${id}" data-field="projection" aria-label="ระยะยื่น ขนาดที่ ${i + 1}">${opts}</select></td>
+        <td class="c-qty" data-label="จำนวน (ชุด)"><input id="q-${id}" data-field="qty" type="number" min="1" step="1" inputmode="numeric" value="${escapeHtml(row.qty)}" aria-label="จำนวน ขนาดที่ ${i + 1}"></td>
+        <td class="c-status" data-label="สถานะ"><span id="status-${id}" class="chip"></span></td>
+        <td class="c-price" data-label="ราคา (มือหมุน)"><strong id="price-${id}"></strong><small id="unit-${id}"></small></td>
+        <td class="c-actions"><button type="button" id="remove-${id}" class="icon-btn" data-action="remove" aria-label="ลบขนาดที่ ${i + 1}">×</button></td>
+      </tr>`;
+  }).join('');
+  recalc();
+}
+
+function rowFromElement(el) {
+  const tr = el.closest('[data-row]');
+  return tr ? rows.find(r => r.id === Number(tr.dataset.row)) : null;
+}
+
+// คิดราคาผ้า/โครงของขนาดเดียว ใช้ตารางเดียวกับหน้าขนาดเดียว
+function evaluateRow(row, manualSet, motorSet) {
+  const w = parseFloat(row.width);
+  const p = row.projection;
+  const qty = parseInt(row.qty, 10);
+  const fail = error => ({ ok: false, error: error });
+
+  if (isNaN(w) || !(qty >= 1)) return fail('กรอกความกว้างและจำนวนให้ครบ');
+  const idx = findWidthBand(w);
+  if (idx === -1) return fail('ความกว้างอยู่นอกช่วงที่ตั้งไว้ (2.00–8.00 ม.)');
+
+  const manualBase = manualSet[p] ? manualSet[p][idx] : null;
+  const motorBase = motorSet[p] ? motorSet[p][idx] : null;
+  if (manualBase == null && motorBase == null) return fail('ไม่มีราคาสำหรับขนาดนี้');
+
+  return {
+    ok: true, w: w, p: p, qty: qty, idx: idx,
+    manualBase: manualBase, motorBase: motorBase,
+    motorType: getAutoMotorType(w, p),
+    motorLabel: getAutoMotorType(w, p) === '80_15' ? 'Strong Up 80/15' : 'Strong Up 50/12'
+  };
+}
+
+function syncRowUi(row, r, coverRate, wantManual) {
+  const chip = $('status-' + row.id);
+  if (!r.ok) {
+    chip.className = 'chip chip-bad';
+    chip.textContent = r.error;
+    $('price-' + row.id).textContent = '—';
+    $('unit-' + row.id).textContent = '';
+    return;
+  }
+  if (r.manualBase == null || r.motorBase == null) {
+    chip.className = 'chip chip-warn';
+    chip.textContent = r.manualBase == null ? 'มีเฉพาะราคาระบบมอเตอร์' : 'มีเฉพาะราคาระบบมือหมุน';
+  } else {
+    chip.className = 'chip chip-ok';
+    chip.textContent = 'มอเตอร์อัตโนมัติ: ' + r.motorLabel;
+  }
+  const base = wantManual && r.manualBase != null ? r.manualBase : r.motorBase;
+  const perSet = base + coverRate * r.w;
+  $('price-' + row.id).textContent = bahtText(perSet * r.qty);
+  $('unit-' + row.id).textContent = r.qty > 1 ? 'ชุดละ ' + bahtText(perSet) : '';
+}
+
+// ===========================================================================
+// อุปกรณ์เสริม / accessories
+// ===========================================================================
+function renderAccessories() {
+  const items = accessoryItems(currentBrand);
+  $('accNote').textContent = currentBrand === 'somfy'
+    ? 'อุปกรณ์เสริม Somfy · มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว ให้เพิ่มเฉพาะที่ต้องการเพิ่ม'
+    : 'อุปกรณ์เสริม Strong Up · กดเพิ่มจำนวนตามที่ใช้ทั้งงาน';
+  $('accList').innerHTML = items.map(item => {
+    const sid = item.key.replace('.', '-');
+    const count = accCounts[item.key] || 0;
+    return `
+      <li class="acc-item${count > 0 ? ' is-picked' : ''}" data-key="${item.key}">
+        <span class="acc-name">${escapeHtml(item.label)}<small>${bahtText(item.value)} / ชิ้น</small></span>
+        <span class="stepper">
+          <button type="button" data-step="-1" aria-label="ลดจำนวน ${escapeHtml(item.label)}">−</button>
+          <output>${count}</output>
+          <button type="button" data-step="1" aria-label="เพิ่มจำนวน ${escapeHtml(item.label)}">+</button>
+        </span>
+      </li>`;
+  }).join('');
+}
+
+// ===========================================================================
+// คำนวณทั้งงาน / whole-job calculation
+// ===========================================================================
+function recalc() {
+  document.querySelectorAll('.check').forEach(c => c.classList.toggle('is-on', !!c.querySelector('input:checked')));
+
+  const fabric = $('fabricType').value;
+  const manualSet = fabric === 'solar' ? PRICE_MANUAL_SOLAR : PRICE_MANUAL_ACRYLIC;
+  const motorSet = fabric === 'solar' ? PRICE_MOTOR_SOLAR : PRICE_MOTOR_ACRYLIC;
+  const fabricLabel = fabric === 'solar' ? 'ผ้า Solar View/Sand' : 'ผ้า Acrylic';
+
+  const coverSel = $('coverType');
+  const coverType = coverSel.value;
+  const coverRate = coverType === 'none' ? 0 : window.getCoverProfileRate(coverType);
+  const coverName = coverSel.options[coverSel.selectedIndex].text.replace(/\s*\([^)]*\)\s*$/, '').trim();
+
+  const wantManual = $('manualCheck').checked;
+  const wantMotor = $('motorCheck').checked;
+  const overrideOn = $('manualOverride50').checked;
+
+  const somfySel = $('somfyMotor');
+  const somfyKey = somfySel.value;
+  const somfyName = somfySel.options[somfySel.selectedIndex].text;
+  const somfyPrice = somfyKey === 'none' ? 0 : window.getCatalogPrice(somfyKey);
+
+  // เลือก Somfy = แสดงอุปกรณ์เสริม Somfy, ไม่เลือก = Strong Up
+  const brand = somfyKey === 'none' ? 'strongup' : 'somfy';
+  if (brand !== currentBrand) { currentBrand = brand; accCounts = {}; renderAccessories(); }
+
+  const extraAcc = (parseFloat($('accCover').value) || 0) + (parseFloat($('accColor').value) || 0) + (parseFloat($('accMisc').value) || 0);
+  const miscLabel = ($('accMiscLabel').value || 'อื่น ๆ').trim();
+  const specialInput = parseFloat($('specialDiscount').value) || 0;
+  const percent = parseFloat($('discount').value) || 0;
+  const jobNote = ($('jobNote').value || '').trim();
+
+  const results = rows.map(row => ({ row: row, r: evaluateRow(row, manualSet, motorSet) }));
+  results.forEach(x => syncRowUi(x.row, x.r, coverRate, wantManual));
+
+  const units = results.reduce((sum, x) => sum + (x.r.ok ? x.r.qty : 0), 0);
+  $('unitCount').textContent = units + ' ชุด · ' + rows.length + ' ขนาด';
+
+  const problems = results.map((x, i) => ({ row: x.row, r: x.r, i: i })).filter(x => !x.r.ok);
+  if (problems.length || !rows.length || (!wantManual && !wantMotor)) {
+    const list = problems.map(x =>
+      `<li>ขนาดที่ ${x.i + 1}${x.row.location.trim() ? ' (' + escapeHtml(x.row.location.trim()) + ')' : ''}: ${escapeHtml(x.r.error)}</li>`);
+    if (!wantManual && !wantMotor) list.push('<li>กรุณาเลือกระบบมือหมุนหรือระบบมอเตอร์อย่างน้อย 1 ระบบ</li>');
+    $('blockedList').innerHTML = list.join('');
+    $('blocked').hidden = false;
+    $('totals').hidden = true;
+    latestQuote = '';
+    $('quoteText').textContent = 'แก้ขนาดที่มีปัญหาก่อน แล้วข้อความใบเสนอราคาจะแสดงที่นี่';
+    $('quoteText').classList.add('is-empty');
+    $('copyQuote').disabled = true;
+    return;
+  }
+  $('blocked').hidden = true;
+  $('totals').hidden = false;
+  $('copyQuote').disabled = false;
+  $('quoteText').classList.remove('is-empty');
+
+  const accPicked = accessoryItems(currentBrand)
+    .filter(item => (accCounts[item.key] || 0) > 0)
+    .map(item => Object.assign({ count: accCounts[item.key] }, item));
+  const accTotal = accPicked.reduce((sum, item) => sum + item.value * item.count, 0);
+
+  // ----- ยอดรวมของแต่ละระบบ -----
+  // มือหมุน: ราคาผ้า/โครง + ฝาครอบ  (+ มอเตอร์ Somfy ต่อชุด ถ้าเลือก — เหมือนหน้าขนาดเดียว)
+  // มอเตอร์: ราคาผ้า/โครง + ฝาครอบ  (+ เพิ่มมือหมุน 2,000 เฉพาะชุดที่ใช้ 50/12)
+  let manualSubtotal = extraAcc + accTotal;
+  let motorSubtotal = extraAcc + accTotal;
+  let manualMissing = 0, motorMissing = 0, overrideSets = 0;
+  const motorTypes = {};
+  results.forEach(x => {
+    const r = x.r;
+    const cover = coverRate * r.w;
+    if (r.manualBase != null) manualSubtotal += (r.manualBase + cover + somfyPrice) * r.qty;
+    else manualMissing += r.qty;
+    if (r.motorBase != null) {
+      const extra = (overrideOn && r.motorType === '50_12') ? MANUAL_OVERRIDE_EXTRA : 0;
+      if (extra) overrideSets += r.qty;
+      motorSubtotal += (r.motorBase + cover + extra) * r.qty;
+      motorTypes[r.motorLabel] = (motorTypes[r.motorLabel] || 0) + r.qty;
+    } else motorMissing += r.qty;
+  });
+
+  const manual = applyDiscounts(manualSubtotal, specialInput, percent);
+  const motorized = applyDiscounts(motorSubtotal, specialInput, percent);
+  const hasDiscount = manual.special > 0 || percent > 0;
+
+  $('manualCard').classList.toggle('is-off', !wantManual);
+  $('motorCard').classList.toggle('is-off', !wantMotor);
+  $('manualTotal').textContent = wantManual ? bahtText(manual.total) : '—';
+  $('manualSub').textContent = wantManual
+    ? (hasDiscount ? 'ก่อนส่วนลด ' + bahtText(manual.subtotal) : (units > 1 ? units + ' ชุด' : 'ต่อ 1 ชุด'))
+    : 'ไม่ได้เลือกระบบนี้';
+  $('motorTotal').textContent = wantMotor ? bahtText(motorized.total) : '—';
+  $('motorSub').textContent = wantMotor
+    ? (hasDiscount ? 'ก่อนส่วนลด ' + bahtText(motorized.subtotal) : Object.keys(motorTypes).join(' · '))
+    : 'ไม่ได้เลือกระบบนี้';
+
+  // ----- ข้อความส่งลูกค้า -----
+  const discountLines = d => [].concat(
+    d.special > 0 ? ['ส่วนลดพิเศษ: -' + bahtText(d.special)] : [],
+    percent > 0 ? ['ส่วนลด: ' + percent + '% = -' + bahtText(d.percentAmount)] : []
+  );
+
+  const lines = [];
+  lines.push('กันสาดพับเก็บได้ Spettmann Star');
+  lines.push('ชนิดผ้า: ' + fabricLabel);
+  lines.push('ฝาครอบ: ' + (coverRate > 0 ? coverName + ' ' + coverRate.toLocaleString('th-TH') + ' บาท/เมตร (รวมในราคาแต่ละขนาดแล้ว)' : 'ไม่มี'));
+  lines.push('จำนวนรวม: ' + units + ' ชุด (' + rows.length + ' ขนาด)');
+  lines.push('');
+  lines.push('รายการขนาด');
+  results.forEach((x, i) => {
+    const r = x.r;
+    const place = x.row.location.trim() ? x.row.location.trim() + ': ' : '';
+    const base = wantManual && r.manualBase != null ? r.manualBase : r.motorBase;
+    const amount = (base + coverRate * r.w) * r.qty;
+    lines.push((i + 1) + '. ' + place + 'กว้าง ' + r.w.toFixed(2) + ' × ยื่น ' + r.p + ' ม. × ' + r.qty + ' ชุด = ' + bahtText(amount));
+  });
+  lines.push('');
+  if (wantManual) {
+    lines.push('ระบบมือหมุน');
+    if (somfyPrice) lines.push('มอเตอร์ ' + somfyName + ': +' + bahtText(somfyPrice) + ' × ' + units + ' ชุด');
+    if (accPicked.length) accPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
+    if (extraAcc > 0) lines.push('อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(extraAcc) + (miscLabel && parseFloat($('accMisc').value) > 0 ? ' (รวม ' + miscLabel + ')' : ''));
+    if (manualMissing) lines.push('หมายเหตุ: มี ' + manualMissing + ' ชุดที่ไม่มีราคาระบบมือหมุน จึงยังไม่รวมในยอดนี้');
+    lines.push('ราคาก่อนส่วนลด: ' + bahtText(manual.subtotal));
+    discountLines(manual).forEach(l => lines.push(l));
+    lines.push('ราคาสรุประบบมือหมุน: ' + bahtText(manual.total));
+    lines.push('');
+  }
+  if (wantMotor) {
+    lines.push('ระบบมอเตอร์');
+    Object.keys(motorTypes).forEach(k => lines.push('มอเตอร์: ' + k + ' × ' + motorTypes[k] + ' ชุด'));
+    if (overrideSets) lines.push('เพิ่มมือหมุน 50/12: +' + bahtText(MANUAL_OVERRIDE_EXTRA) + ' × ' + overrideSets + ' ชุด');
+    if (accPicked.length) accPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
+    if (extraAcc > 0) lines.push('อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(extraAcc));
+    if (motorMissing) lines.push('หมายเหตุ: มี ' + motorMissing + ' ชุดที่ไม่มีราคาระบบมอเตอร์ จึงยังไม่รวมในยอดนี้');
+    lines.push('ราคาก่อนส่วนลด: ' + bahtText(motorized.subtotal));
+    discountLines(motorized).forEach(l => lines.push(l));
+    lines.push('ราคาสรุประบบมอเตอร์: ' + bahtText(motorized.total));
+    lines.push('');
+  }
+  if (jobNote) { lines.push('หมายเหตุเพิ่มเติม: ' + jobNote); lines.push(''); }
+  lines.push('รวม VAT 7% แล้ว');
+  lines.push('ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล');
+  lines.push('ราคาที่แจ้งเป็นราคาเบื้องต้นเท่านั้น ราคาที่แท้จริงสามารถแจ้งได้หลังสํารวจหน้างาน');
+  lines.push('รับประกันโครงสร้างและการติดตั้ง 1 ปี');
+  lines.push('รับประกันการทำงานของมอเตอร์ 2 ปี ตามเงื่อนไขบริษัท');
+
+  latestQuote = lines.join('\n');
+  $('quoteText').textContent = latestQuote;
+}
+
+// ===========================================================================
+// ปุ่มต่าง ๆ / controls
+// ===========================================================================
+function loadStartingJob() {
+  rows = [makeRow({ width: '5.60', projection: '2.50', qty: '1' })];
+  currentBrand = 'strongup';
+  accCounts = {};
+  renderAccessories();
+  renderRows();
+}
+
+function clearAll() {
+  rows = [makeRow()];
+  $('fabricType').selectedIndex = 0;
+  $('coverType').value = 'none';
+  $('somfyMotor').value = 'none';
+  $('manualCheck').checked = true;
+  $('motorCheck').checked = true;
+  $('manualOverride50').checked = false;
+  ['accCover', 'accColor', 'accMisc', 'specialDiscount', 'discount'].forEach(id => { $(id).value = '0'; });
+  $('accMiscLabel').value = 'อื่น ๆ';
+  $('jobNote').value = '';
+  currentBrand = 'strongup';
+  accCounts = {};
+  renderAccessories();
+  renderRows();
+  $('loc-' + rows[0].id).focus();
+}
+
+async function copyQuote() {
+  if (!latestQuote) return;
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(latestQuote);
+    copied = true;
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = latestQuote;
+    document.body.appendChild(ta);
+    ta.select();
+    copied = document.execCommand('copy');
+    ta.remove();
+  }
+  const status = $('copyStatus');
+  status.textContent = copied ? 'คัดลอกแล้ว' : 'คัดลอกไม่ได้ ให้เลือกข้อความแล้วกด Ctrl+C';
+  clearTimeout(copyQuote.timer);
+  copyQuote.timer = setTimeout(function () { status.textContent = ''; }, 2500);
+}
+
+function init() {
+  window.applyOptionPrices();   // ให้ราคาในตัวเลือกตรงกับ prices.js
+
+  ['fabricType', 'coverType', 'somfyMotor', 'manualCheck', 'motorCheck', 'manualOverride50',
+   'accCover', 'accColor', 'accMisc', 'accMiscLabel', 'specialDiscount', 'discount', 'jobNote']
+    .forEach(id => {
+      $(id).addEventListener('input', recalc);
+      $(id).addEventListener('change', recalc);
+    });
+
+  const onRowInput = e => {
+    const field = e.target.dataset.field;
+    const row = field && rowFromElement(e.target);
+    if (!row) return;
+    row[field] = e.target.value;
+    recalc();
+  };
+  $('sizeBody').addEventListener('input', onRowInput);
+  $('sizeBody').addEventListener('change', onRowInput);
+  $('sizeBody').addEventListener('click', e => {
+    const btn = e.target.closest('[data-action="remove"]');
+    const row = btn && rowFromElement(btn);
+    if (!row) return;
+    rows = rows.filter(r => r.id !== row.id);
+    if (!rows.length) rows = [makeRow()];
+    renderRows();
+  });
+
+  $('accList').addEventListener('click', e => {
+    const btn = e.target.closest('[data-step]');
+    if (!btn) return;
+    const li = btn.closest('[data-key]');
+    const key = li.dataset.key;
+    const count = Math.min(99, Math.max(0, (accCounts[key] || 0) + Number(btn.dataset.step)));
+    accCounts[key] = count;
+    li.querySelector('output').textContent = count;
+    li.classList.toggle('is-picked', count > 0);
+    recalc();
+  });
+
+  $('addRow').addEventListener('click', () => {
+    const row = makeRow();
+    rows.push(row);
+    renderRows();
+    $('loc-' + row.id).focus();
+  });
+  $('clearAll').addEventListener('click', clearAll);
+  $('copyQuote').addEventListener('click', copyQuote);
+
+  loadStartingJob();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+<!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้ -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
+</script>
+</body>
+</html>
