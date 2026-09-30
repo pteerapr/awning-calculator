@@ -10,7 +10,7 @@
   IMPORTANT: bump CACHE_NAME (v1 -> v2 ...) whenever you change any cached file,
   so visitors get the new version instead of the old cached copy.
 */
-const CACHE_NAME = 'sangthong-awning-v56';
+const CACHE_NAME = 'sangthong-awning-v57';
 
 const ASSETS = [
   './',
@@ -69,6 +69,7 @@ const ASSETS = [
   './terra-fs-standard-without-LED.html',
   './terra-ma3-LED.html',
   './terra-ma3.html',
+  './terra-ma3-multiple.html',
   './terra-ma3-structure.html',
   './veranda-lt06.html',
   './zipguide-expert.html',
