@@ -1230,7 +1230,9 @@ function calculatePrice(){
   const motorizedDiscountAmount=motorizedDiscountBase*(discount/100);
   const motorizedTotal=motorizedDiscountBase-motorizedDiscountAmount;
 
-  const bahtText = n => (Number(n) || 0).toLocaleString('th-TH') + ' บาท';
+  // ปัดเป็นบาทเต็มก่อนแสดงผล ไม่งั้นส่วนลด % จะทำให้ใบเสนอราคาขึ้นเศษสตางค์
+// (round to whole baht: a percentage discount otherwise shows satang)
+const bahtText = n => Math.round(Number(n) || 0).toLocaleString('th-TH') + ' บาท';
 
   // Per-piece price breakdown lines, shown only when the fabric is split.
   const splitDetailLines = splitPieces ? [

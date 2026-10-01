@@ -1058,7 +1058,9 @@ function itemsToHtml(items) {
     }
 
     function formatTHB(num) {
-      return num.toLocaleString('th-TH') + ' บาท';
+      // ปัดเป็นบาทเต็มก่อนแสดงผล ไม่งั้นส่วนลด % จะทำให้ใบเสนอราคาขึ้นเศษสตางค์
+      // (round to whole baht: a percentage discount otherwise shows satang)
+      return Math.round(Number(num) || 0).toLocaleString('th-TH') + ' บาท';
     }
 
     function needs80Motor(width, projection) {

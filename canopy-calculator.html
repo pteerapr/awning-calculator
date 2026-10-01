@@ -153,7 +153,9 @@ function refreshStyleOptions(){
 }
 
 function bahtText(n){
-  return Number(n).toLocaleString('th-TH', {minimumFractionDigits:0, maximumFractionDigits:2}) + ' บาท';
+  // ปัดเป็นบาทเต็มก่อนแสดงผล ไม่งั้นส่วนลด % จะทำให้ใบเสนอราคาขึ้นเศษสตางค์
+  // (round to whole baht: a percentage discount otherwise shows satang)
+  return Math.round(Number(n) || 0).toLocaleString('th-TH') + ' บาท';
 }
 
 function getPricePerSqm(){

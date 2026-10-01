@@ -1102,7 +1102,9 @@ function getAccessoryItemsByBrand(brand) {
 // ตัวช่วย / helpers
 // ===========================================================================
 const $ = id => document.getElementById(id);
-const bahtText = n => (Number(n) || 0).toLocaleString('th-TH') + ' บาท';
+// ปัดเป็นบาทเต็มก่อนแสดงผล ไม่งั้นส่วนลด % จะทำให้ใบเสนอราคาขึ้นเศษสตางค์
+// (round to whole baht: a percentage discount otherwise shows satang)
+const bahtText = n => Math.round(Number(n) || 0).toLocaleString('th-TH') + ' บาท';
 const escapeHtml = value => String(value)
   .replace(/&/g, '&amp;')
   .replace(/</g, '&lt;')
