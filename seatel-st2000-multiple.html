@@ -265,7 +265,6 @@ button { font: inherit; cursor: pointer; }
                 <th scope="col" class="t-right">จำนวน</th>
                 <th scope="col">แบ่งผ้า</th>
                 <th scope="col">สถานะ</th>
-                <th scope="col" class="t-right">ราคา (มือหมุน)</th>
                 <th scope="col"><span hidden>ลบ</span></th>
               </tr>
             </thead>
@@ -1152,11 +1151,10 @@ function renderRows() {
         <td class="c-qty" data-label="จำนวน (ชุด)"><input id="q-${id}" data-field="qty" type="number" min="1" step="1" inputmode="numeric" value="${escapeHtml(row.qty)}" aria-label="จำนวน ขนาดที่ ${i + 1}"></td>
         <td class="c-split" data-label="แบ่งผ้า"><label><input id="split-${id}" data-field="split" type="checkbox"${row.split ? ' checked' : ''}> 2 ชิ้น</label></td>
         <td class="c-status" data-label="สถานะ"><span id="status-${id}" class="chip"></span></td>
-        <td class="c-price" data-label="ราคา (มือหมุน)"><strong id="price-${id}"></strong><small id="unit-${id}"></small></td>
         <td class="c-actions"><button type="button" id="remove-${id}" class="icon-btn" data-action="remove" aria-label="ลบขนาดที่ ${i + 1}">×</button></td>
       </tr>
       <tr class="split-row" id="splitrow-${id}" data-row="${id}" hidden>
-        <td colspan="9">
+        <td colspan="8">
           <div class="pieces">
             <strong>แบ่งผ้า 2 ชิ้น</strong>
             <label for="p1-${id}">ชิ้นที่ 1</label>
@@ -1246,20 +1244,17 @@ function syncRowUi(row, result, coverRate) {
   if (!result.ok) {
     chip.className = 'chip chip-bad';
     chip.textContent = result.error;
-    $('price-' + row.id).textContent = '—';
-    $('unit-' + row.id).textContent = '';
     return;
   }
   if (result.forced) {
     chip.className = 'chip chip-warn';
     chip.textContent = 'แบ่งผ้า 2 ชิ้น (กว้างเกิน 5 ม.)';
   } else {
-    chip.className = 'chip chip-ok';
-    chip.textContent = result.split ? 'แบ่งผ้า 2 ชิ้น' : 'ผ้า 1 ชิ้น';
+    // ปกติดีอยู่แล้ว ไม่ต้องขึ้นป้ายอะไรให้รกตา (เหลือไว้เฉพาะตอนมีปัญหา)
+    // (nothing to flag when the row is fine - the chip is for problems only)
+    chip.className = 'chip';
+    chip.textContent = '';
   }
-  const perSet = result.base + coverRate * result.w;
-  $('price-' + row.id).textContent = bahtText(perSet * result.qty);
-  $('unit-' + row.id).textContent = result.qty > 1 ? 'ชุดละ ' + bahtText(perSet) : '';
 }
 
 // ===========================================================================

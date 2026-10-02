@@ -235,7 +235,6 @@ button { font: inherit; cursor: pointer; }
                 <th scope="col">ยื่น (ม.)</th>
                 <th scope="col" class="t-right">จำนวน</th>
                 <th scope="col">สถานะ</th>
-                <th scope="col" class="t-right" id="priceColHead">ราคา (มือหมุน)</th>
                 <th scope="col"><span hidden>ลบ</span></th>
               </tr>
             </thead>
@@ -1039,7 +1038,6 @@ function renderRows() {
         <td class="c-proj" data-label="ยื่น (ม.)"><select id="p-${id}" data-field="projection" aria-label="ระยะยื่น ขนาดที่ ${i + 1}">${opts}</select></td>
         <td class="c-qty" data-label="จำนวน (ชุด)"><input id="q-${id}" data-field="qty" type="number" min="1" step="1" inputmode="numeric" value="${escapeHtml(row.qty)}" aria-label="จำนวน ขนาดที่ ${i + 1}"></td>
         <td class="c-status" data-label="สถานะ"><span id="status-${id}" class="chip"></span></td>
-        <td class="c-price" data-label="ราคา (มือหมุน)"><strong id="price-${id}"></strong><small id="unit-${id}"></small></td>
         <td class="c-actions"><button type="button" id="remove-${id}" class="icon-btn" data-action="remove" aria-label="ลบขนาดที่ ${i + 1}">×</button></td>
       </tr>`;
   }).join('');
@@ -1079,21 +1077,17 @@ function syncRowUi(row, r, coverRate, wantManual) {
   if (!r.ok) {
     chip.className = 'chip chip-bad';
     chip.textContent = r.error;
-    $('price-' + row.id).textContent = '—';
-    $('unit-' + row.id).textContent = '';
     return;
   }
   if (r.manualBase == null || r.motorBase == null) {
     chip.className = 'chip chip-warn';
     chip.textContent = r.manualBase == null ? 'มีเฉพาะราคาระบบมอเตอร์ Strong Up' : 'มีเฉพาะราคา' + systemLabel;
   } else {
-    chip.className = 'chip chip-ok';
-    chip.textContent = 'มอเตอร์อัตโนมัติ: ' + r.motorLabel;
+    // ปกติดีอยู่แล้ว ไม่ต้องขึ้นป้ายอะไรให้รกตา (เหลือไว้เฉพาะตอนมีปัญหา)
+    // (nothing to flag when the row is fine - the chip is for problems only)
+    chip.className = 'chip';
+    chip.textContent = '';
   }
-  const base = wantManual && r.manualBase != null ? r.manualBase : r.motorBase;
-  const perSet = base + coverRate * r.w;
-  $('price-' + row.id).textContent = bahtText(perSet * r.qty);
-  $('unit-' + row.id).textContent = r.qty > 1 ? 'ชุดละ ' + bahtText(perSet) : '';
 }
 
 // ===========================================================================
@@ -1241,8 +1235,6 @@ function recalc() {
   const manualSystemLabel = systemLabel;
   $('manualCardLabel').textContent = manualSystemLabel;
   $('manualCheckLabel').textContent = 'คิดราคา' + manualSystemLabel;
-  $('priceColHead').textContent = somfyPrice ? 'ราคา (Somfy)' : 'ราคา (มือหมุน)';
-  document.querySelectorAll('.c-price').forEach(td => td.setAttribute('data-label', $('priceColHead').textContent));
 
   const warnings = [];
   if (!wantManual && somfyPrice) warnings.push('เลือกมอเตอร์ ' + somfyName + ' ไว้ แต่ไม่ได้ติ๊ก "คิดราคา' + manualSystemLabel + '" — ราคา Somfy จึงยังไม่ถูกรวมในใบเสนอราคานี้');
