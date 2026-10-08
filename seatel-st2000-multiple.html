@@ -224,9 +224,9 @@ button { font: inherit; cursor: pointer; }
             <!-- ราคาในวงเล็บอัปเดตจาก prices.js อัตโนมัติ (data-price-key) -->
             <select id="motor">
               <option value="0">ไม่มี</option>
-              <option value="9900" data-price-key="strongUp50_12" selected>มอเตอร์ Strong Up 50/12 (9,900 บาท)</option>
-              <option value="11900" data-price-key="strongUp50_12_crank">มอเตอร์ Strong Up 50/12 with crank handle (11,900 บาท)</option>
-              <option value="15900" data-price-key="strongUp80_15">มอเตอร์ Strong Up 80/15 (15,900 บาท)</option>
+              <option value="9900" data-price-key="strongUp50_12" selected>มอเตอร์ Strong Up-Y 50/12 (9,900 บาท)</option>
+              <option value="11900" data-price-key="strongUp50_12_crank">มอเตอร์ Strong Up-Y 50/12 with crank handle (11,900 บาท)</option>
+              <option value="15900" data-price-key="strongUp80_15">มอเตอร์ Strong Up-Y 80/15 (15,900 บาท)</option>
               <option value="26800" data-price-key="somfyAltus40_17">มอเตอร์ Somfy Altus 40/17 (26,800 บาท)</option>
               <option value="26800" data-price-key="somfyAltus50_12">มอเตอร์ Somfy Altus 50/12 (26,800 บาท)</option>
               <option value="36800" data-price-key="somfyAltus85_17">มอเตอร์ Somfy Altus 85/17 (36,800 บาท)</option>
@@ -1070,12 +1070,11 @@ function getAccessoryItemsByBrand(brand) {
   const P = window.SANGTHONG_PRICES;
   const strongUpItems = [
     { key: "strongUp.remote1", label: "Transmitter 1 Channel / รีโมท 1 ช่อง", value: P.strongUp.remote1 },
-    { key: "strongUp.remote15", label: "Transmitter 15 Channel / รีโมท 15 ช่อง", value: P.strongUp.remote15 },
+    { key: "strongUp.remote2", label: "Transmitter 2 Channel / รีโมท 2 ช่อง", value: P.strongUp.remote2 },
+    { key: "strongUp.remote6", label: "Transmitter 6 Channel / รีโมท 6 ช่อง", value: P.strongUp.remote6 },
+    { key: "strongUp.remote16", label: "Transmitter 16 Channel / รีโมท 16 ช่อง", value: P.strongUp.remote16 },
     { key: "strongUp.windSun", label: "Wind-Sun Sensor / เซ็นเซอร์ลม-แดด", value: P.strongUp.windSun },
-    { key: "strongUp.wifiAdapter", label: "Wifi Smart Bridge with Adapter", value: P.strongUp.wifiAdapter },
-    { key: "strongUp.wifiBridge", label: "Wifi Smart Bridge only", value: P.strongUp.wifiBridge },
-    { key: "strongUp.usbCharger", label: "USB Charger", value: P.strongUp.usbCharger },
-    { key: "strongUp.lanBridge", label: "Lan Smart Bridge 1.20 m", value: P.strongUp.lanBridge }
+    { key: "strongUp.smartController", label: "Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์", value: P.strongUp.smartController }
   ];
   const somfyItems = [
     { key: "somfy.ondeisRain", label: "Ondeis Rain Sensor", value: P.somfy.ondeisRain },
@@ -1125,7 +1124,7 @@ function applyDiscounts(subtotal, specialInput, percent) {
 // ===========================================================================
 let rows = [];          // [{ id, location, width, drop, qty, split, piece1, piece2 }]
 let nextRowId = 1;
-let accCounts = {};     // { 'strongUp.remote15': 1, ... }
+let accCounts = {};     // { 'strongUp.remote1': 1, ... }
 let currentBrand = null;
 let latestQuote = '';
 
@@ -1264,7 +1263,7 @@ function renderAccessories() {
   const items = getAccessoryItemsByBrand(currentBrand);
   $('accNote').textContent =
     currentBrand === 'somfy' ? 'อุปกรณ์เสริม Somfy · มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว ให้เพิ่มเฉพาะที่ต้องการเพิ่ม'
-    : currentBrand === 'strongup' ? 'อุปกรณ์เสริม Strong Up · กดเพิ่มจำนวนตามที่ใช้ทั้งงาน'
+    : currentBrand === 'strongup' ? 'อุปกรณ์เสริม Strong Up-Y · กดเพิ่มจำนวนตามที่ใช้ทั้งงาน'
     : 'เลือกมอเตอร์ก่อน จึงจะเพิ่มอุปกรณ์เสริมมอเตอร์ได้';
   $('accList').innerHTML = items.map(item => {
     const sid = item.key.replace('.', '-');
@@ -1440,13 +1439,13 @@ function recalc() {
 // ===========================================================================
 // ค่าเริ่มต้นและปุ่มต่าง ๆ / starting values and controls
 // ===========================================================================
-// เปิดหน้ามาเหมือน seatel-st2000.html: ขนาดเดียว กว้าง 3.00 × สูง 2.00 มอเตอร์ Strong Up 50/12
+// เปิดหน้ามาเหมือน seatel-st2000.html: ขนาดเดียว กว้าง 3.00 × สูง 2.00 มอเตอร์ Strong Up-Y 50/12
 // ไม่ใส่ข้อมูลตัวอย่าง กันไม่ให้ชื่อตำแหน่งปลอมหลุดไปในใบเสนอราคาจริง
 // (opens like the single-size page; no sample data that could leak into a real quote)
 function loadStartingJob() {
   rows = [makeRow({ width: '3.00', drop: '2.00', qty: '1' })];
   $('fabric').selectedIndex = 0;          // Solar View
-  $('motor').selectedIndex = 1;           // Strong Up 50/12
+  $('motor').selectedIndex = 1;           // Strong Up-Y 50/12
   $('cover').value = 'none';
   currentBrand = getMotorBrandFromSelectedText($('motor').options[1].text);
   accCounts = {};

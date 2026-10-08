@@ -14,7 +14,7 @@
     - terra-ma3.html
     - terra-ma3-LED.html  (ฝาครอบกันน้ำเท่านั้น / cover profile only)
     - spettmann-star.html
-    - ma4-calculator.html  (Strong Up accessories + ฝาครอบกันน้ำ)
+    - ma4-calculator.html  (Strong Up-Y accessories + ฝาครอบกันน้ำ)
     - ma4-calculator-structure.html, terra-ma3-structure.html,
       seatel-st2000-structure.html, spettmann-star-structure.html
   แต่ละไฟล์โหลดด้วย <script src="prices.js"></script> ก่อน <script> หลัก
@@ -24,7 +24,7 @@
     * SEATEL ST1000E เคยใช้ราคารีโมท Somfy ของตัวเอง (1ch 2,498 / 2ch 2,636 /
       5ch 4,163) แต่ได้ปรับให้ตรงกับ catalog (3,017 / 3,862 / 6,035) แล้ว
       จึงอ่านค่าจากไฟล์นี้ได้ (aligned to the catalog so it now shares these prices).
-    * ราคา "ตัวมอเตอร์" (Somfy / Strong Up) อยู่ในบล็อก `motors` ด้านล่าง = single
+    * ราคา "ตัวมอเตอร์" (Somfy / Strong Up-Y) อยู่ในบล็อก `motors` ด้านล่าง = single
       source of truth ใช้ร่วมกันโดย:
         - *-structure.html (4 ไฟล์)            อ่านผ่าน MC.<key> ในตาราง MOTORS
         - chill-d1, seatel-st2000, seatel-st1000e-vertical-awning, izip-screen
@@ -62,15 +62,17 @@ window.SANGTHONG_PRICES = {
     smoove:     2362     // สวิตซ์ Smoove 1 ช่อง RTS Origin / Smoove 1-channel switch
   },
 
-  // อุปกรณ์เสริมมอเตอร์ Strong Up / Strong Up motor accessories
+  // อุปกรณ์เสริมมอเตอร์ Strong Up-Y / Strong Up-Y motor accessories
+  // อัปเดตตามใบ CONTROL SYSTEM ต.ค. 2026 — ของเก่าเลิกขายแล้ว 5 รายการ
+  // (รีโมท 15 ช่อง, Wifi Smart Bridge ทั้ง 2 แบบ, USB Charger, Lan Smart Bridge)
+  // Updated from the October 2026 CONTROL SYSTEM sheet; five old items discontinued.
   strongUp: {
-    remote1:      950,   // Transmitter 1 Channel / รีโมท 1 ช่อง
-    remote15:    1800,   // Transmitter 15 Channel / รีโมท 15 ช่อง
-    windSun:     6600,   // Wind-Sun Sensor / เซ็นเซอร์ลม-แดด
-    wifiAdapter: 7500,   // Wifi Smart Bridge with Adapter
-    wifiBridge:  6600,   // Wifi Smart Bridge only
-    usbCharger:   900,   // USB Charger
-    lanBridge:   9000    // Lan Smart Bridge 1.20 m
+    remote1:          800,   // Transmitter 1 Channel / รีโมท 1 ช่อง
+    remote2:          950,   // Transmitter 2 Channel / รีโมท 2 ช่อง
+    remote6:         1100,   // Transmitter 6 Channel / รีโมท 6 ช่อง
+    remote16:        1600,   // Transmitter 16 Channel / รีโมท 16 ช่อง
+    windSun:         6600,   // Wind & Sun Sensor / เซ็นเซอร์ลม-แดด
+    smartController: 4000    // Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์
   },
 
   // ราคาตัวมอเตอร์ (add-on) / Motor unit prices — SINGLE SOURCE OF TRUTH
@@ -83,10 +85,10 @@ window.SANGTHONG_PRICES = {
   //    option label says "+ Remote", so customer-facing totals do not change)
   // แก้ราคาที่นี่ที่เดียว ทุกไฟล์ในกลุ่มจะเปลี่ยนตามทั้งค่าที่ใช้คำนวณและตัวเลขบนป้าย
   motors: {
-    // --- Strong Up (ราคาเท่ากันทุกไฟล์ / identical in every file) ---
-    strongUp50_12:           9900,   // Strong Up 50/12
-    strongUp50_12_crank:     11900,  // Strong Up 50/12 + มือหมุน (crank handle)
-    strongUp80_15:           15900,  // Strong Up 80/15
+    // --- Strong Up-Y (ราคาเท่ากันทุกไฟล์ / identical in every file) ---
+    strongUp50_12:           9900,   // Strong Up-Y 50/12
+    strongUp50_12_crank:     11900,  // Strong Up-Y 50/12 + มือหมุน (crank handle)
+    strongUp80_15:           15900,  // Strong Up-Y 80/15
 
     // --- Somfy Altus (สายมาตรฐาน / standard Altus line) ---
     somfyAltus50_12:         26800,  // Somfy Altus 50/12  (chill-d1 ป้ายว่า "Altus RTS 50/12")
@@ -154,14 +156,13 @@ window.SANGTHONG_ACCESSORY_KEYS = {
   chkSomfyRemote6:     ['somfy', 'remote6'],
   chkSomfyRemote16:    ['somfy', 'remote16'],
   chkSomfySmoove:      ['somfy', 'smoove'],
-  // อุปกรณ์เสริม Strong Up
-  chkStrongRemote1:    ['strongUp', 'remote1'],
-  chkStrongRemote15:   ['strongUp', 'remote15'],
-  chkStrongWindSun:    ['strongUp', 'windSun'],
-  chkStrongWifiAdapter:['strongUp', 'wifiAdapter'],
-  chkStrongWifiBridge: ['strongUp', 'wifiBridge'],
-  chkStrongUsbCharger: ['strongUp', 'usbCharger'],
-  chkStrongLanBridge:  ['strongUp', 'lanBridge']
+  // อุปกรณ์เสริม Strong Up-Y
+  chkStrongRemote1:         ['strongUp', 'remote1'],
+  chkStrongRemote2:         ['strongUp', 'remote2'],
+  chkStrongRemote6:         ['strongUp', 'remote6'],
+  chkStrongRemote16:        ['strongUp', 'remote16'],
+  chkStrongWindSun:         ['strongUp', 'windSun'],
+  chkStrongSmartController: ['strongUp', 'smartController']
 };
 
 window.applyAccessoryLabelPrices = function () {

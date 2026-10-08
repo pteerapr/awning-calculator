@@ -212,8 +212,8 @@ button { font: inherit; cursor: pointer; }
         </div>
         <div class="grid-3" style="margin-top:14px;">
           <label class="check" id="wrapManual"><input id="manualCheck" type="checkbox" checked> <span id="manualCheckLabel">คิดราคาระบบมือหมุน</span></label>
-          <label class="check" id="wrapMotor"><input id="motorCheck" type="checkbox" checked> คิดราคาระบบมอเตอร์ Strong Up</label>
-          <label class="check" id="wrapOverride"><input id="manualOverride50" type="checkbox"> เพิ่มมือหมุนให้ Strong Up 50/12 (+2,000 บาท/ชุด)</label>
+          <label class="check" id="wrapMotor"><input id="motorCheck" type="checkbox" checked> คิดราคาระบบมอเตอร์ Strong Up-Y</label>
+          <label class="check" id="wrapOverride"><input id="manualOverride50" type="checkbox"> เพิ่มมือหมุนให้ Strong Up-Y 50/12 (+2,000 บาท/ชุด)</label>
         </div>
       </section>
 
@@ -252,10 +252,10 @@ button { font: inherit; cursor: pointer; }
         </div>
         <div class="extras">
           <div>
-            <!-- อุปกรณ์เสริม Strong Up = คิดในระบบมอเตอร์เท่านั้น
+            <!-- อุปกรณ์เสริม Strong Up-Y = คิดในระบบมอเตอร์เท่านั้น
                  อุปกรณ์เสริม Somfy    = คิดในระบบมือหมุนเท่านั้น
-                 (เหมือนหน้าขนาดเดียว: ของ Somfy อยู่กล่องมือหมุน ของ Strong Up อยู่กล่องมอเตอร์) -->
-            <p class="acc-note" id="accNoteStrong"><strong>อุปกรณ์เสริม Strong Up</strong> — คิดในระบบมอเตอร์ Strong Up เท่านั้น</p>
+                 (เหมือนหน้าขนาดเดียว: ของ Somfy อยู่กล่องมือหมุน ของ Strong Up-Y อยู่กล่องมอเตอร์) -->
+            <p class="acc-note" id="accNoteStrong"><strong>อุปกรณ์เสริม Strong Up-Y</strong> — คิดในระบบมอเตอร์ Strong Up-Y เท่านั้น</p>
             <ul id="accListStrong" class="acc-list"></ul>
             <div id="somfyAccBlock" hidden style="margin-top:14px;">
               <p class="acc-note" id="accNoteSomfy"><strong>อุปกรณ์เสริม Somfy</strong> — คิดในระบบ Somfy เท่านั้น · มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว</p>
@@ -317,7 +317,7 @@ button { font: inherit; cursor: pointer; }
           <span id="manualSub" class="sub"></span>
         </div>
         <div class="total-card" id="motorCard">
-          <span class="label" id="motorCardLabel">ระบบมอเตอร์ Strong Up</span>
+          <span class="label" id="motorCardLabel">ระบบมอเตอร์ Strong Up-Y</span>
           <span id="motorTotal" class="big"></span>
           <span id="motorSub" class="sub"></span>
         </div>
@@ -958,7 +958,7 @@ function getAutoMotorType(width, projection) {
   return needs80Motor(width, projection) ? "80_15" : "50_12";
 }
 
-const MANUAL_OVERRIDE_EXTRA = 2000;   // เพิ่มมือหมุนให้ Strong Up 50/12
+const MANUAL_OVERRIDE_EXTRA = 2000;   // เพิ่มมือหมุนให้ Strong Up-Y 50/12
 
 // ===========================================================================
 // ตัวช่วย / helpers
@@ -1001,12 +1001,11 @@ function accessoryItems(brand) {
   ];
   return [
     { key: 'strongUp.remote1', label: 'Transmitter 1 Channel / รีโมท 1 ช่อง', value: P.strongUp.remote1 },
-    { key: 'strongUp.remote15', label: 'Transmitter 15 Channel / รีโมท 15 ช่อง', value: P.strongUp.remote15 },
+    { key: 'strongUp.remote2', label: 'Transmitter 2 Channel / รีโมท 2 ช่อง', value: P.strongUp.remote2 },
+    { key: 'strongUp.remote6', label: 'Transmitter 6 Channel / รีโมท 6 ช่อง', value: P.strongUp.remote6 },
+    { key: 'strongUp.remote16', label: 'Transmitter 16 Channel / รีโมท 16 ช่อง', value: P.strongUp.remote16 },
     { key: 'strongUp.windSun', label: 'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value: P.strongUp.windSun },
-    { key: 'strongUp.wifiAdapter', label: 'Wifi Smart Bridge with Adapter', value: P.strongUp.wifiAdapter },
-    { key: 'strongUp.wifiBridge', label: 'Wifi Smart Bridge only', value: P.strongUp.wifiBridge },
-    { key: 'strongUp.usbCharger', label: 'USB Charger', value: P.strongUp.usbCharger },
-    { key: 'strongUp.lanBridge', label: 'Lan Smart Bridge 1.20 m', value: P.strongUp.lanBridge }
+    { key: 'strongUp.smartController', label: 'Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์', value: P.strongUp.smartController }
   ];
 }
 
@@ -1068,7 +1067,7 @@ function evaluateRow(row, manualSet, motorSet) {
     ok: true, w: w, p: p, qty: qty, idx: idx,
     manualBase: manualBase, motorBase: motorBase,
     motorType: getAutoMotorType(w, p),
-    motorLabel: getAutoMotorType(w, p) === '80_15' ? 'Strong Up 80/15' : 'Strong Up 50/12'
+    motorLabel: getAutoMotorType(w, p) === '80_15' ? 'Strong Up-Y 80/15' : 'Strong Up-Y 50/12'
   };
 }
 
@@ -1081,7 +1080,7 @@ function syncRowUi(row, r, coverRate, wantManual) {
   }
   if (r.manualBase == null || r.motorBase == null) {
     chip.className = 'chip chip-warn';
-    chip.textContent = r.manualBase == null ? 'มีเฉพาะราคาระบบมอเตอร์ Strong Up' : 'มีเฉพาะราคา' + systemLabel;
+    chip.textContent = r.manualBase == null ? 'มีเฉพาะราคาระบบมอเตอร์ Strong Up-Y' : 'มีเฉพาะราคา' + systemLabel;
   } else {
     // ปกติดีอยู่แล้ว ไม่ต้องขึ้นป้ายอะไรให้รกตา (เหลือไว้เฉพาะตอนมีปัญหา)
     // (nothing to flag when the row is fine - the chip is for problems only)
@@ -1177,7 +1176,7 @@ function recalc() {
   if (problems.length || !rows.length || (!wantManual && !wantMotor)) {
     const list = problems.map(x =>
       `<li>ขนาดที่ ${x.i + 1}${x.row.location.trim() ? ' (' + escapeHtml(x.row.location.trim()) + ')' : ''}: ${escapeHtml(x.r.error)}</li>`);
-    if (!wantManual && !wantMotor) list.push('<li>กรุณาเลือกอย่างน้อย 1 ระบบ: ' + systemLabel + ' หรือ ระบบมอเตอร์ Strong Up</li>');
+    if (!wantManual && !wantMotor) list.push('<li>กรุณาเลือกอย่างน้อย 1 ระบบ: ' + systemLabel + ' หรือ ระบบมอเตอร์ Strong Up-Y</li>');
     $('blockedList').innerHTML = list.join('');
     $('blocked').hidden = false;
     $('totals').hidden = true;
@@ -1194,9 +1193,9 @@ function recalc() {
 
   // อุปกรณ์เสริมแยกตามระบบ เหมือนหน้าขนาดเดียว:
   //   Somfy (มอเตอร์ + อุปกรณ์)  -> คิดเฉพาะกล่องระบบมือหมุน
-  //   Strong Up (อุปกรณ์)        -> คิดเฉพาะกล่องระบบมอเตอร์
+  //   Strong Up-Y (อุปกรณ์)        -> คิดเฉพาะกล่องระบบมอเตอร์
   //   ช่องกรอกเงินเอง            -> คิดทั้งสองกล่อง
-  // (mixing these would charge Somfy parts inside a Strong Up quote and vice versa)
+  // (mixing these would charge Somfy parts inside a Strong Up-Y quote and vice versa)
   const somfyPicked = accessoryTotal('somfy');
   const strongPicked = accessoryTotal('strongup');
   const somfyAccTotal = somfyPicked.reduce((sum, item) => sum + item.value * item.count, 0);
@@ -1239,7 +1238,7 @@ function recalc() {
   const warnings = [];
   if (!wantManual && somfyPrice) warnings.push('เลือกมอเตอร์ ' + somfyName + ' ไว้ แต่ไม่ได้ติ๊ก "คิดราคา' + manualSystemLabel + '" — ราคา Somfy จึงยังไม่ถูกรวมในใบเสนอราคานี้');
   if (!wantManual && somfyAccTotal) warnings.push('เลือกอุปกรณ์เสริม Somfy ไว้ แต่ไม่ได้ติ๊ก "คิดราคา' + manualSystemLabel + '" — ราคายังไม่ถูกรวม');
-  if (!wantMotor && strongAccTotal) warnings.push('เลือกอุปกรณ์เสริม Strong Up ไว้ แต่ไม่ได้คิดราคาระบบมอเตอร์ Strong Up — ราคายังไม่ถูกรวม');
+  if (!wantMotor && strongAccTotal) warnings.push('เลือกอุปกรณ์เสริม Strong Up-Y ไว้ แต่ไม่ได้คิดราคาระบบมอเตอร์ Strong Up-Y — ราคายังไม่ถูกรวม');
   $('mismatch').innerHTML = warnings.length
     ? '<strong>ตรวจสอบก่อนส่งลูกค้า</strong><ul>' + warnings.map(w => '<li>' + w + '</li>').join('') + '</ul>'
     : '';
@@ -1289,15 +1288,15 @@ function recalc() {
     lines.push('');
   }
   if (wantMotor) {
-    lines.push('ระบบมอเตอร์ Strong Up');
+    lines.push('ระบบมอเตอร์ Strong Up-Y');
     Object.keys(motorTypes).forEach(k => lines.push('มอเตอร์: ' + k + ' × ' + motorTypes[k] + ' ชุด'));
     if (overrideSets) lines.push('เพิ่มมือหมุน 50/12: +' + bahtText(MANUAL_OVERRIDE_EXTRA) + ' × ' + overrideSets + ' ชุด');
     strongPicked.forEach(item => lines.push('- ' + item.label + ' × ' + item.count + ' = ' + bahtText(item.value * item.count)));
     if (extraAcc > 0) lines.push('อุปกรณ์เสริมเพิ่มเติม: ' + bahtText(extraAcc));
-    if (motorMissing) lines.push('หมายเหตุ: มี ' + motorMissing + ' ชุดที่ไม่มีราคาระบบมอเตอร์ Strong Up จึงยังไม่รวมในยอดนี้');
+    if (motorMissing) lines.push('หมายเหตุ: มี ' + motorMissing + ' ชุดที่ไม่มีราคาระบบมอเตอร์ Strong Up-Y จึงยังไม่รวมในยอดนี้');
     lines.push('ราคาก่อนส่วนลด: ' + bahtText(motorized.subtotal));
     discountLines(motorized).forEach(l => lines.push(l));
-    lines.push('ราคาสรุประบบมอเตอร์ Strong Up: ' + bahtText(motorized.total));
+    lines.push('ราคาสรุประบบมอเตอร์ Strong Up-Y: ' + bahtText(motorized.total));
     lines.push('');
   }
   if (jobNote) { lines.push('หมายเหตุเพิ่มเติม: ' + jobNote); lines.push(''); }

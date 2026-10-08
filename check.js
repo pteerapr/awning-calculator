@@ -118,6 +118,24 @@ for (const file of htmlFiles) {
     }
   }
 
+  // --- 2.1 อ้างถึงราคาที่ไม่มีใน prices.js แล้ว ---
+  // เช่น เลิกขายอุปกรณ์ตัวหนึ่ง ลบออกจาก prices.js แล้ว แต่ลืมลบในไฟล์ HTML
+  // ผลคือราคาจะกลายเป็น undefined แล้วยอดรวมขึ้น NaN ให้ลูกค้าเห็น
+  // Catches a reference to a catalog entry that no longer exists - e.g. an
+  // accessory was discontinued and removed from prices.js but a page still
+  // reads it, which would make the total come out as NaN.
+  const usedRe = /(?:SANGTHONG_PRICES|\bP)\s*(?:\?\.)?((?:\.[A-Za-z_]\w*){2,})/g;
+  let u;
+  while ((u = usedRe.exec(src))) {
+    const keyPath = u[1].replace(/^\./, '');
+    const group = keyPath.split('.')[0];
+    // ดูเฉพาะกลุ่มที่มีอยู่จริงใน catalog กันไปจับตัวแปรอื่นที่บังเอิญชื่อ P
+    if (!(group in catalog)) continue;
+    if (!(keyPath in flatPrices)) {
+      err(file, `อ้างถึงราคาที่ไม่มีใน prices.js แล้ว: ${keyPath} (ถ้าเลิกขายแล้วต้องลบออกจากไฟล์นี้ด้วย)`);
+    }
+  }
+
   // --- 3. ใช้ catalog แต่ลืมโหลด prices.js ---
   if (/SANGTHONG_PRICES/.test(src) && !/src=["']prices\.js["']/.test(src)) {
     err(file, 'อ้างถึง SANGTHONG_PRICES แต่ไม่มี <script src="prices.js">');

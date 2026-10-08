@@ -85,9 +85,9 @@ pre.copy-preview{margin:0; white-space:pre-wrap; background:#f8fafc; border-radi
 <label><input checked id="manualCheck" type="checkbox"/> คิดราคาระบบมือหมุน</label>
 
     <h4>ระบบมอเตอร์</h4>
-    <label><input checked id="motorCheck" type="checkbox"/> คิดราคาระบบมอเตอร์ Strong Up 50/12 + Remote</label>
+    <label><input checked id="motorCheck" type="checkbox"/> คิดราคาระบบมอเตอร์ Strong Up-Y 50/12 + Remote</label>
     <label><input id="manualOverride50" type="checkbox"/> เพิ่มเครื่องหมุนในตัว / Manual Override (+2,000 บาท)</label>
-    <div class="note">หมายเหตุ: ราคามอเตอร์ในตารางเป็นระบบ Strong Up 50/12 + Remote ตามภาพราคา MA4</div>
+    <div class="note">หมายเหตุ: ราคามอเตอร์ในตารางเป็นระบบ Strong Up-Y 50/12 + Remote ตามภาพราคา MA4</div>
 
     <h4>อุปกรณ์เสริม</h4>
     <label for="coverType">ชนิดฝาครอบกันน้ำ</label>
@@ -101,11 +101,14 @@ pre.copy-preview{margin:0; white-space:pre-wrap; background:#f8fafc; border-radi
     <input id="accCover" type="number" value="0"/>
 
     <div id="strongUpAccessoryOptions" class="accessory-box">
-      <h4>Strong Up Accessories / อุปกรณ์เสริม Strong Up</h4>
-      <label><input id="chkStrongRemote1" type="checkbox"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+950 บาท)</label>
-      <label><input id="chkStrongRemote15" type="checkbox"/> Transmitter 15 Channel / รีโมท 15 ช่อง (+1,800 บาท)</label>
+      <h4>Strong Up-Y Accessories / อุปกรณ์เสริม Strong Up-Y</h4>
+      <label><input id="chkStrongRemote1" type="checkbox"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+800 บาท)</label>
+      <label><input id="chkStrongRemote2" type="checkbox"/> Transmitter 2 Channel / รีโมท 2 ช่อง (+950 บาท)</label>
+      <label><input id="chkStrongRemote6" type="checkbox"/> Transmitter 6 Channel / รีโมท 6 ช่อง (+1,100 บาท)</label>
+      <label><input id="chkStrongRemote16" type="checkbox"/> Transmitter 16 Channel / รีโมท 16 ช่อง (+1,600 บาท)</label>
       <label><input id="chkStrongWindSun" type="checkbox"/> Wind-Sun Sensor / เซ็นเซอร์ลม-แดด (+6,600 บาท)</label>
-      <div class="note">อุปกรณ์ Strong Up จะคำนวณเฉพาะในกล่องผลลัพธ์ระบบมอเตอร์</div>
+      <label><input id="chkStrongSmartController" type="checkbox"/> Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์ (+4,000 บาท)</label>
+      <div class="note">อุปกรณ์ Strong Up-Y จะคำนวณเฉพาะในกล่องผลลัพธ์ระบบมอเตอร์</div>
     </div>
 
     <label for="accColor">สีพิเศษ (บาท)</label>
@@ -367,8 +370,11 @@ function getStrongUpAccessoryItems(){
   const P = window.SANGTHONG_PRICES;
   return [
     { label:'Transmitter 1 Channel / รีโมท 1 ช่อง', value:P.strongUp.remote1, id:'chkStrongRemote1' },
-    { label:'Transmitter 15 Channel / รีโมท 15 ช่อง', value:P.strongUp.remote15, id:'chkStrongRemote15' },
-    { label:'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value:P.strongUp.windSun, id:'chkStrongWindSun' }
+    { label:'Transmitter 2 Channel / รีโมท 2 ช่อง', value:P.strongUp.remote2, id:'chkStrongRemote2' },
+    { label:'Transmitter 6 Channel / รีโมท 6 ช่อง', value:P.strongUp.remote6, id:'chkStrongRemote6' },
+    { label:'Transmitter 16 Channel / รีโมท 16 ช่อง', value:P.strongUp.remote16, id:'chkStrongRemote16' },
+    { label:'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value:P.strongUp.windSun, id:'chkStrongWindSun' },
+    { label:'Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์', value:P.strongUp.smartController, id:'chkStrongSmartController' }
   ];
 }
 
@@ -501,7 +507,7 @@ function calc(){
         projection,
         fabricLabel:fabricData.label,
         bandLabel:WIDTH_BANDS[bandIndex].label,
-        systemLabel:'ระบบมอเตอร์ Strong Up 50/12 + Remote',
+        systemLabel:'ระบบมอเตอร์ Strong Up-Y 50/12 + Remote',
         base:baseMotor,
         coverType,
         coverCost,
@@ -510,7 +516,7 @@ function calc(){
         motorExtra
       }));
     } else {
-      lines.push(`ตัวเลือกที่ ${optionNo++}: ระบบมอเตอร์ Strong Up 50/12 + Remote`);
+      lines.push(`ตัวเลือกที่ ${optionNo++}: ระบบมอเตอร์ Strong Up-Y 50/12 + Remote`);
       lines.push('ไม่มีราคาสำหรับระบบมอเตอร์ในขนาดนี้');
     }
   }
@@ -544,8 +550,11 @@ function resetForm(){
   el('coverType').value = 'none';
   el('accCover').value = '0';
   el('chkStrongRemote1').checked = false;
-  el('chkStrongRemote15').checked = false;
+  el('chkStrongRemote2').checked = false;
+  el('chkStrongRemote6').checked = false;
+  el('chkStrongRemote16').checked = false;
   el('chkStrongWindSun').checked = false;
+  el('chkStrongSmartController').checked = false;
   el('accColor').value = '0';
   el('accMiscLabel').value = 'อื่น ๆ';
   el('accMisc').value = '0';
@@ -557,7 +566,8 @@ function resetForm(){
 
 [
   'fabricType','width','projection','qty','manualCheck','motorCheck','manualOverride50',
-  'coverType','accCover','chkStrongRemote1','chkStrongRemote15','chkStrongWindSun',
+  'coverType','accCover','chkStrongRemote1','chkStrongRemote2','chkStrongRemote6',
+  'chkStrongRemote16','chkStrongWindSun','chkStrongSmartController',
   'accColor','accMiscLabel','accMisc','jobNote','specialDiscount','discount'
 ].forEach(id => {
   const node = el(id);

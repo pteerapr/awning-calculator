@@ -113,12 +113,12 @@ label input[type="checkbox"] {
 <label><input checked="" id="motorCheck" type="checkbox"/> คิดราคาระบบมอเตอร์</label>
 <label>
   <input id="manualOverride50" type="checkbox" onchange="calc()"/>
-  เพิ่ม Manual Override สำหรับ Strong Up 50/12 (+2,000 บาท)
+  เพิ่ม Manual Override สำหรับ Strong Up-Y 50/12 (+2,000 บาท)
 </label>
 <div class="note">
   หมายเหตุ: ระบบจะเลือกขนาดมอเตอร์ให้อัตโนมัติตามขนาดกันสาด<br>
-  * Strong Up 50/12 สามารถเลือกเพิ่ม Manual Override ได้ +2,000 บาท<br>
-  * Strong Up 80/15 จะไม่ใช้ตัวเลือก Manual Override นี้
+  * Strong Up-Y 50/12 สามารถเลือกเพิ่ม Manual Override ได้ +2,000 บาท<br>
+  * Strong Up-Y 80/15 จะไม่ใช้ตัวเลือก Manual Override นี้
 </div>
 	<h4>อุปกรณ์เสริม</h4>
 <label for="coverType">ชนิดฝาครอบกันนํ้า</label>
@@ -131,22 +131,21 @@ label input[type="checkbox"] {
 <input id="accCover" type="number" value="0"/>
 
 <div id="strongUpAccessoryOptions" class="accessory-box">
-  <h4>Strong Up Accessories / อุปกรณ์เสริม Strong Up</h4>
-  <label><input id="chkStrongRemote1" type="checkbox" onchange="calc()"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+950 บาท)</label>
-  <label><input id="chkStrongRemote15" type="checkbox" onchange="calc()"/> Transmitter 15 Channel / รีโมท 15 ช่อง (+1,800 บาท)</label>
+  <h4>Strong Up-Y Accessories / อุปกรณ์เสริม Strong Up-Y</h4>
+  <label><input id="chkStrongRemote1" type="checkbox" onchange="calc()"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+800 บาท)</label>
+  <label><input id="chkStrongRemote2" type="checkbox" onchange="calc()"/> Transmitter 2 Channel / รีโมท 2 ช่อง (+950 บาท)</label>
+  <label><input id="chkStrongRemote6" type="checkbox" onchange="calc()"/> Transmitter 6 Channel / รีโมท 6 ช่อง (+1,100 บาท)</label>
+  <label><input id="chkStrongRemote16" type="checkbox" onchange="calc()"/> Transmitter 16 Channel / รีโมท 16 ช่อง (+1,600 บาท)</label>
   <label><input id="chkStrongWindSun" type="checkbox" onchange="calc()"/> Wind-Sun Sensor / เซ็นเซอร์ลม-แดด (+6,600 บาท)</label>
-  <label><input id="chkStrongWifiAdapter" type="checkbox" onchange="calc()"/> Wifi Smart Bridge with Adapter (+7,500 บาท)</label>
-  <label><input id="chkStrongWifiBridge" type="checkbox" onchange="calc()"/> Wifi Smart Bridge only (+6,600 บาท)</label>
-  <label><input id="chkStrongUsbCharger" type="checkbox" onchange="calc()"/> USB Charger (+900 บาท)</label>
-  <label><input id="chkStrongLanBridge" type="checkbox" onchange="calc()"/> Lan Smart Bridge 1.20 m (+9,000 บาท)</label>
-  <div class="note">หมายเหตุ: อุปกรณ์เสริม Strong Up จะแสดงและคำนวณเฉพาะในกล่องผลลัพธ์ระบบมอเตอร์ Strong Up เท่านั้น</div>
+  <label><input id="chkStrongSmartController" type="checkbox" onchange="calc()"/> Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์ (+4,000 บาท)</label>
+  <div class="note">หมายเหตุ: อุปกรณ์เสริม Strong Up-Y จะแสดงและคำนวณเฉพาะในกล่องผลลัพธ์ระบบมอเตอร์ Strong Up-Y เท่านั้น</div>
 </div>
 
 <div id="somfyMotorOptionBox" class="accessory-box">
   <h4>Somfy Motor Option สำหรับระบบมือหมุน</h4>
   <label><input id="chkSomfy50" type="checkbox" onchange="handleSomfyMotorOption('chkSomfy50')"/> Somfy Altus 50/12 (+26,800 บาท)</label>
   <label><input id="chkSomfy85" type="checkbox" onchange="handleSomfyMotorOption('chkSomfy85')"/> Somfy Altus 85/17 (+32,800 บาท)</label>
-  <div class="note">หมายเหตุ: ราคา Somfy จะแสดงและคำนวณเฉพาะในกล่องผลลัพธ์ระบบมือหมุนเท่านั้น เพื่อไม่ให้รวมกับราคามอเตอร์ Strong Up</div>
+  <div class="note">หมายเหตุ: ราคา Somfy จะแสดงและคำนวณเฉพาะในกล่องผลลัพธ์ระบบมือหมุนเท่านั้น เพื่อไม่ให้รวมกับราคามอเตอร์ Strong Up-Y</div>
 </div>
 
 <div id="somfyAccessoryOptions" class="accessory-box" style="display:none;">
@@ -393,12 +392,11 @@ function getStrongUpAccessoryItems() {
   const P = window.SANGTHONG_PRICES;
   return [
     { label: 'Transmitter 1 Channel / รีโมท 1 ช่อง', value: P.strongUp.remote1, id: 'chkStrongRemote1' },
-    { label: 'Transmitter 15 Channel / รีโมท 15 ช่อง', value: P.strongUp.remote15, id: 'chkStrongRemote15' },
+    { label: 'Transmitter 2 Channel / รีโมท 2 ช่อง', value: P.strongUp.remote2, id: 'chkStrongRemote2' },
+    { label: 'Transmitter 6 Channel / รีโมท 6 ช่อง', value: P.strongUp.remote6, id: 'chkStrongRemote6' },
+    { label: 'Transmitter 16 Channel / รีโมท 16 ช่อง', value: P.strongUp.remote16, id: 'chkStrongRemote16' },
     { label: 'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value: P.strongUp.windSun, id: 'chkStrongWindSun' },
-    { label: 'Wifi Smart Bridge with Adapter', value: P.strongUp.wifiAdapter, id: 'chkStrongWifiAdapter' },
-    { label: 'Wifi Smart Bridge only', value: P.strongUp.wifiBridge, id: 'chkStrongWifiBridge' },
-    { label: 'USB Charger', value: P.strongUp.usbCharger, id: 'chkStrongUsbCharger' },
-    { label: 'Lan Smart Bridge 1.20 m', value: P.strongUp.lanBridge, id: 'chkStrongLanBridge' }
+    { label: 'Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์', value: P.strongUp.smartController, id: 'chkStrongSmartController' }
   ];
 }
 
@@ -1076,12 +1074,12 @@ function getAutoMotorLabel(width, projection, manualOverrideChecked) {
   const autoMotorType = getAutoMotorType(width, projection);
 
   if (autoMotorType === "80_15") {
-    return "Strong Up 80/15";
+    return "Strong Up-Y 80/15";
   }
 
   return manualOverrideChecked
-    ? "Strong Up 50/12 + Manual Override"
-    : "Strong Up 50/12";
+    ? "Strong Up-Y 50/12 + Manual Override"
+    : "Strong Up-Y 50/12";
 }
 
 function getManualOverrideExtra(width, projection, manualOverrideChecked) {
@@ -1293,12 +1291,11 @@ const manualOverride50 = document.getElementById('manualOverride50');
     const coverTypeSel = document.getElementById('coverType');
     const accCover     = document.getElementById('accCover');
 	const chkStrongRemote1 = document.getElementById('chkStrongRemote1');
-	const chkStrongRemote15 = document.getElementById('chkStrongRemote15');
+	const chkStrongRemote2 = document.getElementById('chkStrongRemote2');
+	const chkStrongRemote6 = document.getElementById('chkStrongRemote6');
+	const chkStrongRemote16 = document.getElementById('chkStrongRemote16');
 	const chkStrongWindSun = document.getElementById('chkStrongWindSun');
-	const chkStrongWifiAdapter = document.getElementById('chkStrongWifiAdapter');
-	const chkStrongWifiBridge = document.getElementById('chkStrongWifiBridge');
-	const chkStrongUsbCharger = document.getElementById('chkStrongUsbCharger');
-	const chkStrongLanBridge = document.getElementById('chkStrongLanBridge');
+	const chkStrongSmartController = document.getElementById('chkStrongSmartController');
 	const chkSomfy50 = document.getElementById('chkSomfy50');
 	const chkSomfy85 = document.getElementById('chkSomfy85');
 	const chkSomfyOndeisRain = document.getElementById('chkSomfyOndeisRain');
@@ -1334,12 +1331,11 @@ manualOverride50,
 coverTypeSel,
 		accCover,
 		chkStrongRemote1,
-		chkStrongRemote15,
+		chkStrongRemote2,
+		chkStrongRemote6,
+		chkStrongRemote16,
 		chkStrongWindSun,
-		chkStrongWifiAdapter,
-		chkStrongWifiBridge,
-		chkStrongUsbCharger,
-		chkStrongLanBridge,
+		chkStrongSmartController,
 		chkSomfy50,
 		chkSomfy85,
 		chkSomfyOndeisRain,

@@ -94,9 +94,9 @@ table.ref td.hit{ background:#fff3cd; font-weight:800; outline:2px solid #f0ad4e
       <option value="none">ไม่มีมอเตอร์ (เฉพาะโครงสร้างมือหมุน) / No motor</option>
       <option value="somfy50">Somfy Altus 50/12 (+26,800 บาท)</option>
       <option value="somfy85">Somfy Altus 85/17 (+32,800 บาท)</option>
-      <option value="strong50">Strong Up 50/12 (+9,900 บาท)</option>
-      <option value="strong50crank">Strong Up 50/12 + มือหมุน / Crank Handle (+11,900 บาท)</option>
-      <option value="strong80">Strong Up 80/15 (+15,900 บาท)</option>
+      <option value="strong50">Strong Up-Y 50/12 (+9,900 บาท)</option>
+      <option value="strong50crank">Strong Up-Y 50/12 + มือหมุน / Crank Handle (+11,900 บาท)</option>
+      <option value="strong80">Strong Up-Y 80/15 (+15,900 บาท)</option>
     </select>
 
     <div id="motorPriceRow" style="display:none;">
@@ -124,15 +124,14 @@ table.ref td.hit{ background:#fff3cd; font-weight:800; outline:2px solid #f0ad4e
     </div>
 
     <div id="strongAccBox" class="accessory-box" style="display:none;">
-      <h4>Strong Up Accessories / อุปกรณ์เสริม Strong Up</h4>
-      <label><input id="chkStrongRemote1" type="checkbox"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+950 บาท)</label>
-      <label><input id="chkStrongRemote15" type="checkbox"/> Transmitter 15 Channel / รีโมท 15 ช่อง (+1,800 บาท)</label>
+      <h4>Strong Up-Y Accessories / อุปกรณ์เสริม Strong Up-Y</h4>
+      <label><input id="chkStrongRemote1" type="checkbox"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+800 บาท)</label>
+      <label><input id="chkStrongRemote2" type="checkbox"/> Transmitter 2 Channel / รีโมท 2 ช่อง (+950 บาท)</label>
+      <label><input id="chkStrongRemote6" type="checkbox"/> Transmitter 6 Channel / รีโมท 6 ช่อง (+1,100 บาท)</label>
+      <label><input id="chkStrongRemote16" type="checkbox"/> Transmitter 16 Channel / รีโมท 16 ช่อง (+1,600 บาท)</label>
       <label><input id="chkStrongWindSun" type="checkbox"/> Wind-Sun Sensor / เซ็นเซอร์ลม-แดด (+6,600 บาท)</label>
-      <label><input id="chkStrongWifiAdapter" type="checkbox"/> Wifi Smart Bridge with Adapter (+7,500 บาท)</label>
-      <label><input id="chkStrongWifiBridge" type="checkbox"/> Wifi Smart Bridge only (+6,600 บาท)</label>
-      <label><input id="chkStrongUsbCharger" type="checkbox"/> USB Charger (+900 บาท)</label>
-      <label><input id="chkStrongLanBridge" type="checkbox"/> Lan Smart Bridge 1.20 m (+9,000 บาท)</label>
-      <div class="hint">อุปกรณ์เสริม Strong Up จะคำนวณเฉพาะเมื่อเลือกมอเตอร์ Strong Up</div>
+      <label><input id="chkStrongSmartController" type="checkbox"/> Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์ (+4,000 บาท)</label>
+      <div class="hint">อุปกรณ์เสริม Strong Up-Y จะคำนวณเฉพาะเมื่อเลือกมอเตอร์ Strong Up-Y</div>
     </div>
 
     <label>ส่วนลดพิเศษ (บาท)</label>
@@ -170,16 +169,16 @@ const $ = id => document.getElementById(id);
 
 /* ---- ระบบมอเตอร์ + อุปกรณ์เสริม / Motor system + accessories ----
    ราคามอเตอร์ Somfy เป็นราคา add-on คงที่ (เหมือนในเครื่องคำนวณระบบมือหมุนตัวเต็ม)
-   Strong Up ไม่มีราคา add-on มาตรฐานสำหรับงานเฉพาะโครงสร้าง จึงให้กรอกราคาเอง
+   Strong Up-Y ไม่มีราคา add-on มาตรฐานสำหรับงานเฉพาะโครงสร้าง จึงให้กรอกราคาเอง
    ราคาอุปกรณ์เสริมอ่านจาก prices.js (window.SANGTHONG_PRICES) */
 const MC = (window.SANGTHONG_PRICES && window.SANGTHONG_PRICES.motors) || {};
 const MOTOR_TYPES = {
   none:          { label:'',                               price:0,                               system:null },
   somfy50:       { label:'Somfy Altus 50/12',              price:MC.somfyAltus50_12     || 26800,  system:'somfy'  },
   somfy85:       { label:'Somfy Altus 85/17',              price:MC.somfyAltus85_17     || 36800,  system:'somfy'  },
-  strong50:      { label:'Strong Up 50/12',                price:MC.strongUp50_12       || 9900,   system:'strong' },
-  strong50crank: { label:'Strong Up 50/12 + Crank Handle', price:MC.strongUp50_12_crank || 11900,  system:'strong' },
-  strong80:      { label:'Strong Up 80/15',                price:MC.strongUp80_15       || 15900,  system:'strong' }
+  strong50:      { label:'Strong Up-Y 50/12',                price:MC.strongUp50_12       || 9900,   system:'strong' },
+  strong50crank: { label:'Strong Up-Y 50/12 + Crank Handle', price:MC.strongUp50_12_crank || 11900,  system:'strong' },
+  strong80:      { label:'Strong Up-Y 80/15',                price:MC.strongUp80_15       || 15900,  system:'strong' }
 };
 const SOMFY_ACCESSORIES = [
   { id:'chkSomfyOndeisRain', label:'Ondeis Rain Sensor',                    key:'ondeisRain' },
@@ -198,12 +197,11 @@ const SOMFY_ACCESSORIES = [
 ];
 const STRONG_ACCESSORIES = [
   { id:'chkStrongRemote1',     label:'Transmitter 1 Channel / รีโมท 1 ช่อง',  key:'remote1' },
-  { id:'chkStrongRemote15',    label:'Transmitter 15 Channel / รีโมท 15 ช่อง', key:'remote15' },
-  { id:'chkStrongWindSun',     label:'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด',     key:'windSun' },
-  { id:'chkStrongWifiAdapter', label:'Wifi Smart Bridge with Adapter',        key:'wifiAdapter' },
-  { id:'chkStrongWifiBridge',  label:'Wifi Smart Bridge only',                key:'wifiBridge' },
-  { id:'chkStrongUsbCharger',  label:'USB Charger',                           key:'usbCharger' },
-  { id:'chkStrongLanBridge',   label:'Lan Smart Bridge 1.20 m',               key:'lanBridge' }
+  { id:'chkStrongRemote2',     label:'Transmitter 2 Channel / รีโมท 2 ช่อง',  key:'remote2' },
+  { id:'chkStrongRemote6',     label:'Transmitter 6 Channel / รีโมท 6 ช่อง',  key:'remote6' },
+  { id:'chkStrongRemote16',     label:'Transmitter 16 Channel / รีโมท 16 ช่อง',  key:'remote16' },
+  { id:'chkStrongWindSun',     label:'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด',  key:'windSun' },
+  { id:'chkStrongSmartController',     label:'Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์',  key:'smartController' }
 ];
 // ราคาอุปกรณ์เสริมจาก catalog กลาง (คืน 0 หากยังไม่โหลด prices.js)
 function accPrice(group, key){

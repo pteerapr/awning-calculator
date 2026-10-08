@@ -115,9 +115,9 @@ th{background:#f3f4f6;}
 <label>มอเตอร์</label>
 <select id="motor">
 <option value="0">ไม่มี</option>
-<option value="9900" data-price-key="strongUp50_12" selected>มอเตอร์ Strong Up 50/12 (9,900 บาท)</option>
-<option value="11900" data-price-key="strongUp50_12_crank">มอเตอร์ Strong Up 50/12 with crank handle (11,900 บาท)</option>
-<option value="15900" data-price-key="strongUp80_15">มอเตอร์ Strong Up 80/15 (15,900 บาท)</option>
+<option value="9900" data-price-key="strongUp50_12" selected>มอเตอร์ Strong Up-Y 50/12 (9,900 บาท)</option>
+<option value="11900" data-price-key="strongUp50_12_crank">มอเตอร์ Strong Up-Y 50/12 with crank handle (11,900 บาท)</option>
+<option value="15900" data-price-key="strongUp80_15">มอเตอร์ Strong Up-Y 80/15 (15,900 บาท)</option>
 <option value="25800" data-price-key="somfyAltus40_17">มอเตอร์ Somfy Altus 40/17 (25,800 บาท)</option>
 <option value="26800" data-price-key="somfyAltus50_12">มอเตอร์ Somfy Altus 50/12 (26,800 บาท)</option>
 <option value="32800" data-price-key="somfyAltus85_17">มอเตอร์ Somfy Altus 85/17 (32,800 บาท)</option>
@@ -125,15 +125,14 @@ th{background:#f3f4f6;}
 <option value="31000" data-price-key="somfyMaestria50RTS35_17">มอเตอร์ Somfy MAESTRIA+50 RTS 35/17 + Remote 1 ช่อง (Telis situo 1 RTS) (31,000 บาท)</option>
 </select>
 <div id="strongUpAccessoryBox" class="accessory-box">
-  <h4>Strong Up Accessories / อุปกรณ์เสริม Strong Up</h4>
-  <label><input id="chkStrongRemote1" type="checkbox"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+950 บาท)</label>
-  <label><input id="chkStrongRemote15" type="checkbox"/> Transmitter 15 Channel / รีโมท 15 ช่อง (+1,800 บาท)</label>
+  <h4>Strong Up-Y Accessories / อุปกรณ์เสริม Strong Up-Y</h4>
+  <label><input id="chkStrongRemote1" type="checkbox"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+800 บาท)</label>
+  <label><input id="chkStrongRemote2" type="checkbox"/> Transmitter 2 Channel / รีโมท 2 ช่อง (+950 บาท)</label>
+  <label><input id="chkStrongRemote6" type="checkbox"/> Transmitter 6 Channel / รีโมท 6 ช่อง (+1,100 บาท)</label>
+  <label><input id="chkStrongRemote16" type="checkbox"/> Transmitter 16 Channel / รีโมท 16 ช่อง (+1,600 บาท)</label>
   <label><input id="chkStrongWindSun" type="checkbox"/> Wind-Sun Sensor / เซ็นเซอร์ลม-แดด (+6,600 บาท)</label>
-  <label><input id="chkStrongWifiAdapter" type="checkbox"/> Wifi Smart Bridge with Adapter (+7,500 บาท)</label>
-  <label><input id="chkStrongWifiBridge" type="checkbox"/> Wifi Smart Bridge only (+6,600 บาท)</label>
-  <label><input id="chkStrongUsbCharger" type="checkbox"/> USB Charger (+900 บาท)</label>
-  <label><input id="chkStrongLanBridge" type="checkbox"/> Lan Smart Bridge 1.20 m (+9,000 บาท)</label>
-  <div class="diag" style="display:block;">แสดงเฉพาะเมื่อเลือกมอเตอร์ Strong Up</div>
+  <label><input id="chkStrongSmartController" type="checkbox"/> Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์ (+4,000 บาท)</label>
+  <div class="diag" style="display:block;">แสดงเฉพาะเมื่อเลือกมอเตอร์ Strong Up-Y</div>
 </div>
 
 <div id="somfyAccessoryBox" class="accessory-box">
@@ -1078,12 +1077,11 @@ function getAccessoryItemsByBrand(brand) {
   const P = window.SANGTHONG_PRICES;
   const strongUpItems = [
     { id: "chkStrongRemote1", label: "Transmitter 1 Channel / รีโมท 1 ช่อง", value: P.strongUp.remote1 },
-    { id: "chkStrongRemote15", label: "Transmitter 15 Channel / รีโมท 15 ช่อง", value: P.strongUp.remote15 },
+    { id: "chkStrongRemote2", label: "Transmitter 2 Channel / รีโมท 2 ช่อง", value: P.strongUp.remote2 },
+    { id: "chkStrongRemote6", label: "Transmitter 6 Channel / รีโมท 6 ช่อง", value: P.strongUp.remote6 },
+    { id: "chkStrongRemote16", label: "Transmitter 16 Channel / รีโมท 16 ช่อง", value: P.strongUp.remote16 },
     { id: "chkStrongWindSun", label: "Wind-Sun Sensor / เซ็นเซอร์ลม-แดด", value: P.strongUp.windSun },
-    { id: "chkStrongWifiAdapter", label: "Wifi Smart Bridge with Adapter", value: P.strongUp.wifiAdapter },
-    { id: "chkStrongWifiBridge", label: "Wifi Smart Bridge only", value: P.strongUp.wifiBridge },
-    { id: "chkStrongUsbCharger", label: "USB Charger", value: P.strongUp.usbCharger },
-    { id: "chkStrongLanBridge", label: "Lan Smart Bridge 1.20 m", value: P.strongUp.lanBridge }
+    { id: "chkStrongSmartController", label: "Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์", value: P.strongUp.smartController }
   ];
 
   const somfyItems = [
@@ -1354,12 +1352,11 @@ function clearAll(){
   'fabric',
   'motor',
   'chkStrongRemote1',
-  'chkStrongRemote15',
+  'chkStrongRemote2',
+  'chkStrongRemote6',
+  'chkStrongRemote16',
   'chkStrongWindSun',
-  'chkStrongWifiAdapter',
-  'chkStrongWifiBridge',
-  'chkStrongUsbCharger',
-  'chkStrongLanBridge',
+  'chkStrongSmartController',
   'chkSomfyOndeisRain',
   'chkSomfyDryContact',
   'chkSomfySunis',
