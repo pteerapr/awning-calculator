@@ -88,7 +88,7 @@ window.SANGTHONG_PRICES = {
     // --- Strong Up-Y (ราคาเท่ากันทุกไฟล์ / identical in every file) ---
     strongUp50_12:           9900,   // Strong Up-Y 50/12
     strongUp50_12_crank:     11900,  // Strong Up-Y 50/12 + มือหมุน (crank handle)
-    strongUp80_15:           15900,  // Strong Up-Y 80/15
+    strongUp80_15:           15900,  // Strong Up-Y 80/12
 
     // --- Somfy Altus (สายมาตรฐาน / standard Altus line) ---
     somfyAltus50_12:         26800,  // Somfy Altus 50/12  (chill-d1 ป้ายว่า "Altus RTS 50/12")

@@ -120,7 +120,7 @@ label input[type="checkbox"] {
 <div class="note">
   หมายเหตุ: ระบบจะเลือกขนาดมอเตอร์ให้อัตโนมัติตามขนาดกันสาด<br>
   * Strong Up-Y 50/12 สามารถเลือกเพิ่ม Manual Override ได้ +2,000 บาท<br>
-  * Strong Up-Y 80/15 จะไม่ใช้ตัวเลือก Manual Override นี้
+  * Strong Up-Y 80/12 จะไม่ใช้ตัวเลือก Manual Override นี้
 </div>
 
 <div id="strongUpAccessoryOptions">
@@ -733,7 +733,7 @@ function getAutoMotorLabel(width, projection, manualOverrideChecked) {
   const autoMotorType = getAutoMotorType(width, projection);
 
   if (autoMotorType === "80_15") {
-    return "Strong Up-Y 80/15";
+    return "Strong Up-Y 80/12";
   }
 
   return manualOverrideChecked
