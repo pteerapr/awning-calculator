@@ -51,7 +51,18 @@
     th{background:#f3f4f6;color:#111827;text-align:center;}
     td:first-child,th:first-child{text-align:left;font-weight:800;background:#f9fafb;}
     @media (max-width:880px){.main-wrapper{grid-template-columns:1fr;}body{padding:12px;}}
-  </style>
+    /* ช่องกรอกจำนวนอุปกรณ์เสริมแต่ละชิ้น — บางงานใช้เซ็นเซอร์ตัวเดียวคุมหลายหลัง
+     per-accessory quantity: one sensor can serve several awnings */
+  .acc-line { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+  .acc-line label { flex: 1; margin: 0; }
+  .acc-qty-wrap { display: none; align-items: center; gap: 4px; white-space: nowrap; }
+  .acc-line.is-on .acc-qty-wrap { display: flex; }
+  .acc-qty-wrap input {
+    width: 58px; margin: 0; padding: 4px 6px; text-align: center;
+    border: 1px solid #cfe2ff; border-radius: 6px; font-size: 14px;
+  }
+  .acc-qty-wrap span { font-size: 12px; color: #555; }
+</style>
 </head>
 <body>
   <div class="main-wrapper">
@@ -98,22 +109,22 @@
 
       <div id="strongUpAccessoryBox" class="accessory-box">
         <h4>Strong Up-Y Accessories / อุปกรณ์เสริม Strong Up-Y</h4>
-        <label><input id="chkStrongRemote1" type="checkbox" data-label="รีโมท Strong Up-Y 1 ช่อง" data-price="800" /> รีโมท 1 ช่อง เพิ่ม 800 บาท</label>
-        <label><input id="chkStrongRemote2" type="checkbox" data-label="รีโมท Strong Up-Y 2 ช่อง" data-price="950" /> รีโมท 2 ช่อง เพิ่ม 950 บาท</label>
-        <label><input id="chkStrongRemote6" type="checkbox" data-label="รีโมท Strong Up-Y 6 ช่อง" data-price="1100" /> รีโมท 6 ช่อง เพิ่ม 1,100 บาท</label>
-        <label><input id="chkStrongRemote16" type="checkbox" data-label="รีโมท Strong Up-Y 16 ช่อง" data-price="1600" /> รีโมท 16 ช่อง เพิ่ม 1,600 บาท</label>
-        <label><input id="chkStrongWindSun" type="checkbox" data-label="เซ็นเซอร์ลม-แดด Strong Up-Y" data-price="6600" /> เซ็นเซอร์ลม-แดด เพิ่ม 6,600 บาท</label>
-        <label><input id="chkStrongSmartController" type="checkbox" data-label="สมาร์ทคอนโทรลเลอร์ Strong Up-Y (Tuya)" data-price="4000" /> สมาร์ทคอนโทรลเลอร์ (Tuya) เพิ่ม 4,000 บาท</label>
+        <div class="acc-line"><label><input id="chkStrongRemote1" type="checkbox" data-label="รีโมท Strong Up-Y 1 ช่อง" data-price="800"/> รีโมท 1 ช่อง เพิ่ม 800 บาท</label><span class="acc-qty-wrap"><input id="qty-chkStrongRemote1" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkStrongRemote2" type="checkbox" data-label="รีโมท Strong Up-Y 2 ช่อง" data-price="950"/> รีโมท 2 ช่อง เพิ่ม 950 บาท</label><span class="acc-qty-wrap"><input id="qty-chkStrongRemote2" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkStrongRemote6" type="checkbox" data-label="รีโมท Strong Up-Y 6 ช่อง" data-price="1100"/> รีโมท 6 ช่อง เพิ่ม 1,100 บาท</label><span class="acc-qty-wrap"><input id="qty-chkStrongRemote6" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkStrongRemote16" type="checkbox" data-label="รีโมท Strong Up-Y 16 ช่อง" data-price="1600"/> รีโมท 16 ช่อง เพิ่ม 1,600 บาท</label><span class="acc-qty-wrap"><input id="qty-chkStrongRemote16" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkStrongWindSun" type="checkbox" data-label="เซ็นเซอร์ลม-แดด Strong Up-Y" data-price="6600"/> เซ็นเซอร์ลม-แดด เพิ่ม 6,600 บาท</label><span class="acc-qty-wrap"><input id="qty-chkStrongWindSun" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkStrongSmartController" type="checkbox" data-label="สมาร์ทคอนโทรลเลอร์ Strong Up-Y (Tuya)" data-price="4000"/> สมาร์ทคอนโทรลเลอร์ (Tuya) เพิ่ม 4,000 บาท</label><span class="acc-qty-wrap"><input id="qty-chkStrongSmartController" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
       </div>
 
       <div id="somfyAccessoryBox" class="accessory-box">
         <h4>Somfy Accessories / อุปกรณ์เสริม Somfy</h4>
-        <label><input id="chkSomfyRemote1" type="checkbox" data-label="รีโมท Somfy 1 ช่อง" data-price="3108" /> รีโมท 1 ช่อง เพิ่ม 3,108 บาท</label>
-        <label><input id="chkSomfyRemote2" type="checkbox" data-label="รีโมท Somfy 2 ช่อง" data-price="3978" /> รีโมท 2 ช่อง เพิ่ม 3,978 บาท</label>
-        <label><input id="chkSomfyRemote5" type="checkbox" data-label="รีโมท Somfy 5 ช่อง" data-price="6216" /> รีโมท 5 ช่อง เพิ่ม 6,216 บาท</label>
-        <label><input id="chkSomfyRemote6" type="checkbox" data-label="รีโมท Somfy 6 ช่อง" data-price="13675" /> รีโมท 6 ช่อง เพิ่ม 13,675 บาท</label>
-        <label><input id="chkSomfyRemote16" type="checkbox" data-label="รีโมท Somfy 16 ช่อง" data-price="12432" /> รีโมท 16 ช่อง เพิ่ม 12,432 บาท</label>
-        <label><input id="chkSomfySmoove" type="checkbox" data-label="สวิตซ์ Smoove 1 ช่อง" data-price="2362" /> สวิตซ์ Smoove 1 ช่อง เพิ่ม 2,362 บาท</label>
+        <div class="acc-line"><label><input id="chkSomfyRemote1" type="checkbox" data-label="รีโมท Somfy 1 ช่อง" data-price="3108"/> รีโมท 1 ช่อง เพิ่ม 3,108 บาท</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote1" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkSomfyRemote2" type="checkbox" data-label="รีโมท Somfy 2 ช่อง" data-price="3978"/> รีโมท 2 ช่อง เพิ่ม 3,978 บาท</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote2" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkSomfyRemote5" type="checkbox" data-label="รีโมท Somfy 5 ช่อง" data-price="6216"/> รีโมท 5 ช่อง เพิ่ม 6,216 บาท</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote5" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkSomfyRemote6" type="checkbox" data-label="รีโมท Somfy 6 ช่อง" data-price="13675"/> รีโมท 6 ช่อง เพิ่ม 13,675 บาท</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote6" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkSomfyRemote16" type="checkbox" data-label="รีโมท Somfy 16 ช่อง" data-price="12432"/> รีโมท 16 ช่อง เพิ่ม 12,432 บาท</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote16" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+        <div class="acc-line"><label><input id="chkSomfySmoove" type="checkbox" data-label="สวิตซ์ Smoove 1 ช่อง" data-price="2362"/> สวิตซ์ Smoove 1 ช่อง เพิ่ม 2,362 บาท</label><span class="acc-qty-wrap"><input id="qty-chkSomfySmoove" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
       </div>
 
       <label for="cover">ฝาครอบกันน้ำ / Cover Profile</label>
@@ -249,13 +260,40 @@
       return Number(el.dataset.price) || 0; // fallback if catalog missing
     }
 
-    function selectedMotorAccessories() {
+    // ======================================================================
+    // จำนวนอุปกรณ์เสริมแต่ละชิ้น / per-accessory quantity
+    // ======================================================================
+    // ค่าเริ่มต้นเท่ากับจำนวนชุดและวิ่งตามอัตโนมัติ ยอดจึงเท่าของเดิมทุกบาท
+    // พอพิมพ์จำนวนเอง ชิ้นนั้นจะล็อก เพราะบางงานใช้เซ็นเซอร์ตัวเดียวคุมหลายหลัง
+    const accQtyPinned = {};
+
+    function getAccessoryCount(id, awningQty) {
+      const e = document.getElementById('qty-' + id);
+      if (!e || !accQtyPinned[id]) return awningQty;
+      const n = parseInt(e.value, 10);
+      return (isNaN(n) || n < 1) ? 1 : n;
+    }
+
+    function syncAccessoryQtyBoxes(awningQty) {
+      document.querySelectorAll('.acc-line').forEach(function (line) {
+        const box = line.querySelector('input[type="checkbox"]');
+        if (!box) return;
+        const qtyEl = document.getElementById('qty-' + box.id);
+        line.classList.toggle('is-on', box.checked);
+        if (!qtyEl) return;
+        if (!accQtyPinned[box.id]) qtyEl.value = awningQty;
+        if (!box.checked) accQtyPinned[box.id] = false;
+      });
+    }
+
+    function selectedMotorAccessories(awningQty) {
       const brand = getSelectedMotorBrand();
       const ids = brand === 'strongup' ? STRONG_UP_ACCESSORY_IDS : brand === 'somfy' ? SOMFY_ACCESSORY_IDS : [];
-      return ids.map(id => document.getElementById(id)).filter(el => el && el.checked).map(el => ({
-        label: el.dataset.label,
-        price: accessoryPrice(el)
-      }));
+      return ids.map(id => document.getElementById(id)).filter(el => el && el.checked).map(el => {
+        const unit = accessoryPrice(el);
+        const count = getAccessoryCount(el.id, awningQty || 1);
+        return { label: el.dataset.label, price: unit, count: count, lineTotal: unit * count };
+      });
     }
 
     function getBasePrice(modelId, fabric, width, drop) {
@@ -378,10 +416,14 @@
       const motorSelect = document.getElementById('motor');
       const motorPrice = parseFloat(motorSelect.value) || 0;
       const motorName = cleanOptionText(motorSelect.options[motorSelect.selectedIndex].text);
-      const accessoryItems = selectedMotorAccessories();
-      const motorAccessoryTotal = accessoryItems.reduce((sum, item) => sum + item.price, 0);
+      syncAccessoryQtyBoxes(qty);
+      const accessoryItems = selectedMotorAccessories(qty);
+      // ยอดทั้งงานแล้ว ห้ามคูณจำนวนชุดซ้ำ / whole-job total, not multiplied by qty again
+      const motorAccessoryTotal = accessoryItems.reduce((sum, item) => sum + item.lineTotal, 0);
       const motorAccessoryLines = accessoryItems.length
-        ? accessoryItems.map(item => '- ' + item.label + ' = ' + baht(item.price))
+        ? accessoryItems.map(item => item.count > 1
+            ? '- ' + item.label + ' x ' + item.count + ' ชุด = ' + baht(item.lineTotal) + ' (ชุดละ ' + baht(item.price) + ')'
+            : '- ' + item.label + ' = ' + baht(item.lineTotal))
         : ['ไม่มี'];
 
       const extraAccessoryLine = accessories > 0
@@ -392,8 +434,10 @@
       const subtotalManual = unitManual * qty;
       const calcManual = applyDiscounts(subtotalManual, specialDiscount, discountPercent);
 
-      const unitMotor = basePrice + motorPrice + motorAccessoryTotal + coverPrice + accessories;
-      const subtotalMotor = unitMotor * qty;
+      // อุปกรณ์เสริมย้ายออกจากราคาต่อชุด ไปบวกเป็นก้อนเดียวตามจำนวนที่เลือก
+      // accessories moved out of the per-set price; added once with their own counts
+      const unitMotor = basePrice + motorPrice + coverPrice + accessories;
+      const subtotalMotor = unitMotor * qty + motorAccessoryTotal;
       const calcMotor = applyDiscounts(subtotalMotor, specialDiscount, discountPercent);
 
       const motorLines = motorPrice > 0 ? [
@@ -478,6 +522,15 @@
           el.addEventListener('input', id === 'modelGroup' ? updateFabricOptions : calculatePrice);
           el.addEventListener('change', id === 'modelGroup' ? updateFabricOptions : calculatePrice);
         });
+
+      // ช่องกรอกจำนวนอุปกรณ์เสริม — พิมพ์เองเมื่อไหร่ ชิ้นนั้นหยุดวิ่งตามจำนวนชุด
+      // The per-accessory quantity boxes; typing pins that item.
+      document.querySelectorAll('.acc-qty-wrap input').forEach(el => {
+        const accId = el.id.replace(/^qty-/, '');
+        const onEdit = () => { accQtyPinned[accId] = true; calculatePrice(); };
+        el.addEventListener('input', onEdit);
+        el.addEventListener('change', onEdit);
+      });
       const autoSplitBtn = document.getElementById('autoSplit');
       if (autoSplitBtn) autoSplitBtn.addEventListener('click', () => {
         const w = parseFloat(document.getElementById('width').value);
