@@ -67,6 +67,16 @@ th{background:#f3f4f6;}
   .container { flex-direction: column; margin: 0 10px; }
   .card, #resultPanel { width: 100%; box-sizing: border-box; min-height: unset; }
 }
+  /* ข้อความใบเสนอราคาต้องตัดบรรทัดเอง ไม่งั้นบรรทัดยาวจะล้นจอบนมือถือ
+     the quote text must wrap, or long lines overflow the screen on phones */
+  #copyPreview {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
 </style><title>Izip Screen Calculator</title></head><body>
 <h1>Izip Screen Price Calculator  (<a href="index.html">Back to Index</a>)</h1>
 <div class="container">
