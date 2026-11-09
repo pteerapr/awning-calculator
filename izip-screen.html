@@ -395,14 +395,20 @@ function updateArea(){
   calculate(false);
 }
 
+// ตารางราคาเขียนช่วงไว้เป็น 0-3 / 3.01-4 / 4.01-5 ... ซึ่งมี "ช่องโหว่" อยู่ระหว่าง
+// 3 กับ 3.01, 4 กับ 4.01 ไปจนถึง 10 กับ 10.01 พื้นที่ที่ตกลงไปในช่องโหว่จะหาราคาไม่เจอ
+// แล้วคืนค่า 0 ทำให้ใบเสนอราคาขึ้น "0 บาท" เช่น กว้าง 4.17 x สูง 2.40 = 10.008 ตรม.
+// (หน้าจอปัดให้เห็นเป็น 10.01 เลยดูเหมือนควรจะเจอราคา)
+//
+// แก้โดยดูแค่ "ขอบบน" ของแต่ละช่วง ช่วงจึงต่อกันสนิทไม่มีรู — ราคาทุกช่องเท่าเดิมทุกบาท
+// The bands left gaps between 3 and 3.01, 4 and 4.01 ... 10 and 10.01. An area
+// landing in a gap found no band and returned 0, quoting 0 baht to the customer.
+// Matching on the upper bound alone makes the bands continuous. No price changes.
 function getRate(area,fabric){
-  for (const r of table){
-    if(area>=r.range[0] && area<=r.range[1]){
-      if(fabric==0) return r.f0;
-      if(fabric==1) return r.f1;
-      if(fabric==5) return r.f5;
-    }
-  }
+  const band = table.find(r => area <= r.range[1]) || table[table.length - 1];
+  if(fabric==0) return band.f0;
+  if(fabric==1) return band.f1;
+  if(fabric==5) return band.f5;
   return 0;
 }
 
@@ -455,6 +461,17 @@ function calculate(showAlert = true){
   }
 
   const rate=getRate(area,fabric);
+
+  // กันไว้อีกชั้น: ถ้าหาราคาต่อตารางเมตรไม่เจอจริง ๆ ห้ามเสนอราคา 0 บาทให้ลูกค้าเด็ดขาด
+  // ให้ขึ้นข้อความบอกไปเลยว่าหาไม่เจอ จะได้รู้ตัวแทนที่จะส่งใบเสนอราคาผิดออกไป
+  // Safety net: never quote 0 baht. If no rate is found, say so plainly instead.
+  if(!(rate>0)){
+    const preview = document.getElementById("copyPreview");
+    if (preview) setLocalizedCopyPreview("ไม่พบราคาต่อตารางเมตรสำหรับพื้นที่ " + area.toFixed(2) + " ตรม. กรุณาตรวจสอบตารางราคา");
+    if (showAlert) alert("No rate found for " + area.toFixed(2) + " m². Please check the price table.");
+    return;
+  }
+
   const base=rate*area;
   const fabricLabel = fabric==0 ? "Screen 0%" : fabric==1 ? "Screen 1%" : "Screen 5%";
 
