@@ -286,6 +286,12 @@
 </div>
 <button class="add-row" id="addRow" type="button">+ เพิ่มขนาด</button>
 <div class="blocked" id="blocked" role="alert" hidden><strong>ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน</strong><ul id="blockedList"></ul></div>
+<h3 class="mt">Optional Extras / อุปกรณ์เสริม</h3>
+<div class="mt">
+<p class="acc-note" style="font-size:13px;color:#475569;margin:0 0 8px;">คิดครั้งเดียวทั้งงาน ไม่ได้คูณจำนวนกันสาด — กดเพิ่มจำนวนตามที่ใช้จริง</p>
+<ul class="acc-list" id="accList"></ul>
+
+</div>
 <div class="input-grid">
 <div>
 <label for="specialDiscount">ส่วนลดพิเศษ</label>
@@ -296,15 +302,7 @@
 <input id="discount" max="100" min="0" type="number" value="0"/>
 </div>
 </div>
-<h3 class="mt">Optional Extras / อุปกรณ์เสริม</h3>
-<div class="input-grid mt">
-<p class="acc-note" style="font-size:13px;color:#475569;margin:0 0 8px;">คิดครั้งเดียวทั้งงาน ไม่ได้คูณจำนวนกันสาด — กดเพิ่มจำนวนตามที่ใช้จริง</p>
-<ul class="acc-list" id="accList"></ul>
 
-</div>
-<div class="warning" id="warning">
-          No price found for this size. This size was grey/blank in the original table.
-        </div>
 <div class="mt">
 <label for="jobNote">Note / หมายเหตุ</label>
 <input id="jobNote" placeholder="Optional note"/>
