@@ -204,6 +204,38 @@
       h1 { font-size: 30px; }
     }
   .languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+  /* ตารางหลายขนาด + ตัวนับอุปกรณ์เสริม / multi-size table and accessory steppers */
+  .sizes { width:100%; border-collapse:collapse; font-size:14px; }
+  .sizes th { background:#f1f5f9; text-align:left; padding:8px 6px; font-size:12px; color:#475569; white-space:nowrap; }
+  .sizes td { padding:6px; border-bottom:1px solid #e2e8f0; vertical-align:middle; }
+  .sizes select, .sizes input[type="number"], .sizes input[type="text"] { width:100%; margin:0; padding:6px; box-sizing:border-box; }
+  .sizes .c-idx { width:28px; color:#64748b; text-align:center; }
+  .sizes .c-arm { text-align:center; width:84px; }
+  .sizes .c-actions { width:36px; text-align:center; }
+  .icon-btn { background:none; border:none; color:#b91c1c; font-size:18px; cursor:pointer; padding:2px 6px; margin:0; }
+  .add-row { margin-top:12px; width:100%; padding:10px; border:1px dashed #94a3b8; border-radius:10px;
+             background:transparent; color:#334155; font-size:14px; font-weight:700; cursor:pointer; }
+  .chip { display:inline-block; font-size:11px; font-weight:700; line-height:1.4; border-radius:8px; padding:3px 8px; max-width:230px; }
+  .chip-bad { color:#991b1b; background:#fee2e2; }
+  .acc-list { list-style:none; margin:0; padding:0; }
+  .acc-item { display:flex; align-items:center; justify-content:space-between; gap:10px;
+              padding:8px 10px; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:6px; }
+  .acc-item.is-picked { border-color:#60a5fa; background:#eff6ff; }
+  .acc-name { font-size:14px; }
+  .acc-name small { display:block; color:#64748b; font-size:12px; }
+  .stepper { display:flex; align-items:center; gap:6px; }
+  .stepper button { margin:0; width:30px; height:30px; padding:0; border:1px solid #cbd5e1; background:#fff;
+                    color:#0f172a; border-radius:8px; font-size:16px; line-height:1; cursor:pointer; }
+  .stepper output { min-width:26px; text-align:center; font-weight:700; }
+  .blocked { margin-top:12px; background:#fee2e2; color:#991b1b; border-radius:10px; padding:10px 12px; font-size:13px; }
+  .blocked ul { margin:6px 0 0; padding-left:18px; }
+  @media (max-width: 720px) {
+    .sizes thead { display:none; }
+    .sizes tr { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:8px 0; border-bottom:1px solid #e2e8f0; }
+    .sizes td { border:none; padding:2px 0; }
+    .sizes td::before { content:attr(data-label); display:block; font-size:11px; color:#64748b; }
+    .sizes .c-idx, .sizes .c-loc, .sizes .c-status { grid-column:1 / -1; }
+  }
 </style>
 </head>
 <body>
@@ -219,33 +251,26 @@
 <div class="grid">
 <section class="card">
 <h2>Input / รายละเอียดงาน</h2>
+<div class="table-wrap">
+<table class="sizes">
+<thead>
+<tr>
+<th scope="col">#</th>
+<th scope="col">ตำแหน่ง</th>
+<th scope="col">กว้าง (ม.)</th>
+<th scope="col">ยื่น (ม.)</th>
+<th scope="col">จำนวน</th>
+<th scope="col">แขนเพิ่ม</th>
+<th scope="col">สถานะ</th>
+<th scope="col"><span hidden>ลบ</span></th>
+</tr>
+</thead>
+<tbody id="sizeBody"></tbody>
+</table>
+</div>
+<button class="add-row" id="addRow" type="button">+ เพิ่มขนาด</button>
+<div class="blocked" id="blocked" role="alert" hidden><strong>ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน</strong><ul id="blockedList"></ul></div>
 <div class="input-grid">
-<div>
-<label for="width">Width / ขนาดกว้าง</label>
-<select id="width">
-<option value="3.00">3.00 m</option>
-<option value="3.50">3.50 m</option>
-<option selected="" value="4.00">4.00 m</option>
-<option value="4.50">4.50 m</option>
-<option value="5.00">5.00 m</option>
-<option value="5.50">5.50 m</option>
-<option value="6.00">6.00 m</option>
-</select>
-</div>
-<div>
-<label for="projection">Projection / ระยะแขนยื่น</label>
-<select id="projection">
-<option value="1.50">1.50 m</option>
-<option value="2.00">2.00 m</option>
-<option selected="" value="2.50">2.50 m</option>
-<option value="3.00">3.00 m</option>
-<option value="3.50">3.50 m</option>
-</select>
-</div>
-<div>
-<label for="awningQty">Awning Quantity / จำนวนกันสาด</label>
-<input id="awningQty" min="1" type="number" value="1"/>
-</div>
 <div>
 <label for="specialDiscount">ส่วนลดพิเศษ</label>
 <input id="specialDiscount" min="0" oninput="calculate()" step="1" type="number" value="0"/>
@@ -257,18 +282,9 @@
 </div>
 <h3 class="mt">Optional Extras / อุปกรณ์เสริม</h3>
 <div class="input-grid mt">
-<div class="check-row">
-<input id="tuyaWifi" type="checkbox"/>
-<label for="tuyaWifi">Tuya Wifi = 9,000 B.</label>
-</div>
-<div class="check-row">
-<input id="windSunSensor" type="checkbox"/>
-<label for="windSunSensor">Wind-Sun Sensor = 6,600 B.</label>
-</div>
-<div class="check-row">
-<input id="extraArm" type="checkbox"/>
-<label for="extraArm">ซื้อแขนเพิ่ม 1 ข้าง = +10% จากราคา/ชุด (มาตรฐาน 2 แขนต่อชุด)</label>
-</div>
+<p class="acc-note" style="font-size:13px;color:#475569;margin:0 0 8px;">คิดครั้งเดียวทั้งงาน ไม่ได้คูณจำนวนกันสาด — กดเพิ่มจำนวนตามที่ใช้จริง</p>
+<ul class="acc-list" id="accList"></ul>
+
 </div>
 <div class="warning" id="warning">
           ขนาดนี้ไม่มีในตารางราคา / This size is not available in the price table.
@@ -298,6 +314,19 @@ let resultLanguage = 'th';
 // คำที่ใช้ร่วมกับไฟล์อื่นในกลุ่มอยู่ใน i18n.js — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์.
 // รายการข้างล่างนี้ถูกใช้ก่อนเสมอ (this list wins over the shared one).
 const RESULT_EN_OVERRIDES = [
+  // คำแปลของข้อความที่เพิ่มมาตอนทำ "กรอกหลายขนาด" / wording added by multi-size entry
+  ['รายการขนาด', 'Sizes'],
+  ['จำนวนรวม', 'Total quantity'],
+  ['ขนาด)', 'sizes)'],
+  ['รวมแขนเพิ่ม 1 ข้าง', 'incl. extra arm 1 side'],
+  ['ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน', 'Cannot total yet - fix these sizes first'],
+  ['แก้ขนาดที่มีปัญหาก่อน แล้วข้อความใบเสนอราคาจะแสดงที่นี่', 'Fix the sizes with problems and the quotation will appear here'],
+  ['ขนาดที่', 'Size'],
+  ['ที่ยื่น', 'At projection'],
+  ['ต้องกว้างตั้งแต่', 'minimum width is'],
+  ['ม. ขึ้นไป', 'm'],
+  ['รุ่นนี้ยื่นได้สูงสุด', 'This model supports a maximum projection of'],
+  ['กรอกจำนวนให้ถูกต้อง', 'Enter a valid quantity'],
   ['ซื้อแขนเพิ่ม 1 ข้าง', 'Extra arm (1 side)'],
   ['รับประกัน', 'Warranty'],
   ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
@@ -484,81 +513,166 @@ initResultLanguageToggle();
   return Math.round(Number(value) || 0).toLocaleString("th-TH") + " บาท";
 }
 
-    function getBasePrice() {
-      const width = cleanNumber(document.getElementById("width").value);
-      const projection = cleanNumber(document.getElementById("projection").value);
-      const found = PRICE_ROWS.find(row => row.width === width && row.projection === projection);
-      return found ? found.price : 0;
+
+    // ===================== กรอกหลายขนาดในใบเดียว / multi-size entry =====================
+    // แต่ละแถวคือกันสาด 1 ขนาด ราคาคิดจากตาราง PRICE_ROWS ของไฟล์นี้เหมือนเดิม
+    // "แขนเพิ่ม" เป็นของรายแถว เพราะคิด 10% จากราคาของแถวนั้น ไม่ใช่ราคาทั้งงาน
+    const WIDTHS = ['3.00','3.50','4.00','4.50','5.00','5.50','6.00'];
+    const PROJECTIONS = ["1.50","2.00","2.50","3.00","3.50"];
+
+    // อุปกรณ์เสริมระดับงาน คิดครั้งเดียว ไม่คูณจำนวนกันสาด
+    const ACCESSORIES = [
+      { key:'tuyaWifi',      label:'Tuya Wifi',                      value:9000 },
+      { key:'windSunSensor', label:'Wind-Sun Sensor / เซ็นเซอร์ลม-แดด', value:6600 }
+    ];
+
+    let rows = [];
+    let nextRowId = 1;
+    let accCounts = {};
+
+    function makeRow(data) {
+      return Object.assign({ id: nextRowId++, location:'', width:'4.00', projection:'2.50', qty:'1', arm:false }, data);
     }
 
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+        ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+    }
+
+    function renderRows() {
+      const body = document.getElementById('sizeBody');
+      body.innerHTML = rows.map((row, i) => {
+        const id = row.id;
+        const wOpts = WIDTHS.map(w => '<option value="' + w + '"' + (row.width === w ? ' selected' : '') + '>' + w + '</option>').join('');
+        const pOpts = PROJECTIONS.map(p => '<option value="' + p + '"' + (row.projection === p ? ' selected' : '') + '>' + p + '</option>').join('');
+        return '<tr class="size-row" data-row="' + id + '">' +
+          '<td class="c-idx">' + (i + 1) + '</td>' +
+          '<td class="c-loc" data-label="ตำแหน่ง"><input id="loc-' + id + '" data-field="location" type="text" placeholder="เช่น หน้าบ้าน" value="' + escapeHtml(row.location) + '" aria-label="ตำแหน่งของขนาดที่ ' + (i + 1) + '"></td>' +
+          '<td class="c-w" data-label="กว้าง (ม.)"><select id="w-' + id + '" data-field="width" aria-label="ความกว้าง ขนาดที่ ' + (i + 1) + '">' + wOpts + '</select></td>' +
+          '<td class="c-p" data-label="ยื่น (ม.)"><select id="p-' + id + '" data-field="projection" aria-label="ระยะยื่น ขนาดที่ ' + (i + 1) + '">' + pOpts + '</select></td>' +
+          '<td class="c-qty" data-label="จำนวน (ชุด)"><input id="q-' + id + '" data-field="qty" type="number" min="1" step="1" inputmode="numeric" value="' + escapeHtml(row.qty) + '" aria-label="จำนวน ขนาดที่ ' + (i + 1) + '"></td>' +
+          '<td class="c-arm" data-label="แขนเพิ่ม +10%"><input id="arm-' + id + '" data-field="arm" type="checkbox"' + (row.arm ? ' checked' : '') + ' aria-label="ซื้อแขนเพิ่ม 1 ข้าง ขนาดที่ ' + (i + 1) + '"></td>' +
+          '<td class="c-status" data-label="สถานะ"><span id="status-' + id + '" class="chip"></span></td>' +
+          '<td class="c-actions"><button type="button" id="remove-' + id + '" class="icon-btn" data-action="remove" aria-label="ลบขนาดที่ ' + (i + 1) + '">×</button></td>' +
+        '</tr>';
+      }).join('');
+      calculate();
+    }
+
+    function rowFromElement(el) {
+      const tr = el.closest('[data-row]');
+      return tr ? rows.find(r => r.id === Number(tr.dataset.row)) : null;
+    }
+
+    // ราคาของขนาดหนึ่งแถว / price one row. ไม่โยน error เด็ดขาด
+    function evaluateRow(row) {
+      const w = cleanNumber(row.width);
+      const p = cleanNumber(row.projection);
+      const qty = parseInt(row.qty, 10);
+      if (!(qty >= 1)) return { ok:false, error:'กรอกจำนวนให้ถูกต้อง' };
+
+      const found = PRICE_ROWS.find(r => r.width === w && r.projection === p);
+      if (!found) {
+        // ข้อความบอกเหตุผลจากตารางจริง ไม่ใช่ข้อความกลาง ๆ
+        const maxProjection = Math.max.apply(null, PRICE_ROWS.map(r => r.projection));
+        const widthsHere = PRICE_ROWS.filter(r => r.projection === p).map(r => r.width);
+        if (widthsHere.length) {
+          const minWidth = Math.min.apply(null, widthsHere);
+          return { ok:false, error:'ที่ยื่น ' + p.toFixed(2) + ' ม. ต้องกว้างตั้งแต่ ' + minWidth.toFixed(2) + ' ม. ขึ้นไป' };
+        }
+        return { ok:false, error:'รุ่นนี้ยื่นได้สูงสุด ' + maxProjection.toFixed(2) + ' ม.' };
+      }
+
+      const base = found.price;
+      // แขนเพิ่ม = 10% ของราคาตั้งในตารางเท่านั้น ไม่รวมอุปกรณ์เสริม (ตามใบราคา)
+      const arm = row.arm ? Math.round(base * 0.10) : 0;
+      return { ok:true, w:w, p:p, qty:qty, base:base, arm:arm, lineTotal:(base + arm) * qty };
+    }
+
+    function accessoryListHtml() {
+      return ACCESSORIES.map(item => {
+        const count = accCounts[item.key] || 0;
+        return '<li class="acc-item' + (count > 0 ? ' is-picked' : '') + '" data-key="' + item.key + '">' +
+          '<span class="acc-name">' + escapeHtml(item.label) + '<small>' + money(item.value) + ' / ชิ้น</small></span>' +
+          '<span class="stepper">' +
+            '<button type="button" data-step="-1" aria-label="ลดจำนวน ' + escapeHtml(item.label) + '">−</button>' +
+            '<output>' + count + '</output>' +
+            '<button type="button" data-step="1" aria-label="เพิ่มจำนวน ' + escapeHtml(item.label) + '">+</button>' +
+          '</span></li>';
+      }).join('');
+    }
+
+    function renderAccessories() {
+      document.getElementById('accList').innerHTML = accessoryListHtml();
+    }
+
+
     function calculate() {
-      const width = cleanNumber(document.getElementById("width").value);
-      const projection = cleanNumber(document.getElementById("projection").value);
       const discountPercent = cleanNumber(document.getElementById("discount").value);
       const specialDiscountInput = cleanNumber(document.getElementById("specialDiscount").value);
       const jobNote = document.getElementById("jobNote").value.trim();
-      const awningQty = Math.max(cleanNumber(document.getElementById("awningQty").value), 1);
 
-      const tuyaWifi = document.getElementById("tuyaWifi").checked ? 9000 : 0;
-      const windSunSensor = document.getElementById("windSunSensor").checked ? 6600 : 0;
-      const optionalExtras = tuyaWifi + windSunSensor;
+      // คิดราคาทีละแถว แล้วโชว์ป้ายสถานะเฉพาะแถวที่มีปัญหา
+      const results = rows.map(row => ({ row: row, r: evaluateRow(row) }));
+      results.forEach(x => {
+        const chip = document.getElementById('status-' + x.row.id);
+        if (!chip) return;
+        if (x.r.ok) { chip.className = 'chip'; chip.textContent = ''; }
+        else { chip.className = 'chip chip-bad'; chip.textContent = x.r.error; }
+      });
 
-      const basePrice = getBasePrice();
-      // ซื้อแขนเพิ่ม 1 ข้าง = บวก 10% ของราคาต่อชุด (ตามใบราคา มาตรฐาน 2 แขนต่อชุด)
-      // คิดจากราคาตั้งต่อชุดเท่านั้น ไม่รวมอุปกรณ์เสริมอื่น
-      // (extra arm: +10% of the table price per set, not of the other add-ons)
-      const extraArm = document.getElementById("extraArm").checked ? Math.round(basePrice * 0.10) : 0;
-      const unitSubtotal = basePrice + optionalExtras + extraArm;
-      const subtotal = unitSubtotal * awningQty;
+      // มีขนาดไหนไม่มีราคา = ไม่สรุปยอดรวมเลย กันส่งราคาไม่ครบให้ลูกค้า
+      // any unpriceable size withholds the total, so a partial price never reaches a customer
+      const problems = results.filter(x => !x.r.ok);
+      const blocked = document.getElementById('blocked');
+      if (problems.length || !rows.length) {
+        blocked.innerHTML = '<strong>ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน</strong><ul>' +
+          results.map((x, i) => x.r.ok ? '' :
+            '<li>ขนาดที่ ' + (i + 1) +
+            (x.row.location.trim() ? ' (' + escapeHtml(x.row.location.trim()) + ')' : '') +
+            ': ' + escapeHtml(x.r.error) + '</li>').join('') + '</ul>';
+        blocked.hidden = false;
+        setLocalizedCopyPreview('แก้ขนาดที่มีปัญหาก่อน แล้วข้อความใบเสนอราคาจะแสดงที่นี่');
+        return;
+      }
+      blocked.hidden = true;
+
+      // อุปกรณ์เสริมคิดครั้งเดียวทั้งงาน ไม่คูณจำนวนกันสาด
+      const accPicked = ACCESSORIES
+        .map(item => Object.assign({ count: accCounts[item.key] || 0 }, item))
+        .filter(item => item.count > 0);
+      const accTotal = accPicked.reduce((sum, item) => sum + item.value * item.count, 0);
+
+      const awningQty = results.reduce((sum, x) => sum + x.r.qty, 0);
+      const sizesTotal = results.reduce((sum, x) => sum + x.r.lineTotal, 0);
+
+      const subtotal = sizesTotal + accTotal;
       const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
       const discountBase = Math.max(subtotal - specialDiscountAmount, 0);
       const discountAmount = discountBase * (discountPercent / 100);
       const grandTotal = Math.max(discountBase - discountAmount, 0);
 
-      // แสดงคำเตือนเมื่อไม่มีราคาสำหรับขนาดที่เลือก (ช่องสีเทาในตารางเดิม / เกินขีดจำกัดรุ่น)
-      // Show a clear warning when the chosen size has no price (grey cell / beyond model limit)
-      const warningEl = document.getElementById("warning");
-      if (basePrice === 0) {
-        // ระยะยื่นสูงสุดของรุ่นนี้ = ค่ามากสุดในตารางราคา (ดึงจากข้อมูลจริง จึงถูกต้องเสมอ)
-        const maxProjection = Math.max(...PRICE_ROWS.map(r => r.projection));
-        // หน้ากว้างต่ำสุดที่มีราคาสำหรับระยะยื่นที่เลือก
-        const widthsForProjection = PRICE_ROWS
-          .filter(r => r.projection === projection)
-          .map(r => r.width);
-        if (widthsForProjection.length > 0) {
-          // มีราคาที่ระยะยื่นนี้ แต่หน้ากว้างที่เลือกแคบเกินไป
-          const minWidth = Math.min(...widthsForProjection);
-          warningEl.textContent =
-            `ที่ระยะยื่น ${projection.toFixed(2)} ม. ต้องใช้หน้ากว้างตั้งแต่ ${minWidth.toFixed(2)} ม. ขึ้นไป ` +
-            `(รุ่นนี้ระยะยื่นสูงสุด ${maxProjection.toFixed(2)} ม.) — ` +
-            `At ${projection.toFixed(2)} m projection, minimum width is ${minWidth.toFixed(2)} m ` +
-            `(max projection for this model: ${maxProjection.toFixed(2)} m).`;
-        } else {
-          // ระยะยื่นที่เลือกเกินขีดจำกัดของรุ่น
-          warningEl.textContent =
-            `รุ่นนี้รองรับระยะยื่นสูงสุด ${maxProjection.toFixed(2)} ม. — ` +
-            `This model supports a maximum projection of ${maxProjection.toFixed(2)} m.`;
-        }
-        warningEl.style.display = "block";
-      } else {
-        warningEl.style.display = "none";
-      }
-
       const lines = [];
       lines.push("TERRA FS Full Cassette Premium Model Without LED");
       lines.push("รุ่นพรีเมี่ยม + มอเตอร์ RTS ไม่มีไฟ LED");
       lines.push("ชนิดผ้า: Acrylic Fabric");
-      lines.push(`กว้าง: ${width.toFixed(2)} m`);
-      lines.push(`ยื่น: ${projection.toFixed(2)} m`);  //lines.push(`ราคาตั้งต่อชุด: ${basePrice ? money(basePrice) : "No price found"}`);
-      if (tuyaWifi) lines.push(`Tuya Wifi: +${money(tuyaWifi)}`);
-      if (windSunSensor) lines.push(`Wind-Sun Sensor: +${money(windSunSensor)}`);
-      if (extraArm) lines.push(`ซื้อแขนเพิ่ม 1 ข้าง: +${money(extraArm)}`);
-      //lines.push(`//ราคาต่อชุดก่อนส่วนลด: ${basePrice ? money(unitSubtotal) : "No price found"}`);
-      lines.push(`จำนวน: ${awningQty}`);
-      lines.push(`ราคาก่อนส่วนลด: ${basePrice ? money(subtotal) : "No price found"}`);
+      lines.push('');
+      lines.push('รายการขนาด');
+      results.forEach((x, i) => {
+        const r = x.r;
+        const place = x.row.location.trim() ? x.row.location.trim() + ': ' : '';
+        lines.push((i + 1) + '. ' + place + 'กว้าง ' + r.w.toFixed(2) + ' × ยื่น ' + r.p.toFixed(2) + ' ม. × ' + r.qty + ' ชุด = ' + money(r.lineTotal) +
+          (r.arm ? ' (รวมแขนเพิ่ม 1 ข้าง ' + money(r.arm) + '/ชุด)' : ''));
+      });
+      lines.push('');
+      accPicked.forEach(item => {
+        lines.push(item.label + ' × ' + item.count + ' = ' + money(item.value * item.count));
+      });
+      lines.push(`จำนวนรวม: ${awningQty} ชุด (${rows.length} ขนาด)`);
+      lines.push(`ราคาก่อนส่วนลด: ${money(subtotal)}`);
       if (specialDiscountAmount > 0) lines.push(`ส่วนลดพิเศษ: -${money(specialDiscountAmount)}`);
       lines.push(`ส่วนลด: ${discountPercent}% = ${money(discountAmount)}`);
-      lines.push(`ราคารวม: ${basePrice ? money(grandTotal) : "No price found"}`);
+      lines.push(`ราคารวม: ${money(grandTotal)}`);
       if (jobNote) lines.push(`Note/หมายเหตุ: ${jobNote}`);
       lines.push("รวม VAT 7% แล้ว");
       lines.push("ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล");
@@ -593,19 +707,66 @@ lines.push("ราคาที่แจ้งเป็นราคาเบื�
       }
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById("width").addEventListener("change", calculate);
-      document.getElementById("projection").addEventListener("change", calculate);
-      document.getElementById("awningQty").addEventListener("input", calculate);
-      document.getElementById("specialDiscount").addEventListener("input", calculate);
-      document.getElementById("discount").addEventListener("input", calculate);
-      document.getElementById("jobNote").addEventListener("input", calculate);
-      document.getElementById("tuyaWifi").addEventListener("change", calculate);
-      document.getElementById("windSunSensor").addEventListener("change", calculate);
-      document.getElementById("extraArm").addEventListener("change", calculate);
+    function initTerraFs() {
+      // ช่องระดับงาน / job-level fields
+      ['specialDiscount', 'discount', 'jobNote'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+      });
 
-      calculate();
-    });
+      // แถวขนาด — ผูกแบบ delegate ที่ tbody จะได้ไม่ต้อง render ใหม่ตอนพิมพ์
+      const body = document.getElementById('sizeBody');
+      const onRowInput = e => {
+        const field = e.target.dataset.field;
+        const row = field && rowFromElement(e.target);
+        if (!row) return;
+        row[field] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        calculate();
+      };
+      body.addEventListener('input', onRowInput);
+      body.addEventListener('change', onRowInput);
+      body.addEventListener('click', e => {
+        const btn = e.target.closest('[data-action="remove"]');
+        const row = btn && rowFromElement(btn);
+        if (!row) return;
+        rows = rows.filter(r => r.id !== row.id);
+        if (!rows.length) rows = [makeRow()];   // ไม่ปล่อยให้ตารางว่าง
+        renderRows();
+      });
+
+      document.getElementById('addRow').addEventListener('click', () => {
+        const row = makeRow();
+        rows.push(row);
+        renderRows();
+        const el = document.getElementById('loc-' + row.id);
+        if (el) el.focus();
+      });
+
+      // ตัวนับอุปกรณ์เสริม 0-99
+      document.getElementById('accList').addEventListener('click', e => {
+        const btn = e.target.closest('[data-step]');
+        if (!btn) return;
+        const li = btn.closest('[data-key]');
+        const key = li.dataset.key;
+        const count = Math.min(99, Math.max(0, (accCounts[key] || 0) + Number(btn.dataset.step)));
+        accCounts[key] = count;
+        li.querySelector('output').textContent = count;
+        li.classList.toggle('is-picked', count > 0);
+        calculate();
+      });
+
+      rows = [makeRow()];      // เริ่มด้วย 1 ขนาด ไม่ใส่ชื่อตำแหน่งตัวอย่าง
+      renderAccessories();
+      renderRows();            // renderRows เรียก calculate() ให้เอง
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTerraFs);
+    } else {
+      initTerraFs();
+    }
   
 </script>
 <!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
