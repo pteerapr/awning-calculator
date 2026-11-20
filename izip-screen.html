@@ -32,6 +32,10 @@ th,td{border:1px solid #e5e7eb; padding:.5rem .6rem; text-align:left;}
 th{background:#f3f4f6;}
 .totalBox, .price-lg { color:#0f5132!important; background:#e9f7ef!important; border:2px solid #198754!important; border-radius:12px!important; padding:.6rem 1rem!important; display:inline-block; }
 .languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+.customer-range-box{margin-top:14px; padding:12px; background:#fff7ed; border:1px dashed #f59e0b; border-radius:12px;}
+.customer-range-box .range-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+.customer-range-box h4{margin:0; color:#9a3412; font-size:14px;}
+.customer-range-box pre{white-space:pre-wrap; margin:8px 0 0; font-family:inherit; font-size:.9rem; line-height:1.55;}
 </style><style>
   body { font-family: Arial, sans-serif; background:#f8f9fb; margin:30px; }
   h1 { text-align:center; color:#003366; }
@@ -180,6 +184,14 @@ Motorized System: กว้าง 0.70 - 5.80 ม. / สูง 0.85 - 3.25 ม.
   <div class="languageToggle" aria-label="Result language"><button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button><button type="button" data-result-lang="en" aria-pressed="false">EN</button></div>
 <div class="st-brandbar" style="background:#003366;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;"><div style="font-weight:900;letter-spacing:2px;font-size:15px;">SANGTHONG CREATION</div><div style="font-size:11px;letter-spacing:.4px;opacity:.85;margin-top:3px;">Price presented by Sangthong Creation</div></div><pre id="copyPreview">ระบบจะแสดงข้อความสำหรับส่งลูกค้าอัตโนมัติเมื่อมีการเปลี่ยนข้อมูล</pre>
 </div>
+<!-- ช่วงราคาสำหรับลูกค้า (ไม่แสดงราคาจริง) / customer price range, separate from the quotation above -->
+<div class="customer-range-box">
+  <div class="range-head">
+    <h4 id="rangeTitle">ช่วงราคาสำหรับลูกค้า (ไม่รวมอุปกรณ์เสริม)</h4>
+    <button type="button" id="copyRangeBtn" onclick="copyRange()" style="margin-top:0;">Copy Range</button>
+  </div>
+  <pre id="rangePreview"></pre>
+</div>
 <div class="note">
 </div>
 </div>
@@ -192,6 +204,7 @@ let resultLanguage = 'th';
 // คำที่ใช้ร่วมกับไฟล์อื่นในกลุ่มอยู่ใน i18n.js — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์.
 // รายการข้างล่างนี้ถูกใช้ก่อนเสมอ (this list wins over the shared one).
 const RESULT_EN_OVERRIDES = [
+  ['ก้านดึง', 'Pull stick'],
   ['เคลือบสีพิเศษ Powder Coated', 'Custom Colour Powder Coated Paint'],
   ['กรอบ 3 ด้าน', 'frame length 3 sides (left/right/top)'],
   ['ขนาดเกินมาตรฐานระบบมือดึง', 'Size is outside the standard range for the Push & Pull system'],
@@ -412,6 +425,72 @@ function getRate(area,fabric){
   return 0;
 }
 
+// ===== ช่วงราคาสำหรับลูกค้า / customer price range =====
+// ต่ำสุด = ระบบมือดึง (ราคาผ้าต่อตรม × พื้นที่), สูงสุด = ระบบมอเตอร์ (ราคาผ้า + มอเตอร์ที่เลือก) × จำนวนชุด
+// ไม่รวมอุปกรณ์เสริม ก้านดึง รีโมทเพิ่ม สีพิเศษ หรือส่วนลด และแสดงเฉพาะหลักแรกจริง ที่เหลือเป็น X
+// Low = manual base, high = base + selected motor; no accessories/extras/discount; masked with X.
+function maskRangePrice(value) {
+  // 29,400 -> 2X,XXX ; เกิน 100,000 แสดง 2 หลักแรก เช่น 130,280 -> 13X,XXX
+  const digits = String(Math.floor(value));
+  const keep = value >= 100000 ? 2 : 1;
+  const masked = digits.slice(0, keep) + 'X'.repeat(Math.max(digits.length - keep, 0));
+  return masked.replace(/\B(?=(.{3})+$)/g, ',');
+}
+function clearCustomerRange() {
+  const box = document.getElementById("rangePreview");
+  if (box) box.textContent = "";
+}
+function updateCustomerRange(w, h, qty, fabricLabel, prices) {
+  const box = document.getElementById("rangePreview");
+  if (!box) return;
+  const en = resultLanguage === 'en';
+  const t = document.getElementById("rangeTitle");
+  if (t) t.textContent = en ? 'Customer price range (no accessories)' : 'ช่วงราคาสำหรับลูกค้า (ไม่รวมอุปกรณ์เสริม)';
+  const valid = prices.filter(v => v > 0).map(v => v * qty);
+  if (!valid.length) {
+    box.textContent = en ? 'No price range available for this size' : 'ไม่มีช่วงราคาสำหรับขนาดนี้';
+    return;
+  }
+  const lowTxt = maskRangePrice(Math.min(...valid));
+  const highTxt = maskRangePrice(Math.max(...valid));
+  const rangeTxt = lowTxt === highTxt ? lowTxt : lowTxt + ' – ' + highTxt;
+  const lines = en ? [
+    'iZip Screen',
+    'Fabric: ' + fabricLabel,
+    'Size: ' + w.toFixed(2) + ' × ' + h.toFixed(2) + ' m (W × H)' + (qty > 1 ? ' (' + qty + ' sets)' : ''),
+    'Estimated price: ' + rangeTxt + ' THB',
+    '(excluding accessories)',
+    'VAT 7% included',
+    'Installation price within Bangkok and vicinity',
+    'This is a preliminary price only. The final price can be confirmed after a site survey.'
+  ] : [
+    'iZip Screen',
+    'ชนิดผ้าใบ: ' + fabricLabel,
+    'ขนาด: กว้าง ' + w.toFixed(2) + ' × สูง ' + h.toFixed(2) + ' ม.' + (qty > 1 ? ' (' + qty + ' ชุด)' : ''),
+    'ราคาประมาณ ' + rangeTxt + ' บาท',
+    '(ยังไม่รวมอุปกรณ์เสริม)',
+    'รวม VAT 7% แล้ว',
+    'ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล',
+    'ราคาที่แจ้งเป็นราคาเบื้องต้นเท่านั้น ราคาที่แท้จริงสามารถแจ้งได้หลังสํารวจหน้างาน'
+  ];
+  box.textContent = lines.join("\n");
+}
+function copyRange() {
+  const text = document.getElementById("rangePreview").innerText.trim();
+  if (!text) { alert("ไม่มีข้อมูลให้คัดลอก (No data to copy)"); return; }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        const btn = document.getElementById("copyRangeBtn");
+        btn.textContent = "Copied ✅";
+        setTimeout(() => btn.textContent = "Copy Range", 1500);
+      })
+      .catch(() => manualCopyFallback(text));
+  } else {
+    manualCopyFallback(text);
+  }
+}
+
 function calculate(showAlert = true){
   const w=parseFloat(document.getElementById("width").value)||0;
   const h=parseFloat(document.getElementById("height").value)||0;
@@ -456,6 +535,7 @@ function calculate(showAlert = true){
   if(area<=0){
     const preview = document.getElementById("copyPreview");
     if (preview) setLocalizedCopyPreview("กรุณากรอกความกว้างและความสูง");
+    clearCustomerRange();
     if (showAlert) alert("Please input width and height.");
     return;
   }
@@ -468,6 +548,7 @@ function calculate(showAlert = true){
   if(!(rate>0)){
     const preview = document.getElementById("copyPreview");
     if (preview) setLocalizedCopyPreview("ไม่พบราคาต่อตารางเมตรสำหรับพื้นที่ " + area.toFixed(2) + " ตรม. กรุณาตรวจสอบตารางราคา");
+    clearCustomerRange();
     if (showAlert) alert("No rate found for " + area.toFixed(2) + " m². Please check the price table.");
     return;
   }
@@ -572,9 +653,18 @@ function calculate(showAlert = true){
 lines.push("ราคาที่แจ้งเป็นราคาเบื้องต้นเท่านั้น ราคาที่แท้จริงสามารถแจ้งได้หลังสํารวจหน้างาน");lines.push("รับประกันมอเตอร์ 2 ปี ในกรณีมอเตอร์ Somfy รับประกัน 5 ปี");
 
   setLocalizedCopyPreview(lines.join("\n"));
+
+  // ช่วงราคาสำหรับลูกค้า: มือดึง = ราคาผ้า, มอเตอร์ = ราคาผ้า + ตัวมอเตอร์ (ไม่รวมอุปกรณ์เสริม)
+  // a system outside its standard size limits is left out of the range
+  const rangeMotorPrice = motorBrand === "somfy" ? somfyMotor : ((w > 3.99) ? 10250 : 7650);
+  updateCustomerRange(w, h, qty, fabricLabel, [
+    manualSizeOk ? base : 0,
+    motorSizeOk ? base + rangeMotorPrice : 0
+  ]);
 }
 
 function clearAll(){
+  clearCustomerRange();
   document.querySelectorAll("input,select").forEach(e=>{
     if(e.type==="checkbox") e.checked=false;
     else if(e.tagName==="SELECT") e.selectedIndex=0;
