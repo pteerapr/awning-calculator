@@ -285,6 +285,16 @@ pre {
   .result-head { align-items:stretch; flex-direction:column; }
   .copy-button { width:100%; }
 }
+  /* ข้อความใบเสนอราคาต้องตัดบรรทัดเอง ไม่งั้นบรรทัดยาวจะล้นจอบนมือถือ
+     the quote text must wrap, or long lines overflow the screen on phones */
+  #copyPreview {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
 </style>
 </head>
 <body>

@@ -649,9 +649,12 @@ const PRICE_MOTOR_SOLAR = {
 
 // ----- กฎการเลือกมอเตอร์อัตโนมัติ คัดลอกจาก spettmann-star.html -----
 function findWidthBand(width) {
+  // ช่วงเขียนเป็น max 2.50 แล้ว min ถัดไป 2.51 ทำให้มีช่องโหว่ 0.01 ระหว่างทุกช่วง
+  // ดูแค่ขอบบนจึงต่อกันสนิท ขอบล่างสุดยังกันค่าที่แคบเกินไป — ราคาไม่เปลี่ยน
+  // Bands left a 0.01 hole between each pair; matching the upper bound closes it.
+  if (!(width >= WIDTH_BANDS[0].min)) return -1;
   for (let i = 0; i < WIDTH_BANDS.length; i++) {
-    const b = WIDTH_BANDS[i];
-    if (width >= b.min && width <= b.max) return i;
+    if (width <= WIDTH_BANDS[i].max) return i;
   }
   return -1;
 }

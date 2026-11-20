@@ -186,6 +186,16 @@
       h1 { font-size: 30px; }
     }
   .languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+  /* ข้อความใบเสนอราคาต้องตัดบรรทัดเอง ไม่งั้นบรรทัดยาวจะล้นจอบนมือถือ
+     the quote text must wrap, or long lines overflow the screen on phones */
+  #copyPreview {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
 </style>
 </head>
 <body>

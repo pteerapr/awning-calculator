@@ -236,6 +236,16 @@
     .sizes td::before { content:attr(data-label); display:block; font-size:11px; color:#64748b; }
     .sizes .c-idx, .sizes .c-loc, .sizes .c-status { grid-column:1 / -1; }
   }
+  /* ข้อความใบเสนอราคาต้องตัดบรรทัดเอง ไม่งั้นบรรทัดยาวจะล้นจอบนมือถือ
+     the quote text must wrap, or long lines overflow the screen on phones */
+  #copyPreview {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
 </style>
 </head>
 <body>
@@ -317,7 +327,7 @@ const RESULT_EN_OVERRIDES = [
   // คำแปลของข้อความที่เพิ่มมาตอนทำ "กรอกหลายขนาด" / wording added by multi-size entry
   ['รายการขนาด', 'Sizes'],
   ['จำนวนรวม', 'Total quantity'],
-  ['ขนาด)', 'sizes)'],
+  ['ขนาด)', 'size(s))'],
   ['รวมแขนเพิ่ม 1 ข้าง', 'incl. extra arm 1 side'],
   ['ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน', 'Cannot total yet - fix these sizes first'],
   ['แก้ขนาดที่มีปัญหาก่อน แล้วข้อความใบเสนอราคาจะแสดงที่นี่', 'Fix the sizes with problems and the quotation will appear here'],
