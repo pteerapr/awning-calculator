@@ -25,3 +25,7 @@ Desktop.ini
 
 # NOTE: the manual backup files (_backup_before_*, *bak*, *_original*, indexbak.html)
 # are intentionally NOT ignored yet — they stay tracked until we decide to remove them.
+
+# --- การตั้งค่าส่วนตัวของ Claude Code (เฉพาะเครื่องนี้ ไม่ต้องเข้า git) ---
+# (personal Claude Code permission rules - machine-specific, not for the repo)
+.claude/settings.local.json
