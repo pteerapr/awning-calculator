@@ -1,0 +1,1600 @@
+<!-- Sangthong Calculator Package Version: clean-v1 | Packaged: 2026-05-13 | Source file: seatel-st2000.html -->
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366"><style>
+:root {
+  --primary:#003366;
+  --accent:#007bff;
+  --bg:#f8f9fb;
+  --text:#111827;
+  --panel:#ffffff;
+  --muted:#e5e7eb;
+  --shadow:0 12px 30px rgba(15,23,42,.08);
+  --radius:14px;
+}
+html,body{background:var(--bg)!important; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text);}
+h1,h2,h3{color:var(--primary)!important; margin-top:0.5rem;}
+.container,.panel,.card,.result-panel,.main-wrapper,#resultPanel{
+  background:var(--panel)!important; border-radius:var(--radius)!important; box-shadow:var(--shadow)!important;
+}
+button, .btn {
+  background:var(--primary)!important; color:#fff!important; border:none!important; border-radius:10px!important;
+  padding:.6rem 1rem!important; cursor:pointer!important; font-weight:600!important;
+}
+button:hover, .btn:hover { background:var(--accent)!important; }
+input, select {
+  border:1px solid #d1d5db!important; border-radius:10px!important; padding:.55rem .7rem!important;
+}
+label{font-weight:700!important; font-size:.9rem!important;}
+table{width:100%; border-collapse:collapse;}
+th,td{border:1px solid #e5e7eb; padding:.5rem .6rem; text-align:left;}
+th{background:#f3f4f6;}
+.totalBox, .price-lg { color:#0f5132!important; background:#e9f7ef!important; border:2px solid #198754!important; border-radius:12px!important; padding:.6rem 1rem!important; display:inline-block; }
+.languageToggle{display:inline-flex;border:1px solid #d1d5db;border-radius:999px;background:#fff;padding:3px;gap:0;margin:.5rem 0 .75rem}.languageToggle button{border:0;border-radius:999px;background:transparent;color:#475569;cursor:pointer;font-size:13px;font-weight:900;line-height:1;padding:8px 12px}.languageToggle button.active{background:#003366;color:#fff}.languageToggle button:focus-visible{outline:3px solid rgba(14,165,233,.35);outline-offset:2px}
+</style><style>
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f6f9fc; color: #222; }
+  .main-wrapper { display: flex; justify-content: center; gap: 20px; align-items: flex-start; }
+  .container, .result-panel { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,.1); }
+  .container { width: 400px; }
+  .result-panel { width: 350px; }
+  h2 { text-align: center; margin-bottom: 20px; }
+  label { display: block; margin: 10px 0 4px; font-weight: bold; }
+  input, select, button { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; }
+  input[type="checkbox"] {
+    width: auto !important;
+    padding: 0 !important;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  label input[type="checkbox"] {
+    display: inline-block;
+  }
+  .accessory-box {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    background: #eef5ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 10px;
+  }
+  .accessory-box h4 {
+    margin: 0 0 8px;
+    color: #003366;
+  }
+  /* ช่องกรอกจำนวนอุปกรณ์เสริมแต่ละชิ้น — บางงานใช้เซ็นเซอร์ตัวเดียวคุมหลายหลัง
+     per-accessory quantity: one sensor can serve several awnings */
+  .acc-line { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+  .acc-line label { flex: 1; margin: 0; }
+  .acc-qty-wrap { display: none; align-items: center; gap: 4px; white-space: nowrap; }
+  .acc-line.is-on .acc-qty-wrap { display: flex; }
+  .acc-qty-wrap input {
+    width: 58px; margin: 0; padding: 4px 6px; text-align: center;
+    border: 1px solid #cfe2ff; border-radius: 6px; font-size: 14px;
+  }
+  .acc-qty-wrap span { font-size: 12px; color: #555; }
+
+  button { margin-top: 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+  button:hover { background: #0056b3; }
+  .clear-btn { background: #6c757d; }
+  .clear-btn:hover { background: #5a6268; }
+  .result { background: #e9f7ef; border-left: 4px solid #28a745; padding: 10px; display: none; }
+  .error { margin-top: 10px; background: #f8d7da; border-left: 4px solid #dc3545; padding: 10px; display: none; }
+  .motor-text { color: #007bff; font-weight: bold; }
+  .cover-text { color: #ff6600; font-weight: bold; }
+  .diag { margin-top: 10px; font-size: 12px; color: #555; display:none; }
+  .customer-range-box{margin-top:14px; padding:12px; background:#fff7ed; border:1px dashed #f59e0b; border-radius:12px;}
+  .customer-range-box .range-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .customer-range-box h4{margin:0; color:#9a3412; font-size:14px;}
+  .customer-range-box pre{white-space:pre-wrap; margin:8px 0 0; font-family:inherit; font-size:.9rem; line-height:1.55;}
+  .quote-box { background:#f7f9fc; border:1px solid #d9e2ef; border-radius:10px; padding:12px; line-height:1.65; }
+  .quote-title { font-weight:700; color:#003366; font-size:18px; margin-bottom:8px; }
+  .quote-section { margin-top:10px; padding-top:8px; border-top:1px solid #e5e7eb; }
+  .quote-price { font-size:18px; font-weight:700; color:#0f5132; }
+  .customer-copy-label { font-size:13px; font-weight:700; color:#003366; margin-bottom:8px; }
+  .customer-copy-text { margin:0; padding:12px; background:#f1f3f5; border:1px solid #d8dee4; border-radius:8px; white-space:pre-wrap; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#111827; }
+@media (max-width: 768px) {
+  .main-wrapper { flex-direction: column; padding: 10px; }
+  .container, .result-panel { width: 100%; box-sizing: border-box; }
+}
+</style><title>SEATEL ST2000 Calculator</title></head><body><div class="main-wrapper">
+<div class="container">
+<h2>เครื่องคำนวณราคากันสาด SEATEL ST2000 (<a href="index.html">Back to Index</a>)</h2>
+<label>ความกว้าง (เมตร)</label>
+<input id="width" placeholder="เช่น 2.4" type="number" value="3.00"/>
+<!-- ติ๊กเพื่อแบ่งผ้าเป็น 2 ชิ้นที่ความกว้างเท่าใดก็ได้
+     ถ้ากว้างเกิน 5.00 ม. (เกินตารางราคา) ระบบจะติ๊กให้เองและล็อกไม่ให้ปลด -->
+<label style="display:block; margin-top:8px; font-weight:normal;"><input id="chkSplitFabric" type="checkbox"/> แบ่งผ้าเป็น 2 ชิ้น / Split fabric into 2 panels</label>
+<div id="splitFabricBox" class="split-box" style="display:none; margin-top:12px; padding:12px; background:#eef5ff; border-radius:10px; border:1px solid #cfe2ff;">
+  <strong>ระบบแบ่งผ้า / Split Fabric</strong>
+  <p style="margin:6px 0 8px; font-size:13px; color:#374151;">คิดราคาผ้าเป็น 2 ชิ้น (บวกกัน) แต่ใช้มอเตอร์ 1 ตัวเท่านั้น — ความกว้างเกิน 5.00 เมตร ระบบจะบังคับแบ่งผ้าเสมอ</p>
+  <label for="piece1">ความกว้างผ้าชิ้นที่ 1 (เมตร)</label>
+  <input id="piece1" placeholder="เช่น 3.00" type="number" min="0" step="0.01"/>
+  <label for="piece2">ความกว้างผ้าชิ้นที่ 2 (เมตร)</label>
+  <input id="piece2" placeholder="เช่น 3.00" type="number" min="0" step="0.01"/>
+  <button type="button" id="autoSplit" style="margin-top:8px;">แบ่งเท่ากันอัตโนมัติ</button>
+</div>
+<label>ความสูง (เมตร)</label>
+<input id="drop" placeholder="เช่น 2.0" type="number" value="2.00"/>
+<label>ชนิดผ้า</label>
+<select id="fabric">
+<option>Solar View</option>
+<option>Solar Screen</option>
+<option>Sun Text</option>
+<option>Solar Zip 5%</option>
+<option>Solar Zip 1%</option>
+<option>Solar Zip 0%</option>
+<option>Vinista Clear 0.75 mm</option>
+<option>Vinista Clear 1.00 mm</option>
+</select>
+<label>มอเตอร์</label>
+<select id="motor">
+<option value="0">ไม่มี</option>
+<option value="9900" data-price-key="strongUp50_12" selected>มอเตอร์ Strong Up-Y 50/12 (9,900 บาท)</option>
+<option value="11900" data-price-key="strongUp50_12_crank">มอเตอร์ Strong Up-Y 50/12 with crank handle (11,900 บาท)</option>
+<option value="15900" data-price-key="strongUp80_15">มอเตอร์ Strong Up-Y 80/12 (15,900 บาท)</option>
+<option value="25800" data-price-key="somfyAltus40_17">มอเตอร์ Somfy Altus 40/17 (25,800 บาท)</option>
+<option value="26800" data-price-key="somfyAltus50_12">มอเตอร์ Somfy Altus 50/12 (26,800 บาท)</option>
+<option value="32800" data-price-key="somfyAltus85_17">มอเตอร์ Somfy Altus 85/17 (32,800 บาท)</option>
+<option value="25000" data-price-key="somfyMaestria50RTS15_17">มอเตอร์ Somfy MAESTRIA+50 RTS 15/17 + Remote 1 ช่อง (Telis situo 1 RTS) (25,000 บาท)</option>
+<option value="31000" data-price-key="somfyMaestria50RTS35_17">มอเตอร์ Somfy MAESTRIA+50 RTS 35/17 + Remote 1 ช่อง (Telis situo 1 RTS) (31,000 บาท)</option>
+</select>
+<div id="strongUpAccessoryBox" class="accessory-box">
+  <h4>Strong Up-Y Accessories / อุปกรณ์เสริม Strong Up-Y</h4>
+  <div class="acc-line"><label><input id="chkStrongRemote1" type="checkbox"/> Transmitter 1 Channel / รีโมท 1 ช่อง (+800 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkStrongRemote1" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkStrongRemote2" type="checkbox"/> Transmitter 2 Channel / รีโมท 2 ช่อง (+950 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkStrongRemote2" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkStrongRemote6" type="checkbox"/> Transmitter 6 Channel / รีโมท 6 ช่อง (+1,100 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkStrongRemote6" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkStrongRemote16" type="checkbox"/> Transmitter 16 Channel / รีโมท 16 ช่อง (+1,600 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkStrongRemote16" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkStrongWindSun" type="checkbox"/> Wind-Sun Sensor / เซ็นเซอร์ลม-แดด (+6,600 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkStrongWindSun" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkStrongSmartController" type="checkbox"/> Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์ (+4,000 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkStrongSmartController" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="diag" style="display:block;">แสดงเฉพาะเมื่อเลือกมอเตอร์ Strong Up-Y</div>
+</div>
+
+<div id="somfyAccessoryBox" class="accessory-box">
+  <h4>Somfy Accessories / อุปกรณ์เสริม Somfy</h4>
+  <div class="acc-line"><label><input id="chkSomfyOndeisRain" type="checkbox"/> Ondeis Rain Sensor (+13,675 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyOndeisRain" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyDryContact" type="checkbox"/> Dry Contact Transmitter RTS (+14,918 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyDryContact" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfySunis" type="checkbox"/> Sunis Sensor RTS Wirefree (+23,315 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfySunis" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyEolis" type="checkbox"/> Eolis Sensor RTS (+11,663 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyEolis" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyEolis3D" type="checkbox"/> Eolis 3D Sensor RTS (+11,663 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyEolis3D" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfySoliris" type="checkbox"/> Soliris RTS Sensor (+21,756 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfySoliris" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyTaHoma" type="checkbox"/> TaHoma (+11,005 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyTaHoma" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyRemote1" type="checkbox"/> Somfy Remote 1 Channel / รีโมท 1 ช่อง (+3,108 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote1" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyRemote2" type="checkbox"/> Somfy Remote 2 Channel / รีโมท 2 ช่อง (+3,978 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote2" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyRemote5" type="checkbox"/> Somfy Remote 5 Channel / รีโมท 5 ช่อง (+6,216 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote5" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyRemote6" type="checkbox"/> Somfy Remote 6 Channel / รีโมท 6 ช่อง (+13,675 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote6" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfyRemote16" type="checkbox"/> Somfy Remote 16 Channel / รีโมท 16 ช่อง (+12,432 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfyRemote16" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="acc-line"><label><input id="chkSomfySmoove" type="checkbox"/> Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง (+2,362 บาท)</label><span class="acc-qty-wrap"><input id="qty-chkSomfySmoove" type="number" min="1" step="1" value="1" aria-label="จำนวน"><span>ชุด</span></span></div>
+  <div class="diag" style="display:block;">หมายเหตุ: มอเตอร์บางรุ่นรวมรีโมท 1 ช่องมาแล้ว ให้ติ๊กเฉพาะรีโมทที่ต้องการเพิ่ม</div>
+  <div class="diag" style="display:block;">แสดงเฉพาะเมื่อเลือกมอเตอร์ Somfy</div>
+</div>
+<label>ฝาครอบ (Cover Profile)</label>
+<select id="cover">
+<option value="0">ไม่มี</option>
+<option value="2400" data-price-key="coverProfile.aluminum">ฝาครอบอลูมิเนียม (2,400 บาท/เมตร)</option>
+<option value="2900" data-price-key="coverProfile.white">ฝาครอบสีขาว (2,900 บาท/เมตร)</option>
+</select>
+<label>อุปกรณ์เสริมเพิ่มเติม (บาท)</label>
+<input id="accessories" min="0" placeholder="เช่น 1500" type="number" value="0"/>
+<label>จำนวน (ชุด)</label>
+<input id="qty" min="1" type="number" value="1"/>
+<label for="jobNote">Note / หมายเหตุ</label>
+<input id="jobNote" placeholder="Optional note" type="text" />
+<label for="specialDiscount">ส่วนลดพิเศษ</label>
+
+<input id="specialDiscount" min="0" step="1" type="number" value="0"/>
+<label>ส่วนลด (%)</label>
+<input id="discount" max="100" min="0" type="number" value="0"/>
+<div class="error" id="error"></div>
+<div class="diag" id="diag"></div>
+</div>
+<div class="result-panel"><div class="st-brandbar" style="background:#003366;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:center;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;"><div style="font-weight:900;letter-spacing:2px;font-size:15px;">SANGTHONG CREATION</div><div style="font-size:11px;letter-spacing:.4px;opacity:.85;margin-top:3px;">Price presented by Sangthong Creation</div></div>
+<h3>ผลการคำนวณ</h3>
+<div class="languageToggle" aria-label="Result language">
+  <button class="active" type="button" data-result-lang="th" aria-pressed="true">TH</button>
+  <button type="button" data-result-lang="en" aria-pressed="false">EN</button>
+</div>
+<div class="result" id="result"></div>
+<button id="copyResult" style="width:100%;margin-top:10px;background:#28a745;color:white;border:none;padding:10px;border-radius:6px;cursor:pointer;">
+  คัดลอกผลลัพธ์ทั้งหมด
+</button>
+<!-- ช่วงราคาสำหรับลูกค้า (ไม่แสดงราคาจริง) / customer price range, separate from the result above -->
+<div class="customer-range-box">
+  <div class="range-head">
+    <h4 id="rangeTitle">ช่วงราคาสำหรับลูกค้า (ไม่รวมอุปกรณ์เสริม)</h4>
+    <button id="copyRangeBtn" type="button" style="background:#28a745;color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;">Copy Range</button>
+  </div>
+  <pre id="rangePreview"></pre>
+</div>
+</div>
+</div>
+<script src="prices.js"></script>
+<script src="i18n.js"></script>
+<script>
+let resultLanguage = 'th';
+
+// คำแปลเฉพาะของไฟล์นี้ / wording specific to this calculator.
+// คำที่ใช้ร่วมกับไฟล์อื่นในกลุ่มอยู่ใน i18n.js — แก้ที่นั่นครั้งเดียวได้ทุกไฟล์.
+// รายการข้างล่างนี้ถูกใช้ก่อนเสมอ (this list wins over the shared one).
+const RESULT_EN_OVERRIDES = [
+  ['รับประกัน', 'Warranty'],
+  ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
+  ['สินค้า Pre-Order รอสินค้า', 'Pre-order product, lead time'],
+  ['กว้างรวม', 'Total width'],
+  ['แบ่งผ้า', 'Fabric split'],
+  ['ชิ้นที่ 1', 'Panel 1'],
+  ['ชิ้นที่ 2', 'Panel 2'],
+  ['ราคาผ้าชิ้นที่ 1', 'Panel 1 fabric price'],
+  ['ราคาผ้าชิ้นที่ 2', 'Panel 2 fabric price'],
+  ['รวมราคาผ้า 2 ชิ้น', 'Total fabric price for 2 panels'],
+  ['ราคาผ้า/โครงต่อชุด', 'Fabric/frame price per set'],
+  ['รายละเอียดราคา', 'Price details'],
+  ['รูปแบบ', 'Format'],
+  ['ผ้าชิ้นเดียว', 'Single fabric panel'],
+  ['แบ่งผ้า 2 ชิ้นในระบบเดียว', 'Split into 2 fabric panels in one system'],
+  ['การใช้งานแบบมือหมุน', 'Manual operation'],
+  ['คิดมอเตอร์ 1 ตัวต่อระบบ', 'one motor per system'],
+  ['หมายเหตุ*-', 'Notes:'],
+  ['รับประกันการทำงานของมอเตอร์ 2 ปี', 'Motor warranty: 2 years'],
+  ['รับประกันโครงสร้างและการติดตั้ง', 'Structure and installation warranty'],
+  ['ไม่ครอบคลุมตัวผ้าใบ', 'excluding fabric'],
+  ['เป็นไปตามเงื่อนไขของทางบริษัท', 'subject to company terms'],
+  ['ชนิดผ้า', 'Fabric'],
+  ['ขนาด', 'Size'],
+  ['กว้าง', 'Width'],
+  ['ระยะยื่น', 'Projection'],
+  ['ยื่น', 'Projection'],
+  ['ยาว', 'Length'],
+  ['จำนวน', 'Quantity'],
+  ['ส่วนลดพิเศษ', 'Special Discount'],
+  ['ส่วนลด', 'Discount'],
+  ['ราคาก่อนส่วนลด', 'Before Discount'],
+  ['ราคารวมก่อนส่วนลด', 'Total Before Discount'],
+  ['ราคาสุทธิ', 'Net Total'],
+  ['ราคารวมสุทธิ', 'Net Total'],
+  ['ราคารวม', 'Total'],
+  ['ราคาสรุป', 'Final Price'],
+  ['หมายเหตุ', 'Note'],
+  ['มอเตอร์', 'Motor'],
+  ['ฝาครอบกันน้ำ', 'Waterproof Cover'],
+  ['ฝาครอบ', 'Cover'],
+  ['อุปกรณ์เสริมมอเตอร์', 'Motor Accessories'],
+  ['อุปกรณ์เสริมอื่น ๆ', 'Other Accessories'],
+  ['สีขาว', 'white'],
+  ['อลูมิเนียม', 'aluminum'],
+  ['วัน', 'days'],
+  ['Customer copy text / ข้อความสำหรับส่งลูกค้า', 'Customer copy text'],
+  ['Manual Operation / ระบบมือหมุน', 'Manual Operation'],
+  ['Motorized System / ระบบมอเตอร์', 'Motorized System'],
+  ['ราคาสรุประบบมือหมุน', 'Manual System Final Price'],
+  ['ราคาสรุประบบมอเตอร์', 'Motorized System Final Price'],
+  ['ขนาด: กว้าง', 'Size: Width'],
+  ['อุปกรณ์เสริมมอเตอร์', 'Motor Accessories'],
+  ['รูปแบบ', 'Format'],
+  ['แบ่งผ้า 2 ชิ้นในระบบเดียว', 'Split into 2 fabric panels in one system'],
+  ['ผ้าชิ้นเดียว', 'Single fabric panel'],
+  ['คิดมอเตอร์ 1 ตัวต่อระบบ', 'one motor per system'],
+  ['การใช้งานแบบมือหมุน', 'Manual operation'],
+  ['กว้างรวม', 'Total width'],
+  ['แบ่งผ้า', 'Fabric split'],
+  ['ชิ้นที่ 1', 'Panel 1'],
+  ['ชิ้นที่ 2', 'Panel 2'],
+  ['ราคาผ้าชิ้นที่ 1', 'Panel 1 Fabric Price'],
+  ['ราคาผ้าชิ้นที่ 2', 'Panel 2 Fabric Price'],
+  ['รวมราคาผ้า 2 ชิ้น', 'Total Fabric Price for 2 Panels'],
+  ['ราคาผ้า/โครงต่อชุด', 'Fabric/frame price per set'],
+  ['รายละเอียดราคา', 'Price Details'],
+  ['ราคารวมก่อนส่วนลด', 'Total Before Discount'],
+  ['ราคารวมสุทธิก่อนสํารวจหน้างาน', 'Net Total Before Site Survey'],
+  ['ราคารวมสุทธิก่อนสำรวจหน้างาน', 'Net Total Before Site Survey'],
+  ['หมายเหตุ*-', 'Notes:'],
+  ['ยาว', 'Height'],
+  ['ชนิดผ้า', 'Fabric'],
+  ['กว้าง', 'Width'],
+  ['ยื่น', 'Projection'],
+  ['ระยะยื่น', 'Drop'],
+  ['มอเตอร์', 'Motor'],
+  ['อุปกรณ์เสริมมอเตอร์', 'Motor Accessories'],
+  ['อุปกรณ์เสริมอื่น ๆ', 'Other Accessories'],
+  ['ฝาครอบกันน้ำ', 'Waterproof Cover'],
+  ['ฝาครอบ', 'Cover'],
+  ['ราคาก่อนส่วนลด', 'Before Discount'],
+  ['ส่วนลดพิเศษ', 'Special Discount'],
+  ['ส่วนลด', 'Discount'],
+  ['ราคาสรุป', 'Final Price'],
+  ['ราคาสุทธิ', 'Net Total'],
+  ['ราคารวม', 'Total'],
+  ['จำนวน', 'Quantity'],
+  ['หมายเหตุ', 'Note'],
+  ['รับประกัน', 'Warranty'],
+  ['ขนาดอยู่นอกช่วงมาตรฐาน', 'Size is outside the standard range'],
+  ['ไม่พบราคาสำหรับขนาดนี้', 'No price found for this size']
+];
+const RESULT_EN_REPLACEMENTS = window.SANGTHONG_I18N
+  ? window.SANGTHONG_I18N.merge(RESULT_EN_OVERRIDES, 'AWNING')
+  : RESULT_EN_OVERRIDES;
+function localizeResultText(text){
+  if (resultLanguage !== 'en') return String(text || '');
+  let output = String(text || '');
+  RESULT_EN_REPLACEMENTS
+    .slice()
+    .sort((a, b) => b[0].length - a[0].length)
+    .forEach(([from, to]) => { output = output.split(from).join(to); });
+  return output
+    .split(')THB').join(') THB')
+    .replace(new RegExp('([0-9,])THB', 'g'), '$1 THB')
+    .replace(new RegExp('\\bB\\.', 'g'), 'THB')
+    .replace(new RegExp('\\s+THB', 'g'), ' THB')
+    .replace(new RegExp('Pre-order product, lead time\\s+([0-9-]+)\\s+days', 'g'), 'Pre-order product, lead time $1 days')
+    .replace(new RegExp('MotorWarranty', 'g'), 'Motor warranty')
+    .replace(new RegExp(':\\s*None', 'g'), ': None')
+    .replace(new RegExp('/\\s*None', 'g'), '/ None')
+    .trim();
+}
+
+
+
+
+function updateResultLanguageLabels(){
+  const resultSignal = '\u0e1c\u0e25\u0e01\u0e32\u0e23';
+  const customerSignal = '\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21';
+  document.querySelectorAll('h2,h3,h4,.panel-title,.customer-copy-title,.customer-copy-label').forEach(el => {
+    const original = el.getAttribute('data-result-label-th') || el.textContent.trim();
+    if (!original.includes(resultSignal) && !original.includes(customerSignal)) return;
+    if (!el.getAttribute('data-result-label-th')) el.setAttribute('data-result-label-th', original);
+    el.textContent = resultLanguage === 'en' ? localizeResultText(original) : original;
+  });
+}
+
+function localizeEscapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s]));
+}
+function localizeResultPanel(){
+  const res = document.getElementById('result');
+  if (!res || resultLanguage !== 'en' || !res.innerText.trim()) return;
+  const text = localizeResultText(res.innerText);
+  res.innerHTML = '<pre style="white-space:pre-wrap;margin:0;font-family:inherit;line-height:1.6">' + localizeEscapeHtml(text) + '</pre>';
+  window.latestCopyText = text;
+}
+function setResultLanguage(lang){
+  resultLanguage = lang === 'en' ? 'en' : 'th';
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    const active = button.dataset.resultLang === resultLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  if (typeof calculatePrice === 'function') calculatePrice();
+  updateResultLanguageLabels();
+}
+function initResultLanguageToggle(){
+  document.querySelectorAll('[data-result-lang]').forEach(button => {
+    button.addEventListener('click', () => setResultLanguage(button.dataset.resultLang));
+  });
+  if (typeof calculatePrice === 'function') {
+    const originalCalculatePrice = calculatePrice;
+    calculatePrice = function(){
+      originalCalculatePrice.apply(this, arguments);
+      localizeResultPanel();
+    };
+  }
+  updateResultLanguageLabels();
+}
+initResultLanguageToggle();
+
+
+// --- ตารางราคาที่ทำให้สคริปต์ไม่ล้ม (56 แถว เวอร์ชันเต็ม) ---
+const PRICE_ROWS =   [
+    {
+        "width_band": "1.00-1.50",
+        "drop_band": "0.10-1.00",
+        "Solar View": 12300,
+        "Solar Screen": 12700,
+        "Sun Text": 12900,
+		"Solar Zip 5%": 12700,
+		"Solar Zip 1%": 12900,
+		"Solar Zip 0%": 13500,
+		"Vinista Clear 0.75 mm": 13200,
+		"Vinista Clear 1.00 mm": 13500
+    },
+    {
+        "width_band": "1.00-1.50",
+        "drop_band": "1.01-1.50",
+        "Solar View": 13100,
+        "Solar Screen": 13600,
+        "Sun Text": 14000,
+		"Solar Zip 5%": 13600,
+		"Solar Zip 1%": 14000,
+		"Solar Zip 0%": 14900,
+		"Vinista Clear 0.75 mm": 14400,
+		"Vinista Clear 1.00 mm": 14900
+    },
+    {
+        "width_band": "1.00-1.50",
+        "drop_band": "1.51-2.00",
+        "Solar View": 13900,
+        "Solar Screen": 14700,
+        "Sun Text": 15100,
+		"Solar Zip 5%": 14700,
+		"Solar Zip 1%": 15100,
+		"Solar Zip 0%": 16300,
+		"Vinista Clear 0.75 mm": 15700,
+		"Vinista Clear 1.00 mm": 16300
+    },
+    {
+        "width_band": "1.00-1.50",
+        "drop_band": "2.01-2.50",
+        "Solar View": 14900,
+        "Solar Screen": 15800,
+        "Sun Text": 16400,
+		"Solar Zip 5%": 15800,
+		"Solar Zip 1%": 16400,
+		"Solar Zip 0%": 17900,
+		"Vinista Clear 0.75 mm": 17100,
+		"Vinista Clear 1.00 mm": 17900
+    },
+    {
+        "width_band": "1.00-1.50",
+        "drop_band": "2.51-3.00",
+        "Solar View": 15800,
+        "Solar Screen": 16900,
+        "Sun Text": 17600,
+		"Solar Zip 5%": 16900,
+		"Solar Zip 1%": 17600,
+		"Solar Zip 0%": 19400,
+		"Vinista Clear 0.75 mm": 18500,
+		"Vinista Clear 1.00 mm": 19400
+    },
+    {
+        "width_band": "1.00-1.50",
+        "drop_band": "3.01-3.50",
+        "Solar View": 16600,
+        "Solar Screen": 18000,
+        "Sun Text": 18700,
+		"Solar Zip 5%": 18000,
+		"Solar Zip 1%": 18700,
+		"Solar Zip 0%": 20800,
+		"Vinista Clear 0.75 mm": 19800,
+		"Vinista Clear 1.00 mm": 20800
+    },
+    {
+        "width_band": "1.00-1.50",
+        "drop_band": "3.51-4.00",
+        "Solar View": 18200,
+        "Solar Screen": 19200,
+        "Sun Text": 20600,
+		"Solar Zip 5%": 19800,
+		"Solar Zip 1%": 20600,
+		"Solar Zip 0%": 23000,
+		"Vinista Clear 0.75 mm": 21800,
+		"Vinista Clear 1.00 mm": 23000
+    },
+    {
+        "width_band": "1.51-2.00",
+        "drop_band": "0.10-1.00",
+        "Solar View": 13300,
+        "Solar Screen": 13900,
+        "Sun Text": 14100,
+		"Solar Zip 5%": 13900,
+		"Solar Zip 1%": 14100,
+		"Solar Zip 0%": 14900,
+		"Vinista Clear 0.75 mm": 14500,
+		"Vinista Clear 1.00 mm": 14900
+    },
+    {
+        "width_band": "1.51-2.00",
+        "drop_band": "1.01-1.50",
+        "Solar View": 14300,
+        "Solar Screen": 15100,
+        "Sun Text": 15500,
+		"Solar Zip 5%": 15100,
+		"Solar Zip 1%": 15100,
+		"Solar Zip 0%": 16700,
+		"Vinista Clear 0.75 mm": 16100,
+		"Vinista Clear 1.00 mm": 16700
+    },
+    {
+        "width_band": "1.51-2.00",
+        "drop_band": "1.51-2.00",
+        "Solar View": 15500,
+        "Solar Screen": 16500,
+        "Sun Text": 17100,
+		"Solar Zip 5%": 16500,
+		"Solar Zip 1%": 17100,
+		"Solar Zip 0%": 18700,
+		"Vinista Clear 0.75 mm": 17900,
+		"Vinista Clear 1.00 mm": 18700
+
+    },
+    {
+        "width_band": "1.51-2.00",
+        "drop_band": "2.01-2.50",
+        "Solar View": 16600,
+        "Solar Screen": 17900,
+        "Sun Text": 18600,
+		"Solar Zip 5%": 17900,
+		"Solar Zip 1%": 18600,
+		"Solar Zip 0%": 20600,
+		"Vinista Clear 0.75 mm": 19600,
+		"Vinista Clear 1.00 mm": 20600
+    },
+    {
+        "width_band": "1.51-2.00",
+        "drop_band": "2.51-3.00",
+        "Solar View": 17700,
+        "Solar Screen": 19300,
+        "Sun Text": 20100,
+		"Solar Zip 5%": 19300,
+		"Solar Zip 1%": 20100,
+		"Solar Zip 0%": 22500,
+		"Vinista Clear 0.75 mm": 21300,
+		"Vinista Clear 1.00 mm": 22500
+    },
+    {
+        "width_band": "1.51-2.00",
+        "drop_band": "3.01-3.50",
+        "Solar View": 18800,
+        "Solar Screen": 20600,
+        "Sun Text": 21600,
+		"Solar Zip 5%": 20600,
+		"Solar Zip 1%": 21600,
+		"Solar Zip 0%": 24400,
+		"Vinista Clear 0.75 mm": 23000,
+		"Vinista Clear 1.00 mm": 24400
+    },
+    {
+        "width_band": "1.51-2.00",
+        "drop_band": "3.51-4.00",
+        "Solar View": 20600,
+        "Solar Screen": 22700,
+        "Sun Text": 23800,
+		"Solar Zip 5%": 22700,
+		"Solar Zip 1%": 23800,
+		"Solar Zip 0%": 27000,
+		"Vinista Clear 0.75 mm": 25400,
+		"Vinista Clear 1.00 mm": 27000
+    },
+    {
+        "width_band": "2.01-2.50",
+        "drop_band": "0.10-1.00",
+        "Solar View": 14400,
+        "Solar Screen": 15100,
+        "Sun Text": 15400,
+		"Solar Zip 5%": 15100,
+		"Solar Zip 1%": 15400,
+		"Solar Zip 0%": 16400,
+		"Vinista Clear 0.75 mm": 15900,
+		"Vinista Clear 1.00 mm": 16400
+    },
+    {
+        "width_band": "2.01-2.50",
+        "drop_band": "1.01-1.50",
+        "Solar View": 15600,
+        "Solar Screen": 16600,
+        "Sun Text": 17100,
+		"Solar Zip 5%": 16600,
+		"Solar Zip 1%": 17100,
+		"Solar Zip 0%": 18600,
+		"Vinista Clear 0.75 mm": 17900,
+		"Vinista Clear 1.00 mm": 18600
+    },
+    {
+        "width_band": "2.01-2.50",
+        "drop_band": "1.51-2.00",
+        "Solar View": 17000,
+        "Solar Screen": 18300,
+        "Sun Text": 19000,
+		"Solar Zip 5%": 18300,
+		"Solar Zip 1%": 19000,
+		"Solar Zip 0%": 21000,
+		"Vinista Clear 0.75 mm": 20000,
+		"Vinista Clear 1.00 mm": 21000
+    },
+    {
+        "width_band": "2.01-2.50",
+        "drop_band": "2.01-2.50",
+        "Solar View": 18300,
+        "Solar Screen": 20000,
+        "Sun Text": 20800,
+		"Solar Zip 5%": 20000,
+		"Solar Zip 1%": 20800,
+		"Solar Zip 0%": 23300,
+		"Vinista Clear 0.75 mm": 22100,
+		"Vinista Clear 1.00 mm": 23300
+    },
+    {
+        "width_band": "2.01-2.50",
+        "drop_band": "2.51-3.00",
+        "Solar View": 19700,
+        "Solar Screen": 21600,
+        "Sun Text": 22700,
+		"Solar Zip 5%": 21600,
+		"Solar Zip 1%": 22700,
+		"Solar Zip 0%": 25700,
+		"Vinista Clear 0.75 mm": 24200,
+		"Vinista Clear 1.00 mm": 25700
+    },
+    {
+        "width_band": "2.01-2.50",
+        "drop_band": "3.01-3.50",
+        "Solar View": 21000,
+        "Solar Screen": 23300,
+        "Sun Text": 24500,
+		"Solar Zip 5%": 23300,
+		"Solar Zip 1%": 24500,
+		"Solar Zip 0%": 28000,
+		"Vinista Clear 0.75 mm": 26200,
+		"Vinista Clear 1.00 mm": 28000
+    },
+    {
+        "width_band": "2.01-2.50",
+        "drop_band": "3.51-4.00",
+        "Solar View": 23000,
+        "Solar Screen": 25600,
+        "Sun Text": 27000,
+		"Solar Zip 5%": 25600,
+		"Solar Zip 1%": 27000,
+		"Solar Zip 0%": 31000,
+		"Vinista Clear 0.75 mm": 29000,
+		"Vinista Clear 1.00 mm": 31000
+    },
+    {
+        "width_band": "2.51-3.00",
+        "drop_band": "0.10-1.00",
+        "Solar View": 15500,
+        "Solar Screen": 16200,
+        "Sun Text": 16700,
+		"Solar Zip 5%": 16200,
+		"Solar Zip 1%": 16700,
+		"Solar Zip 0%": 17900,
+		"Vinista Clear 0.75 mm": 17300,
+		"Vinista Clear 1.00 mm": 17900
+    },
+    {
+        "width_band": "2.51-3.00",
+        "drop_band": "1.01-1.50",
+        "Solar View": 16900,
+        "Solar Screen": 18100,
+        "Sun Text": 18700,
+		"Solar Zip 5%": 18100,
+		"Solar Zip 1%": 18700,
+		"Solar Zip 0%": 20500,
+		"Vinista Clear 0.75 mm": 19600,
+		"Vinista Clear 1.00 mm": 20500
+    },
+    {
+        "width_band": "2.51-3.00",
+        "drop_band": "1.51-2.00",
+        "Solar View": 18500,
+        "Solar Screen": 20000,
+        "Sun Text": 20900,
+		"Solar Zip 5%": 20000,
+		"Solar Zip 1%": 20900,
+		"Solar Zip 0%": 23300,
+		"Vinista Clear 0.75 mm": 22100,
+		"Vinista Clear 1.00 mm": 23300
+		
+    },
+    {
+        "width_band": "2.51-3.00",
+        "drop_band": "2.01-2.50",
+        "Solar View": 20100,
+        "Solar Screen": 22000,
+        "Sun Text": 23100,
+		"Solar Zip 5%": 22000,
+		"Solar Zip 1%": 23100,
+		"Solar Zip 0%": 26100,
+		"Vinista Clear 0.75 mm": 24600,
+		"Vinista Clear 1.00 mm": 26100
+    },
+    {
+        "width_band": "2.51-3.00",
+        "drop_band": "2.51-3.00",
+        "Solar View": 21600,
+        "Solar Screen": 24000,
+        "Sun Text": 25200,
+		"Solar Zip 5%": 24000,
+		"Solar Zip 1%": 25200,
+		"Solar Zip 0%": 28800,
+		"Vinista Clear 0.75 mm": 27000,
+		"Vinista Clear 1.00 mm": 28800
+    },
+    {
+        "width_band": "2.51-3.00",
+        "drop_band": "3.01-3.50",
+        "Solar View": 23200,
+        "Solar Screen": 25900,
+        "Sun Text": 27400,
+		"Solar Zip 5%": 25900,
+		"Solar Zip 1%": 27400,
+		"Solar Zip 0%": 31600,
+		"Vinista Clear 0.75 mm": 29500,
+		"Vinista Clear 1.00 mm": 31600
+    },
+    {
+        "width_band": "2.51-3.00",
+        "drop_band": "3.51-4.00",
+        "Solar View": 25500,
+        "Solar Screen": 28600,
+        "Sun Text": 30300,
+		"Solar Zip 5%": 28600,
+		"Solar Zip 1%": 30300,
+		"Solar Zip 0%": 35100,
+		"Vinista Clear 0.75 mm": 32700,
+		"Vinista Clear 1.00 mm": 35100
+    },
+    {
+        "width_band": "3.01-3.50",
+        "drop_band": "0.10-1.00",
+        "Solar View": 16500,
+        "Solar Screen": 17400,
+        "Sun Text": 17900,
+		"Solar Zip 5%": 17400,
+		"Solar Zip 1%":17900,
+		"Solar Zip 0%": 19300,
+		"Vinista Clear 0.75 mm": 18600,
+		"Vinista Clear 1.00 mm": 19300
+
+    },
+    {
+        "width_band": "3.01-3.50",
+        "drop_band": "1.01-1.50",
+        "Solar View": 18200,
+        "Solar Screen": 19600,
+        "Sun Text": 20300,
+		"Solar Zip 5%": 19600,
+		"Solar Zip 1%":20300,
+		"Solar Zip 0%": 22400,
+		"Vinista Clear 0.75 mm": 21400,
+		"Vinista Clear 1.00 mm": 22400
+    },
+    {
+        "width_band": "3.01-3.50",
+        "drop_band": "1.51-2.00",
+        "Solar View": 20000,
+        "Solar Screen": 21800,
+        "Sun Text": 22800,
+		"Solar Zip 5%": 21800,
+		"Solar Zip 1%":22800,
+		"Solar Zip 0%": 25600,
+		"Vinista Clear 0.75 mm": 24200,
+		"Vinista Clear 1.00 mm": 25600
+    },
+    {
+        "width_band": "3.01-3.50",
+        "drop_band": "2.01-2.50",
+        "Solar View": 21800,
+        "Solar Screen": 24100,
+        "Sun Text": 25300,
+		"Solar Zip 5%": 24100,
+		"Solar Zip 1%":25300,
+		"Solar Zip 0%": 28800,
+		"Vinista Clear 0.75 mm": 27100,
+		"Vinista Clear 1.00 mm": 28800
+    },
+    {
+        "width_band": "3.01-3.50",
+        "drop_band": "2.51-3.00",
+        "Solar View": 23600,
+        "Solar Screen": 26300,
+        "Sun Text": 27800,
+		"Solar Zip 5%": 26300,
+		"Solar Zip 1%":27800,
+		"Solar Zip 0%": 32000,
+		"Vinista Clear 0.75 mm": 29900,
+		"Vinista Clear 1.00 mm": 32000
+    },
+    {
+        "width_band": "3.01-3.50",
+        "drop_band": "3.01-3.50",
+        "Solar View": 25300,
+        "Solar Screen": 28500,
+        "Sun Text": 30200,
+		"Solar Zip 5%":28500,
+		"Solar Zip 1%":30200,
+		"Solar Zip 0%": 35100,
+		"Vinista Clear 0.75 mm": 32700,
+		"Vinista Clear 1.00 mm": 35100
+    },
+    {
+        "width_band": "3.01-3.50",
+        "drop_band": "3.51-4.00",
+        "Solar View": 27900,
+        "Solar Screen": 31500,
+        "Sun Text": 33500,
+		"Solar Zip 5%": 31500,
+		"Solar Zip 1%":33500,
+		"Solar Zip 0%": 39100,
+		"Vinista Clear 0.75 mm": 36300,
+		"Vinista Clear 1.00 mm": 39100
+    },
+    {
+        "width_band": "3.51-4.00",
+        "drop_band": "0.10-1.00",
+        "Solar View": 17600,
+        "Solar Screen": 18600,
+        "Sun Text": 19200,
+		"Solar Zip 5%": 18600,
+		"Solar Zip 1%":19200,
+		"Solar Zip 0%": 20800,
+		"Vinista Clear 0.75 mm": 20000,
+		"Vinista Clear 1.00 mm": 20800
+    },
+    {
+        "width_band": "3.51-4.00",
+        "drop_band": "1.01-1.50",
+        "Solar View": 19500,
+        "Solar Screen": 21000,
+        "Sun Text": 21900,
+		"Solar Zip 5%": 21000,
+		"Solar Zip 1%":21900,
+		"Solar Zip 0%": 24300,
+		"Vinista Clear 0.75 mm": 23100,
+		"Vinista Clear 1.00 mm": 24300
+    },
+    {
+        "width_band": "3.51-4.00",
+        "drop_band": "1.51-2.00",
+        "Solar View": 21500,
+        "Solar Screen": 23600,
+        "Sun Text": 24700,
+		"Solar Zip 5%": 23600,
+		"Solar Zip 1%":24700,
+		"Solar Zip 0%": 27900,
+		"Vinista Clear 0.75 mm": 26300,
+		"Vinista Clear 1.00 mm": 27900
+    },
+    {
+        "width_band": "3.51-4.00",
+        "drop_band": "2.01-2.50",
+        "Solar View": 23500,
+        "Solar Screen": 26100,
+        "Sun Text": 27500,
+		"Solar Zip 5%": 26100,
+		"Solar Zip 1%":27500,
+		"Solar Zip 0%": 31500,
+		"Vinista Clear 0.75 mm": 29500,
+		"Vinista Clear 1.00 mm": 31500
+    },
+    {
+        "width_band": "3.51-4.00",
+        "drop_band": "2.51-3.00",
+        "Solar View": 25600,
+        "Solar Screen": 28700,
+        "Sun Text": 30400,
+		"Solar Zip 5%": 28700,
+		"Solar Zip 1%":30400,
+		"Solar Zip 0%": 35200,
+		"Vinista Clear 0.75 mm": 32800,
+		"Vinista Clear 1.00 mm": 35200
+    },
+    {
+        "width_band": "3.51-4.00",
+        "drop_band": "3.01-3.50",
+        "Solar View": 27500,
+        "Solar Screen": 31200,
+        "Sun Text": 33100,
+		"Solar Zip 5%": 31200,
+		"Solar Zip 1%":33100,
+		"Solar Zip 0%": 38700,
+		"Vinista Clear 0.75 mm": 35900,
+		"Vinista Clear 1.00 mm": 38700
+    },
+    {
+        "width_band": "3.51-4.00",
+        "drop_band": "3.51-4.00",
+        "Solar View": 30300,
+        "Solar Screen": 34400,
+        "Sun Text": 36700,
+		"Solar Zip 5%": 34400,
+		"Solar Zip 1%":36700,
+		"Solar Zip 0%": 43100,
+		"Vinista Clear 0.75 mm": 39900,
+		"Vinista Clear 1.00 mm": 43100
+    },
+    {
+        "width_band": "4.01-4.50",
+        "drop_band": "0.10-1.00",
+        "Solar View": 18600,
+        "Solar Screen": 19800,
+        "Sun Text": 20400,
+		"Solar Zip 5%": 19800,
+		"Solar Zip 1%":20400,
+		"Solar Zip 0%": 22200,
+		"Vinista Clear 0.75 mm": 21300,
+		"Vinista Clear 1.00 mm": 22200
+    },
+    {
+        "width_band": "4.01-4.50",
+        "drop_band": "1.01-1.50",
+        "Solar View": 20800,
+        "Solar Screen": 22500,
+        "Sun Text": 23500,
+		"Solar Zip 5%": 22500,
+		"Solar Zip 1%":23500,
+		"Solar Zip 0%": 26200,
+		"Vinista Clear 0.75 mm": 24800,
+		"Vinista Clear 1.00 mm": 26200
+    },
+    {
+        "width_band": "4.01-4.50",
+        "drop_band": "1.51-2.00",
+        "Solar View": 23000,
+        "Solar Screen": 25300,
+        "Sun Text": 26600,
+		"Solar Zip 5%": 25300,
+		"Solar Zip 1%":26600,
+		"Solar Zip 0%": 30200,
+		"Vinista Clear 0.75 mm": 28400,
+		"Vinista Clear 1.00 mm": 30200
+    },
+    {
+        "width_band": "4.01-4.50",
+        "drop_band": "2.01-2.50",
+        "Solar View": 25300,
+        "Solar Screen": 28200,
+        "Sun Text": 29800,
+		"Solar Zip 5%": 28200,
+		"Solar Zip 1%":29800,
+		"Solar Zip 0%": 34300,
+		"Vinista Clear 0.75 mm": 32000,
+		"Vinista Clear 1.00 mm": 34300
+    },
+    {
+        "width_band": "4.01-4.50",
+        "drop_band": "2.51-3.00",
+        "Solar View": 27500,
+        "Solar Screen": 31000,
+        "Sun Text": 32900,
+		"Solar Zip 5%": 31000,
+		"Solar Zip 1%":32900,
+		"Solar Zip 0%": 38300,
+		"Vinista Clear 0.75 mm": 35600,
+		"Vinista Clear 1.00 mm": 38300
+    },
+    {
+        "width_band": "4.01-4.50",
+        "drop_band": "3.01-3.50",
+        "Solar View": 29700,
+        "Solar Screen": 33800,
+        "Sun Text": 36000,
+		"Solar Zip 5%": 33800,
+		"Solar Zip 1%":36000,
+		"Solar Zip 0%":42300,
+		"Vinista Clear 0.75 mm": 39200,
+		"Vinista Clear 1.00 mm": 42300
+    },
+    {
+        "width_band": "4.01-4.50",
+        "drop_band": "3.51-4.00",
+        "Solar View": 32700,
+        "Solar Screen": 37400,
+        "Sun Text": 39900,
+		"Solar Zip 5%": 37400,
+		"Solar Zip 1%":39900,
+		"Solar Zip 0%": 47100,
+		"Vinista Clear 0.75 mm": 43500,
+		"Vinista Clear 1.00 mm": 47100
+    },
+    {
+        "width_band": "4.51-5.00",
+        "drop_band": "0.10-1.00",
+        "Solar View": 22500,
+        "Solar Screen": 23800,
+        "Sun Text": 24500,
+		"Solar Zip 5%": 23800,
+		"Solar Zip 1%":24500,
+		"Solar Zip 0%": 26500,
+		"Vinista Clear 0.75 mm": 25500,
+		"Vinista Clear 1.00 mm": 26500
+    },
+    {
+        "width_band": "4.51-5.00",
+        "drop_band": "1.01-1.50",
+        "Solar View": 24800,
+        "Solar Screen": 26800,
+        "Sun Text": 27800,
+		"Solar Zip 5%": 26800,
+		"Solar Zip 1%":27800,
+		"Solar Zip 0%":30800,
+		"Vinista Clear 0.75 mm": 29300,
+		"Vinista Clear 1.00 mm": 30800
+    },
+    {
+        "width_band": "4.51-5.00",
+        "drop_band": "1.51-2.00",
+        "Solar View": 27300,
+        "Solar Screen": 29900,
+        "Sun Text": 31300,
+		"Solar Zip 5%": 29900,
+		"Solar Zip 1%":31300,
+		"Solar Zip 0%": 35300,
+		"Vinista Clear 0.75 mm": 33300,
+		"Vinista Clear 1.00 mm": 35300
+    },
+    {
+        "width_band": "4.51-5.00",
+        "drop_band": "2.01-2.50",
+        "Solar View": 29800,
+        "Solar Screen": 33000,
+        "Sun Text": 34800,
+		"Solar Zip 5%": 33000,
+		"Solar Zip 1%":34800,
+		"Solar Zip 0%":39800,
+		"Vinista Clear 0.75 mm": 37300,
+		"Vinista Clear 1.00 mm": 39800
+    },
+    {
+        "width_band": "4.51-5.00",
+        "drop_band": "2.51-3.00",
+        "Solar View": 32200,
+        "Solar Screen": 36100,
+        "Sun Text": 38200,
+		"Solar Zip 5%": 36100,
+		"Solar Zip 1%":38200,
+		"Solar Zip 0%": 44200,
+		"Vinista Clear 0.75 mm": 41200,
+		"Vinista Clear 1.00 mm": 44200
+    },
+    {
+        "width_band": "4.51-5.00",
+        "drop_band": "3.01-3.50",
+        "Solar View": 34700,
+        "Solar Screen": 39200,
+        "Sun Text": 41700,
+		"Solar Zip 5%": 39200,
+		"Solar Zip 1%":41700,
+		"Solar Zip 0%":48700,
+		"Vinista Clear 0.75 mm": 45200,
+		"Vinista Clear 1.00 mm": 48700
+    },
+    {
+        "width_band": "4.51-5.00",
+        "drop_band": "3.51-4.00",
+        "Solar View": 37900,
+        "Solar Screen": 43100,
+        "Sun Text": 45900,
+		"Solar Zip 5%": 43100,
+		"Solar Zip 1%":45900,
+		"Solar Zip 0%": 53900,
+		"Vinista Clear 0.75 mm": 49900,
+		"Vinista Clear 1.00 mm": 53900
+    }
+];
+
+function thb(n){return new Intl.NumberFormat('th-TH',{style:'currency',currency:'THB',maximumFractionDigits:0}).format(n);}
+
+function parseBand(bandStr){
+  const normalized = bandStr.replace(/-/g, '–').replace(/[^0-9.–]/g, '');
+  const [minStr,maxStr] = normalized.split('–').map(s=>parseFloat(s));
+  return [minStr,maxStr];
+}
+function findBand(value,bands){
+  for(const band of bands){
+    const [lo,hi]=parseBand(band);
+    if(value>=lo&&value<=hi) return band;
+  }
+  return null;
+}
+
+// Look up the table fabric price for a given width/drop/fabric.
+// Returns { ok, price, widthBand }. Used for both single panels and split pieces.
+function lookupFabricPrice(wVal, dVal, fab){
+  const wb=findBand(wVal,[...new Set(PRICE_ROWS.map(r=>r.width_band))]);
+  const db=findBand(dVal,[...new Set(PRICE_ROWS.map(r=>r.drop_band))]);
+  const row=PRICE_ROWS.find(r=>r.width_band===wb&&r.drop_band===db);
+  if(!row) return {ok:false};
+  const price=row[fab];
+  if(price==null) return {ok:false};
+  return {ok:true, price, widthBand:wb};
+}
+
+
+function getMotorBrandFromSelectedText(text) {
+  if (/Strong Up/i.test(text)) return "strongup";
+  if (/Somfy/i.test(text)) return "somfy";
+  return "none";
+}
+
+function getAccessoryItemsByBrand(brand) {
+  // Accessory prices come from the shared catalog in prices.js (window.SANGTHONG_PRICES)
+  const P = window.SANGTHONG_PRICES;
+  const strongUpItems = [
+    { id: "chkStrongRemote1", label: "Transmitter 1 Channel / รีโมท 1 ช่อง", value: P.strongUp.remote1 },
+    { id: "chkStrongRemote2", label: "Transmitter 2 Channel / รีโมท 2 ช่อง", value: P.strongUp.remote2 },
+    { id: "chkStrongRemote6", label: "Transmitter 6 Channel / รีโมท 6 ช่อง", value: P.strongUp.remote6 },
+    { id: "chkStrongRemote16", label: "Transmitter 16 Channel / รีโมท 16 ช่อง", value: P.strongUp.remote16 },
+    { id: "chkStrongWindSun", label: "Wind-Sun Sensor / เซ็นเซอร์ลม-แดด", value: P.strongUp.windSun },
+    { id: "chkStrongSmartController", label: "Smart Controller (Tuya) / สมาร์ทคอนโทรลเลอร์", value: P.strongUp.smartController }
+  ];
+
+  const somfyItems = [
+    { id: "chkSomfyOndeisRain", label: "Ondeis Rain Sensor", value: P.somfy.ondeisRain },
+    { id: "chkSomfyDryContact", label: "Dry Contact Transmitter RTS", value: P.somfy.dryContact },
+    { id: "chkSomfySunis", label: "Sunis Sensor RTS Wirefree", value: P.somfy.sunis },
+    { id: "chkSomfyEolis", label: "Eolis Sensor RTS", value: P.somfy.eolis },
+    { id: "chkSomfyEolis3D", label: "Eolis 3D Sensor RTS", value: P.somfy.eolis3D },
+    { id: "chkSomfySoliris", label: "Soliris RTS Sensor", value: P.somfy.soliris },
+    { id: "chkSomfyTaHoma", label: "TaHoma", value: P.somfy.taHoma },
+    { id: "chkSomfyRemote1", label: "Somfy Remote 1 Channel / รีโมท 1 ช่อง", value: P.somfy.remote1 },
+    { id: "chkSomfyRemote2", label: "Somfy Remote 2 Channel / รีโมท 2 ช่อง", value: P.somfy.remote2 },
+    { id: "chkSomfyRemote5", label: "Somfy Remote 5 Channel / รีโมท 5 ช่อง", value: P.somfy.remote5 },
+    { id: "chkSomfyRemote6", label: "Somfy Remote 6 Channel / รีโมท 6 ช่อง", value: P.somfy.remote6 },
+    { id: "chkSomfyRemote16", label: "Somfy Remote 16 Channel / รีโมท 16 ช่อง", value: P.somfy.remote16 },
+    { id: "chkSomfySmoove", label: "Smoove 1 Channel RTS Origin / สวิตซ์ Smoove 1 ช่อง", value: P.somfy.smoove }
+  ];
+
+  if (brand === "strongup") return strongUpItems;
+  if (brand === "somfy") return somfyItems;
+  return [];
+}
+
+function updateMotorAccessoryVisibility() {
+  const motorSel = document.getElementById("motor");
+  const motorText = motorSel.options[motorSel.selectedIndex].text;
+  const brand = getMotorBrandFromSelectedText(motorText);
+
+  const strongBox = document.getElementById("strongUpAccessoryBox");
+  const somfyBox = document.getElementById("somfyAccessoryBox");
+
+  if (strongBox) strongBox.style.display = brand === "strongup" ? "block" : "none";
+  if (somfyBox) somfyBox.style.display = brand === "somfy" ? "block" : "none";
+
+  if (brand !== "strongup") {
+    getAccessoryItemsByBrand("strongup").forEach(item => {
+      const el = document.getElementById(item.id);
+      if (el) el.checked = false;
+    });
+  }
+
+  if (brand !== "somfy") {
+    getAccessoryItemsByBrand("somfy").forEach(item => {
+      const el = document.getElementById(item.id);
+      if (el) el.checked = false;
+    });
+  }
+
+  return brand;
+}
+
+// ==========================================================================
+// จำนวนอุปกรณ์เสริมแต่ละชิ้น / per-accessory quantity
+// ==========================================================================
+// ค่าเริ่มต้นจะเท่ากับจำนวนกันสาด และเปลี่ยนตามอัตโนมัติ (ผลลัพธ์จึงเหมือนเดิมทุกบาท)
+// แต่พอผู้ใช้พิมพ์จำนวนเองของชิ้นไหน ชิ้นนั้นจะ "ล็อก" ไว้ ไม่วิ่งตามจำนวนกันสาดอีก
+// เพราะบางงานใช้เซ็นเซอร์หรือสมาร์ทคอนโทรลเลอร์ตัวเดียวคุมกันสาดหลายหลัง
+//
+// Each count defaults to the awning quantity and follows it, so totals match
+// what this page produced before. Once the user types a number for an item,
+// that item is pinned and stops following - one sensor can serve many awnings.
+const accQtyPinned = {};
+
+function accQtyInput(id) { return document.getElementById('qty-' + id); }
+
+// จำนวนที่จะใช้คิดเงินของอุปกรณ์ชิ้นนั้น / how many of this item to charge for
+function getAccessoryCount(id, awningQty) {
+  const el = accQtyInput(id);
+  if (!el) return awningQty;
+  if (!accQtyPinned[id]) return awningQty;
+  const n = parseInt(el.value, 10);
+  return (isNaN(n) || n < 1) ? 1 : n;
+}
+
+// อัปเดตเลขในช่องให้ตรงกับที่คิดเงินจริง และซ่อน/โชว์ช่องตามการติ๊ก
+function syncAccessoryQtyBoxes(awningQty) {
+  document.querySelectorAll('.acc-line').forEach(line => {
+    const box = line.querySelector('input[type="checkbox"]');
+    if (!box) return;
+    const qtyEl = accQtyInput(box.id);
+    line.classList.toggle('is-on', box.checked);
+    if (!qtyEl) return;
+    if (!accQtyPinned[box.id]) qtyEl.value = awningQty;   // ยังไม่ถูกแก้มือ ให้วิ่งตามจำนวนกันสาด
+    if (!box.checked) accQtyPinned[box.id] = false;       // ติ๊กออก = เริ่มใหม่
+  });
+}
+
+function getSelectedMotorAccessories(brand, awningQty) {
+  const selected = [];
+  getAccessoryItemsByBrand(brand).forEach(item => {
+    const el = document.getElementById(item.id);
+    if (el && el.checked) {
+      const count = getAccessoryCount(item.id, awningQty);
+      selected.push(Object.assign({}, item, { count: count, lineTotal: item.value * count }));
+    }
+  });
+  return selected;
+}
+
+// ===== ช่วงราคาสำหรับลูกค้า / customer price range =====
+// ต่ำสุด = ระบบมือหมุน (ราคาผ้าตามตาราง), สูงสุด = ระบบมอเตอร์ (ราคาผ้า + มอเตอร์ที่เลือก) × จำนวนชุด
+// ไม่รวมอุปกรณ์เสริม ฝาครอบ หรือส่วนลด และแสดงเฉพาะหลักแรกจริง ที่เหลือเป็น X
+// Low = manual base, high = base + selected motor; no accessories/cover/discount; masked with X.
+function maskRangePrice(value) {
+  // 29,400 -> 2X,XXX ; เกิน 100,000 แสดง 2 หลักแรก เช่น 130,280 -> 13X,XXX
+  const digits = String(Math.floor(value));
+  const keep = value >= 100000 ? 2 : 1;
+  const masked = digits.slice(0, keep) + 'X'.repeat(Math.max(digits.length - keep, 0));
+  return masked.replace(/\B(?=(.{3})+$)/g, ',');
+}
+function clearCustomerRange() {
+  const box = document.getElementById('rangePreview');
+  if (box) box.textContent = '';
+}
+function updateCustomerRange(w, d, qty, base, motor, fabric, isSplit) {
+  const box = document.getElementById('rangePreview');
+  if (!box) return;
+  const en = resultLanguage === 'en';
+  const t = document.getElementById('rangeTitle');
+  if (t) t.textContent = en ? 'Customer price range (no accessories)' : 'ช่วงราคาสำหรับลูกค้า (ไม่รวมอุปกรณ์เสริม)';
+  const lowTxt = maskRangePrice(base * qty);
+  const highTxt = maskRangePrice((base + (motor || 0)) * qty);
+  const rangeTxt = lowTxt === highTxt ? lowTxt : lowTxt + ' – ' + highTxt;
+  const lines = en ? [
+    'SEATEL ST2000',
+    'Fabric: ' + fabric,
+    'Size: ' + w.toFixed(2) + ' × ' + d.toFixed(2) + ' m (W × H)' + (isSplit ? ', 2 fabric pieces' : '') + (qty > 1 ? ' (' + qty + ' sets)' : ''),
+    'Estimated price: ' + rangeTxt + ' THB',
+    '(excluding accessories)',
+    'VAT 7% included',
+    'Installation price within Bangkok and vicinity',
+    'This is a preliminary price only. The final price can be confirmed after a site survey.'
+  ] : [
+    'SEATEL ST2000',
+    'ชนิดผ้า: ' + fabric,
+    'ขนาด: กว้าง ' + w.toFixed(2) + ' × สูง ' + d.toFixed(2) + ' ม.' + (isSplit ? ' (แบ่งผ้า 2 ชิ้น)' : '') + (qty > 1 ? ' (' + qty + ' ชุด)' : ''),
+    'ราคาประมาณ ' + rangeTxt + ' บาท',
+    '(ยังไม่รวมอุปกรณ์เสริม)',
+    'รวม VAT 7% แล้ว',
+    'ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล',
+    'ราคาที่แจ้งเป็นราคาเบื้องต้นเท่านั้น ราคาที่แท้จริงสามารถแจ้งได้หลังสํารวจหน้างาน'
+  ];
+  box.textContent = lines.join('\n');
+}
+
+function calculatePrice(){
+  const w=parseFloat(document.getElementById('width').value);
+  const d=parseFloat(document.getElementById('drop').value);
+  const qty=parseInt(document.getElementById('qty').value);
+  const fabric=document.getElementById('fabric').value;
+  const discount=parseFloat(document.getElementById('discount').value)||0;
+  const specialDiscountInput=parseFloat(document.getElementById('specialDiscount').value)||0;
+  const jobNote=(document.getElementById('jobNote').value||'').trim();
+  const accessories=parseFloat(document.getElementById('accessories').value)||0;
+  const motorSel=document.getElementById('motor');
+  const motor=parseFloat(motorSel.value)||0;
+  const motorName=motorSel.options[motorSel.selectedIndex].text;
+  const motorBrand = updateMotorAccessoryVisibility();
+  const safeQty = (isNaN(qty) || qty < 1) ? 1 : qty;
+  syncAccessoryQtyBoxes(safeQty);
+  const selectedMotorAccessories = getSelectedMotorAccessories(motorBrand, safeQty);
+  // รวมเป็นยอดทั้งงานแล้ว (ราคาต่อชิ้น x จำนวนที่เลือก) ไม่ต้องไปคูณจำนวนกันสาดซ้ำอีก
+  // already a whole-job total (unit price x chosen count) - must NOT be multiplied by qty again
+  const motorAccessoryTotal = selectedMotorAccessories.reduce((sum, item) => sum + item.lineTotal, 0);
+  const motorAccessoryDetail = selectedMotorAccessories.length
+    ? selectedMotorAccessories.map(item =>
+        item.label + ': +' + thb(item.lineTotal) + (item.count > 1 ? ' (' + item.count + ' ชุด)' : '')
+      ).join('<br>')
+    : 'ไม่มี';
+  const coverSel=document.getElementById('cover');
+  const coverRate=parseFloat(coverSel.value)||0;
+  const coverName=coverSel.options[coverSel.selectedIndex].text;
+  const err=document.getElementById('error');
+  const res=document.getElementById('result');
+  const diag=document.getElementById('diag');
+  err.style.display=res.style.display='none';
+  if(diag) diag.style.display='none';
+  clearCustomerRange();
+
+  // แบ่งผ้า / Split fabric — ผู้ใช้ติ๊กเองได้ทุกความกว้าง
+  // แต่ถ้ากว้างเกิน 5.00 ม. (เกินตารางราคา) ต้องแบ่งเสมอ จึงบังคับติ๊กและล็อกช่องไว้
+  const splitBox=document.getElementById('splitFabricBox');
+  const splitChk=document.getElementById('chkSplitFabric');
+  const forceSplit = w > 5.00;
+  if(splitChk){
+    if(forceSplit) splitChk.checked = true;
+    splitChk.disabled = forceSplit;
+  }
+  const mustSplit = forceSplit || !!(splitChk && splitChk.checked);
+  if(splitBox) splitBox.style.display = mustSplit ? 'block' : 'none';
+  // ไม่ได้แบ่งผ้า = ล้างช่องผ้าทั้งสอง เพื่อให้เริ่มกรอกจากค่าว่างทุกครั้งที่เปิดใช้ใหม่
+  if(!mustSplit){
+    document.getElementById('piece1').value='';
+    document.getElementById('piece2').value='';
+  }
+
+  if(isNaN(w)||isNaN(d)||qty<1){err.innerText='กรุณากรอกค่าความกว้าง ความสูง และจำนวนให้ถูกต้อง';err.style.display='block';res.style.display='none';return;}
+
+  // Split fabric: the fabric is built as 2 pieces (each priced from the table,
+  // the two prices added together) but driven by a single motor.
+  let price=0;            // fabric/frame base price (single panel or sum of 2 pieces)
+  let sizeText='กว้าง '+w.toFixed(2)+' x สูง '+d.toFixed(2)+' m';
+  let splitPieces=null;   // {p1,p2,price1,price2,band1,band2} when split
+
+  if(mustSplit){
+    const p1=parseFloat(document.getElementById('piece1').value);
+    const p2=parseFloat(document.getElementById('piece2').value);
+    if(isNaN(p1)||isNaN(p2)||p1<=0||p2<=0){err.innerText='เมื่อแบ่งผ้า ต้องกรอกความกว้างผ้าชิ้นที่ 1 และชิ้นที่ 2';err.style.display='block';res.style.display='none';return;}
+    const sumPieces=Math.round((p1+p2)*100)/100;
+    if(Math.abs(sumPieces-w)>0.01){err.innerText='ความกว้างผ้าสองชิ้นรวมกันต้องเท่ากับความกว้างรวม ('+w.toFixed(2)+' ม.) ตอนนี้รวมได้ '+sumPieces.toFixed(2)+' ม.';err.style.display='block';res.style.display='none';return;}
+    if(p1>5||p2>5){err.innerText='ผ้าแต่ละชิ้นต้องไม่เกิน 5.00 เมตร ตามตารางราคา';err.style.display='block';res.style.display='none';return;}
+    const lk1=lookupFabricPrice(p1,d,fabric);
+    const lk2=lookupFabricPrice(p2,d,fabric);
+    if(!lk1.ok||!lk2.ok){err.innerText='ไม่พบราคาสำหรับขนาดผ้าชิ้นที่ 1 หรือชิ้นที่ 2';err.style.display='block';res.style.display='none';return;}
+    price=lk1.price+lk2.price;
+    sizeText='กว้างรวม '+w.toFixed(2)+' x สูง '+d.toFixed(2)+' m (แบ่งผ้า 2 ชิ้น ใช้มอเตอร์ 1 ตัว)';
+    splitPieces={p1,p2,price1:lk1.price,price2:lk2.price,band1:lk1.widthBand,band2:lk2.widthBand};
+  }else{
+    const lk=lookupFabricPrice(w,d,fabric);
+    if(!lk.ok){err.innerText='ไม่พบราคาสำหรับขนาดนี้';err.style.display='block';res.style.display='none';return;}
+    price=lk.price;
+  }
+  const cover=coverRate*w;
+
+  // The PRICE_ROWS table is the manual-operation base price.
+  // Show both manual total and motorized total, similar to Terra MA3.
+  const manualSubtotal=(price+cover+accessories)*qty;
+  const manualSpecialDiscountAmount=Math.min(specialDiscountInput, manualSubtotal);
+  const manualDiscountBase=Math.max(manualSubtotal-manualSpecialDiscountAmount,0);
+  const manualDiscountAmount=manualDiscountBase*(discount/100);
+  const manualTotal=manualDiscountBase-manualDiscountAmount;
+
+  // อุปกรณ์เสริมคิดแยก ไม่คูณจำนวนกันสาด เพราะมีช่องกรอกจำนวนของตัวเองแล้ว
+  // accessories are added outside the x qty bracket - they carry their own count
+  const motorizedSubtotal=(price+motor+cover+accessories)*qty + motorAccessoryTotal;
+  const motorizedSpecialDiscountAmount=Math.min(specialDiscountInput, motorizedSubtotal);
+  const motorizedDiscountBase=Math.max(motorizedSubtotal-motorizedSpecialDiscountAmount,0);
+  const motorizedDiscountAmount=motorizedDiscountBase*(discount/100);
+  const motorizedTotal=motorizedDiscountBase-motorizedDiscountAmount;
+
+  // ปัดเป็นบาทเต็มก่อนแสดงผล ไม่งั้นส่วนลด % จะทำให้ใบเสนอราคาขึ้นเศษสตางค์
+// (round to whole baht: a percentage discount otherwise shows satang)
+const bahtText = n => Math.round(Number(n) || 0).toLocaleString('th-TH') + ' บาท';
+
+  // Per-piece price breakdown lines, shown only when the fabric is split.
+  const splitDetailLines = splitPieces ? [
+    'ผ้าชิ้นที่ 1: กว้าง ' + splitPieces.p1.toFixed(2) + ' ม. (' + splitPieces.band1 + ') = ' + bahtText(splitPieces.price1),
+    'ผ้าชิ้นที่ 2: กว้าง ' + splitPieces.p2.toFixed(2) + ' ม. (' + splitPieces.band2 + ') = ' + bahtText(splitPieces.price2)
+  ] : [];
+
+  const cleanMotorName = motorName
+    .replace(/^มอเตอร์\s*/,'')
+    .replace(/\s*\([^)]*\)\s*$/,'')
+    .trim();
+  const cleanCoverName = coverName
+    .replace(/\s*\([^)]*\)\s*$/,'')
+    .trim();
+
+  const coverLine = coverRate > 0
+    ? cleanCoverName + ' = ' + bahtText(cover)
+    : 'ไม่มี';
+
+  const extraAccessoryLine = accessories > 0
+    ? bahtText(accessories)
+    : 'ไม่มี';
+
+  const manualDiscountLines = [];
+  if (manualSpecialDiscountAmount > 0) manualDiscountLines.push('ส่วนลดพิเศษ: -' + bahtText(manualSpecialDiscountAmount));
+  if (discount > 0) manualDiscountLines.push('ส่วนลด: ' + discount + '% = -' + bahtText(manualDiscountAmount));
+
+  const motorizedDiscountLines = [];
+  if (motorizedSpecialDiscountAmount > 0) motorizedDiscountLines.push('ส่วนลดพิเศษ: -' + bahtText(motorizedSpecialDiscountAmount));
+  if (discount > 0) motorizedDiscountLines.push('ส่วนลด: ' + discount + '% = -' + bahtText(motorizedDiscountAmount));
+
+  const motorAccessoryText = selectedMotorAccessories.length
+    ? selectedMotorAccessories.map(item =>
+        // ถ้ามีมากกว่า 1 ชุด บอกให้ชัดว่าชุดละเท่าไหร่ รวมเท่าไหร่ ลูกค้าจะได้ไม่งง
+        // show unit price and line total when more than one is quoted
+        item.count > 1
+          ? '- ' + item.label + ' x ' + item.count + ' ชุด = ' + bahtText(item.lineTotal) + ' (ชุดละ ' + bahtText(item.value) + ')'
+          : '- ' + item.label + ' = ' + bahtText(item.lineTotal)
+      ).join('\n')
+    : 'ไม่มี';
+
+  const motorizedLines = motor > 0
+    ? [
+        '',
+        'Motorized System / ระบบมอเตอร์',
+        'มอเตอร์: ' + cleanMotorName + ' = ' + bahtText(motor),
+        'อุปกรณ์เสริมมอเตอร์:',
+        motorAccessoryText,
+        'ราคาก่อนส่วนลด: ' + bahtText(motorizedSubtotal),
+        ...motorizedDiscountLines,
+        'ราคาสรุประบบมอเตอร์: ' + bahtText(motorizedTotal)
+      ]
+    : [
+        '',
+        'Motorized System / ระบบมอเตอร์',
+        'ยังไม่ได้เลือกมอเตอร์'
+      ];
+
+  const customerLines = [
+    'SEATEL ST2000',
+    'ชนิดผ้า: ' + fabric,
+    'ขนาด: ' + sizeText,
+    ...splitDetailLines,
+    'ฝาครอบ: ' + coverLine,
+    'อุปกรณ์เสริมเพิ่มเติม: ' + extraAccessoryLine,
+    'จำนวน: ' + qty + ' ชุด',
+    '',
+    'Manual Operation / ระบบมือหมุน',
+    'ราคาก่อนส่วนลด: ' + bahtText(manualSubtotal),
+    ...manualDiscountLines,
+    'ราคาสรุประบบมือหมุน: ' + bahtText(manualTotal),
+    ...motorizedLines,
+    ...(jobNote ? ['', 'หมายเหตุเพิ่มเติม: ' + jobNote] : []),
+    '',
+    'รวม VAT 7% แล้ว',
+    'ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล',
+    'ราคาประเมินเบื้องต้น อาจเปลี่ยนแปลงหลังสำรวจหน้างานจริง',
+    'รับประกันโครงสร้างและการติดตั้ง 1 ปี',
+    'รับประกันการทำงานของมอเตอร์ 2 ปี ตามเงื่อนไขบริษัท'
+  ];
+
+  const customerText = customerLines.join('\n');
+  window.latestCopyText = customerText;
+
+  const escapeHtml = value => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+  res.innerHTML = '<div class="quote-box">' +
+    '<div class="customer-copy-label">Customer copy text / ข้อความสำหรับส่งลูกค้า</div>' +
+    '<pre class="customer-copy-text">' + escapeHtml(customerText) + '</pre>' +
+    '</div>';
+  res.style.display='block';
+  updateCustomerRange(w, d, qty, price, motor, fabric, !!splitPieces);
+}
+
+function clearAll(){
+  clearCustomerRange();
+  document.getElementById('width').value='';
+  document.getElementById('piece1').value='';
+  document.getElementById('piece2').value='';
+  const splitChk=document.getElementById('chkSplitFabric');
+  if(splitChk){ splitChk.checked=false; splitChk.disabled=false; }
+  document.getElementById('splitFabricBox').style.display='none';
+  document.getElementById('drop').value='';
+  document.getElementById('fabric').selectedIndex=0;
+  document.getElementById('motor').selectedIndex=1;
+  document.getElementById('cover').selectedIndex=0;
+  document.getElementById('accessories').value='0';
+  document.getElementById('qty').value='1';
+  // ล้างจำนวนอุปกรณ์เสริมที่พิมพ์เองไว้ ให้กลับไปวิ่งตามจำนวนกันสาดเหมือนเปิดหน้าใหม่
+  // clear any pinned accessory counts so they follow the awning quantity again
+  Object.keys(accQtyPinned).forEach(k => { accQtyPinned[k] = false; });
+  document.querySelectorAll('.acc-qty-wrap input').forEach(el => { el.value = '1'; });
+  document.getElementById('discount').value='0';
+  document.getElementById('error').style.display='none';
+  document.getElementById('result').style.display='none';
+}
+
+
+// --- auto calculate after user input ---
+[
+  'width',
+  'chkSplitFabric',
+  'piece1',
+  'piece2',
+  'drop',
+  'fabric',
+  'motor',
+  'chkStrongRemote1',
+  'chkStrongRemote2',
+  'chkStrongRemote6',
+  'chkStrongRemote16',
+  'chkStrongWindSun',
+  'chkStrongSmartController',
+  'chkSomfyOndeisRain',
+  'chkSomfyDryContact',
+  'chkSomfySunis',
+  'chkSomfyEolis',
+  'chkSomfyEolis3D',
+  'chkSomfySoliris',
+  'chkSomfyTaHoma',
+  'chkSomfyRemote1',
+  'chkSomfyRemote2',
+  'chkSomfyRemote5',
+  'chkSomfyRemote6',
+  'chkSomfyRemote16',
+  'chkSomfySmoove',
+  'cover',
+  'accessories',
+  'qty',
+  'jobNote',
+  'specialDiscount',
+  'discount'
+].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', calculatePrice);
+  el.addEventListener('change', calculatePrice);
+});
+
+// ผูกช่องกรอกจำนวนอุปกรณ์เสริมทุกช่อง — พิมพ์เองเมื่อไหร่ ชิ้นนั้นจะหยุดวิ่งตามจำนวนกันสาด
+// Wire every per-accessory quantity box. Typing in one pins that item so it
+// stops following the awning quantity.
+document.querySelectorAll('.acc-qty-wrap input').forEach(el => {
+  const id = el.id.replace(/^qty-/, '');
+  const onEdit = () => { accQtyPinned[id] = true; calculatePrice(); };
+  el.addEventListener('input', onEdit);
+  el.addEventListener('change', onEdit);
+});
+
+// Auto-split: divide the total width into two equal fabric pieces
+const autoSplitBtn = document.getElementById('autoSplit');
+if (autoSplitBtn) autoSplitBtn.addEventListener('click', () => {
+  const w = parseFloat(document.getElementById('width').value);
+  if (!w || w <= 0) return;
+  const half = Math.round((w / 2) * 100) / 100;
+  const other = Math.round((w - half) * 100) / 100;
+  document.getElementById('piece1').value = half.toFixed(2);
+  document.getElementById('piece2').value = other.toFixed(2);
+  calculatePrice();
+});
+
+// Show the starting message / calculate immediately if default values are enough
+calculatePrice();
+
+// --- self test ---
+(function runTests(){
+  try{
+    console.assert(Array.isArray(PRICE_ROWS) && PRICE_ROWS.length===56, 'PRICE_ROWS ต้องมี 56 แถว');
+    const bandsW=[...new Set(PRICE_ROWS.map(r=>r.width_band))];
+    const bandsD=[...new Set(PRICE_ROWS.map(r=>r.drop_band))];
+    // ทดสอบจุดกลาง
+    let wb=findBand(1.2,bandsW), db=findBand(1.2,bandsD);
+    let row=PRICE_ROWS.find(r=>r.width_band===wb&&r.drop_band===db);
+    console.assert(row && row['Solar View']===13100, 'Test กลางผิด');
+    // ทดสอบขอบบน
+    wb=findBand(3.01,bandsW); db=findBand(3.49,bandsD);
+    row=PRICE_ROWS.find(r=>r.width_band===wb&&r.drop_band===db);
+    console.assert(row && row['Sun Text']===32000, 'Test ขอบผิด');
+    // ทดสอบแถวใหญ่สุด
+    wb=findBand(4.8,bandsW); db=findBand(3.2,bandsD);
+    row=PRICE_ROWS.find(r=>r.width_band===wb&&r.drop_band===db);
+    console.assert(row && row['Solar Screen']===39000, 'Test ขนาดใหญ่ผิด');
+    console.log('self-test: ผ่านทุกเคส');
+  }catch(e){
+    const diag=document.getElementById('diag');
+    if(diag){ diag.style.display='block'; diag.textContent='การทดสอบภายในพบปัญหา: '+e.message; }
+    console.error(e);
+  }
+})();
+document.getElementById('copyRangeBtn').onclick = () => {
+  const text = document.getElementById('rangePreview').innerText.trim();
+  if (!text) { alert('ยังไม่มีผลลัพธ์ให้คัดลอก'); return; }
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      const btn = document.getElementById('copyRangeBtn');
+      btn.textContent = 'Copied ✅';
+      setTimeout(() => btn.textContent = 'Copy Range', 1500);
+    })
+    .catch(() => alert('ไม่สามารถคัดลอกได้'));
+};
+document.getElementById('copyResult').onclick = () => {
+  const text = window.latestCopyText || document.getElementById('result').innerText;
+  if (text.trim() !== '') {
+    navigator.clipboard.writeText(text)
+      .then(() => alert('คัดลอกผลลัพธ์เรียบร้อยแล้ว!'))
+      .catch(() => alert('ไม่สามารถคัดลอกได้'));
+  } else {
+    alert('ยังไม่มีผลลัพธ์ให้คัดลอก');
+  }
+};
+
+
+</script><!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
+     register the service worker so this calculator works offline.
+     ทำงานเฉพาะบน HTTPS (เช่น Cloudflare Pages) ไม่ทำงานกับ file:// -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) { console.log('Service worker registered:', reg.scope); })
+      .catch(function (err) { console.warn('Service worker registration failed:', err); });
+  });
+}
+</script>
+</body></html>
