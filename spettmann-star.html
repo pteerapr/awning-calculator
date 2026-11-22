@@ -586,6 +586,45 @@ if (document.readyState === 'loading') {
       box.textContent = lines.join('\n');
     }
 
+// ปุ่มคัดลอกช่วงราคา — ตอนรวมไฟล์ตัวผูก event หล่นหาย ปุ่มเลยกดไม่ติด
+// wire the Copy Range button; its handler was lost in the merge
+function initCopyRangeButton() {
+  const btn = document.getElementById('copyRangeBtn');
+  if (!btn) return;
+  btn.onclick = function () {
+    const box = document.getElementById('rangePreview');
+    const text = box ? String(box.textContent || '').trim() : '';
+    if (!text) { alert('ยังไม่มีช่วงราคาให้คัดลอก'); return; }
+    const done = function (ok) {
+      btn.textContent = ok ? 'Copied ✅' : 'คัดลอกไม่ได้';
+      setTimeout(function () { btn.textContent = 'Copy Range'; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }).catch(function () { fallback(); });
+    } else {
+      fallback();
+    }
+    // เปิดไฟล์แบบ file:// จะใช้ clipboard API ไม่ได้ ต้องมีทางสำรอง
+    function fallback() {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        ta.remove();
+        done(ok);
+      } catch (e) { done(false); }
+    }
+  };
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCopyRangeButton);
+} else {
+  initCopyRangeButton();
+}
+
+
 // ===========================================================================
 // ตารางราคาและช่วงความกว้าง — คัดลอกมาจาก spettmann-star.html ทั้งชุด
 // ถ้าแก้ราคาที่ต้นฉบับ ต้องคัดลอกมาใหม่ที่นี่ด้วย
