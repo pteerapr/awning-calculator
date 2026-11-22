@@ -83,6 +83,10 @@ th{background:#f3f4f6;}
   .motor-text { color: #007bff; font-weight: bold; }
   .cover-text { color: #ff6600; font-weight: bold; }
   .diag { margin-top: 10px; font-size: 12px; color: #555; display:none; }
+  .customer-range-box{margin-top:14px; padding:12px; background:#fff7ed; border:1px dashed #f59e0b; border-radius:12px;}
+  .customer-range-box .range-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .customer-range-box h4{margin:0; color:#9a3412; font-size:14px;}
+  .customer-range-box pre{white-space:pre-wrap; margin:8px 0 0; font-family:inherit; font-size:.9rem; line-height:1.55;}
   .quote-box { background:#f7f9fc; border:1px solid #d9e2ef; border-radius:10px; padding:12px; line-height:1.65; }
   .quote-title { font-weight:700; color:#003366; font-size:18px; margin-bottom:8px; }
   .quote-section { margin-top:10px; padding-top:8px; border-top:1px solid #e5e7eb; }
@@ -194,6 +198,14 @@ th{background:#f3f4f6;}
 <button id="copyResult" style="width:100%;margin-top:10px;background:#28a745;color:white;border:none;padding:10px;border-radius:6px;cursor:pointer;">
   คัดลอกผลลัพธ์ทั้งหมด
 </button>
+<!-- ช่วงราคาสำหรับลูกค้า (ไม่แสดงราคาจริง) / customer price range, separate from the result above -->
+<div class="customer-range-box">
+  <div class="range-head">
+    <h4 id="rangeTitle">ช่วงราคาสำหรับลูกค้า (ไม่รวมอุปกรณ์เสริม)</h4>
+    <button id="copyRangeBtn" type="button" style="background:#28a745;color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;">Copy Range</button>
+  </div>
+  <pre id="rangePreview"></pre>
+</div>
 </div>
 </div>
 <script src="prices.js"></script>
@@ -1192,6 +1204,52 @@ function getSelectedMotorAccessories(brand, awningQty) {
   return selected;
 }
 
+// ===== ช่วงราคาสำหรับลูกค้า / customer price range =====
+// ต่ำสุด = ระบบมือหมุน (ราคาผ้าตามตาราง), สูงสุด = ระบบมอเตอร์ (ราคาผ้า + มอเตอร์ที่เลือก) × จำนวนชุด
+// ไม่รวมอุปกรณ์เสริม ฝาครอบ หรือส่วนลด และแสดงเฉพาะหลักแรกจริง ที่เหลือเป็น X
+// Low = manual base, high = base + selected motor; no accessories/cover/discount; masked with X.
+function maskRangePrice(value) {
+  // 29,400 -> 2X,XXX ; เกิน 100,000 แสดง 2 หลักแรก เช่น 130,280 -> 13X,XXX
+  const digits = String(Math.floor(value));
+  const keep = value >= 100000 ? 2 : 1;
+  const masked = digits.slice(0, keep) + 'X'.repeat(Math.max(digits.length - keep, 0));
+  return masked.replace(/\B(?=(.{3})+$)/g, ',');
+}
+function clearCustomerRange() {
+  const box = document.getElementById('rangePreview');
+  if (box) box.textContent = '';
+}
+function updateCustomerRange(w, d, qty, base, motor, fabric, isSplit) {
+  const box = document.getElementById('rangePreview');
+  if (!box) return;
+  const en = resultLanguage === 'en';
+  const t = document.getElementById('rangeTitle');
+  if (t) t.textContent = en ? 'Customer price range (no accessories)' : 'ช่วงราคาสำหรับลูกค้า (ไม่รวมอุปกรณ์เสริม)';
+  const lowTxt = maskRangePrice(base * qty);
+  const highTxt = maskRangePrice((base + (motor || 0)) * qty);
+  const rangeTxt = lowTxt === highTxt ? lowTxt : lowTxt + ' – ' + highTxt;
+  const lines = en ? [
+    'SEATEL ST2000',
+    'Fabric: ' + fabric,
+    'Size: ' + w.toFixed(2) + ' × ' + d.toFixed(2) + ' m (W × H)' + (isSplit ? ', 2 fabric pieces' : '') + (qty > 1 ? ' (' + qty + ' sets)' : ''),
+    'Estimated price: ' + rangeTxt + ' THB',
+    '(excluding accessories)',
+    'VAT 7% included',
+    'Installation price within Bangkok and vicinity',
+    'This is a preliminary price only. The final price can be confirmed after a site survey.'
+  ] : [
+    'SEATEL ST2000',
+    'ชนิดผ้า: ' + fabric,
+    'ขนาด: กว้าง ' + w.toFixed(2) + ' × สูง ' + d.toFixed(2) + ' ม.' + (isSplit ? ' (แบ่งผ้า 2 ชิ้น)' : '') + (qty > 1 ? ' (' + qty + ' ชุด)' : ''),
+    'ราคาประมาณ ' + rangeTxt + ' บาท',
+    '(ยังไม่รวมอุปกรณ์เสริม)',
+    'รวม VAT 7% แล้ว',
+    'ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล',
+    'ราคาที่แจ้งเป็นราคาเบื้องต้นเท่านั้น ราคาที่แท้จริงสามารถแจ้งได้หลังสํารวจหน้างาน'
+  ];
+  box.textContent = lines.join('\n');
+}
+
 function calculatePrice(){
   const w=parseFloat(document.getElementById('width').value);
   const d=parseFloat(document.getElementById('drop').value);
@@ -1224,6 +1282,7 @@ function calculatePrice(){
   const diag=document.getElementById('diag');
   err.style.display=res.style.display='none';
   if(diag) diag.style.display='none';
+  clearCustomerRange();
 
   // แบ่งผ้า / Split fabric — ผู้ใช้ติ๊กเองได้ทุกความกว้าง
   // แต่ถ้ากว้างเกิน 5.00 ม. (เกินตารางราคา) ต้องแบ่งเสมอ จึงบังคับติ๊กและล็อกช่องไว้
@@ -1385,9 +1444,11 @@ const bahtText = n => Math.round(Number(n) || 0).toLocaleString('th-TH') + ' บ
     '<pre class="customer-copy-text">' + escapeHtml(customerText) + '</pre>' +
     '</div>';
   res.style.display='block';
+  updateCustomerRange(w, d, qty, price, motor, fabric, !!splitPieces);
 }
 
 function clearAll(){
+  clearCustomerRange();
   document.getElementById('width').value='';
   document.getElementById('piece1').value='';
   document.getElementById('piece2').value='';
@@ -1501,6 +1562,17 @@ calculatePrice();
     console.error(e);
   }
 })();
+document.getElementById('copyRangeBtn').onclick = () => {
+  const text = document.getElementById('rangePreview').innerText.trim();
+  if (!text) { alert('ยังไม่มีผลลัพธ์ให้คัดลอก'); return; }
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      const btn = document.getElementById('copyRangeBtn');
+      btn.textContent = 'Copied ✅';
+      setTimeout(() => btn.textContent = 'Copy Range', 1500);
+    })
+    .catch(() => alert('ไม่สามารถคัดลอกได้'));
+};
 document.getElementById('copyResult').onclick = () => {
   const text = window.latestCopyText || document.getElementById('result').innerText;
   if (text.trim() !== '') {

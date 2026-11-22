@@ -20,6 +20,10 @@ input[type=number],input[type=text],select{width:100%;padding:7px 9px;border-rad
 input:focus, select:focus { outline:none; border-color:#007acc; box-shadow:0 0 0 2px rgba(0,122,204,0.2); }
 .fabric-options{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;}
 .inline-input{max-width:110px;}
+.customer-range-box{margin-top:14px; padding:12px; background:#fff7ed; border:1px dashed #f59e0b; border-radius:12px;}
+.customer-range-box .range-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+.customer-range-box h4{margin:0; color:#9a3412; font-size:14px;}
+.customer-range-box pre{white-space:pre-wrap; margin:8px 0 0; font-family:inherit; font-size:.9rem; line-height:1.55;}
 .result-box{border-radius:12px;border:1px solid #dde3ee;padding:14px;background:#f9fbff;min-height:130px;font-size:14px;margin-bottom:20px;}
 .customer-copy-title{font-weight:700;margin-bottom:10px;font-size:15px;color:#000;}
 .customer-copy-text{background:#f4f6f8;border-radius:0;padding:12px;font-family:Consolas,Menlo,Monaco,"Courier New",monospace;font-size:12px;line-height:1.55;white-space:pre-wrap;color:#000;margin:0;}
@@ -156,6 +160,15 @@ label input[type="checkbox"]{display:inline-block;}
 
 <div class="btn-row" style="margin-top:5px;">
 <button class="btn btn-primary" id="copyBtn" style="background:#005b8f;">คัดลอกผลลัพธ์</button>
+</div>
+
+<!-- ช่วงราคาสำหรับลูกค้า (ไม่แสดงราคาจริง) / customer price range, separate from the result above -->
+<div class="customer-range-box">
+<div class="range-head">
+<h4 id="rangeTitle">ช่วงราคาสำหรับลูกค้า (ไม่รวมอุปกรณ์เสริม)</h4>
+<button class="btn btn-primary" id="copyRangeBtn" type="button" style="background:#005b8f;">Copy Range</button>
+</div>
+<pre id="rangePreview"></pre>
 </div>
 
 <div class="note">
@@ -514,6 +527,55 @@ function setResultLanguage(lang){
     });
   }
 
+// ===== ช่วงราคาสำหรับลูกค้า / customer price range =====
+// ต่ำสุด = ระบบมือหมุน (ราคาผ้าที่เลือก), สูงสุด = ระบบมอเตอร์ (ราคาผ้า + มอเตอร์ที่เลือก) × จำนวนชุด
+// ไม่รวมอุปกรณ์เสริม ฝาครอบ หรือส่วนลด แล้วปัดตัวเลขให้กลม ๆ เพื่อไม่ให้เห็นราคาจริง
+// Low = manual base, high = base + selected motor; no accessories/cover/discount; rounded outward.
+function maskRangePrice(value) {
+  // แสดงตัวเลขหลักแรกจริง ที่เหลือเป็น X (เกิน 100,000 แสดง 2 หลักแรก) เช่น 29,400 -> 2X,XXX
+  // keep the real leading digit(s), mask the rest: 29,400 -> 2X,XXX; 130,280 -> 13X,XXX
+  const digits = String(Math.floor(value));
+  const keep = value >= 100000 ? 2 : 1;
+  const masked = digits.slice(0, keep) + 'X'.repeat(Math.max(digits.length - keep, 0));
+  return masked.replace(/\B(?=(.{3})+$)/g, ',');
+}
+function clearCustomerRange() {
+  const box = document.getElementById("rangePreview");
+  if (box) box.textContent = "";
+}
+function updateCustomerRange(width, proj, qty, base, motorPrice, fabricLabel) {
+  const box = document.getElementById("rangePreview");
+  if (!box) return;
+  const en = resultLanguage === 'en';
+  const t = document.getElementById("rangeTitle");
+  if (t) t.textContent = en ? 'Customer price range (no accessories)' : 'ช่วงราคาสำหรับลูกค้า (ไม่รวมอุปกรณ์เสริม)';
+  const lowRaw = base * qty;
+  const highRaw = (base + motorPrice) * qty;
+  const lowTxt = maskRangePrice(lowRaw);
+  const highTxt = maskRangePrice(highRaw);
+  const rangeTxt = lowTxt === highTxt ? lowTxt : lowTxt + ' – ' + highTxt;
+  const lines = en ? [
+    'CHILL D1 Awning',
+    'Fabric: ' + fabricLabel,
+    'Size: ' + width.toFixed(2) + ' × ' + proj.toFixed(2) + ' m' + (qty > 1 ? ' (' + qty + ' sets)' : ''),
+    'Estimated price: ' + rangeTxt + ' THB',
+    '(excluding accessories)',
+    'VAT 7% included',
+    'Installation price within Bangkok and vicinity',
+    'This is a preliminary price only. The final price can be confirmed after a site survey.'
+  ] : [
+    'กันสาด CHILL D1',
+    'ชนิดผ้า: ' + fabricLabel,
+    'ขนาด: กว้าง ' + width.toFixed(2) + ' × ยื่น ' + proj.toFixed(2) + ' ม.' + (qty > 1 ? ' (' + qty + ' ชุด)' : ''),
+    'ราคาประมาณ ' + rangeTxt + ' บาท',
+    '(ยังไม่รวมอุปกรณ์เสริม)',
+    'รวม VAT 7% แล้ว',
+    'ราคาติดตั้งภายในกรุงเทพฯ และปริมณฑล',
+    'ราคาที่แจ้งเป็นราคาเบื้องต้นเท่านั้น ราคาที่แท้จริงสามารถแจ้งได้หลังสํารวจหน้างาน'
+  ];
+  box.textContent = lines.join("\n");
+}
+
 function calculate() {
   const width = parseFloat(widthInput.value);
   const proj = parseFloat(projInput.value);
@@ -523,6 +585,7 @@ function calculate() {
   if (isNaN(width) || isNaN(proj)) {
     latestCustomerCopyText = "";
     resultBox.innerHTML = "<div class=\"result-title\">กรุณากรอกความกว้างและระยะยื่นให้ครบ</div>";
+    clearCustomerRange();
     return;
   }
 
@@ -533,6 +596,7 @@ function calculate() {
   if (!wBand || !pBand) {
     latestCustomerCopyText = "";
     resultBox.innerHTML = "<div class=\"result-title\">ขนาดอยู่นอกช่วงมาตรฐาน</div>";
+    clearCustomerRange();
     return;
   }
 
@@ -543,6 +607,7 @@ function calculate() {
   if (base === "X") {
     latestCustomerCopyText = "";
     resultBox.innerHTML = "<div class=\"result-title\">ขนาดนี้ไม่สามารถผลิตได้ (X)</div>";
+    clearCustomerRange();
     return;
   }
 
@@ -672,6 +737,7 @@ lines.push("ราคาที่แจ้งเป็นราคาเบื�
   resultBox.innerHTML =
     "<div class=\"customer-copy-title\">" + localizeResultText('Customer copy text / \u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e2a\u0e48\u0e07\u0e25\u0e39\u0e01\u0e04\u0e49\u0e32') + "</div>" +
     "<pre class=\"customer-copy-text\">" + escapeHtml(latestCustomerCopyText) + "</pre>";
+  updateCustomerRange(width, proj, qty, base, motorPrice, getFabricLabel(fabric));
 }
 
 
@@ -740,6 +806,18 @@ lines.push("ราคาที่แจ้งเป็นราคาเบื�
 document.querySelectorAll('[data-result-lang]').forEach(button => {
     button.addEventListener('click', () => setResultLanguage(button.dataset.resultLang));
   });
+
+document.getElementById("copyRangeBtn").addEventListener("click", () => {
+  const text = document.getElementById("rangePreview").innerText.trim();
+  if (!text) { alert("ไม่มีข้อความให้คัดลอก"); return; }
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      const btn = document.getElementById("copyRangeBtn");
+      btn.textContent = "Copied ✅";
+      setTimeout(() => btn.textContent = "Copy Range", 1500);
+    })
+    .catch(err => alert("ไม่สามารถคัดลอกได้: " + err));
+});
 
 document.getElementById("copyBtn").addEventListener("click", () => {
   const cleanText = latestCustomerCopyText || resultBox.innerText.trim();
