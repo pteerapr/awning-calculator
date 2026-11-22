@@ -295,6 +295,30 @@ pre {
     box-sizing: border-box;
     overflow-x: hidden;
   }
+  /* ตารางหลายขนาด / multi-size table */
+  .sizes { width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
+  .sizes th { background:#f1f5f9; text-align:left; padding:8px 6px; font-size:12px; color:#475569; white-space:nowrap; }
+  .sizes td { padding:6px; border-bottom:1px solid #e2e8f0; vertical-align:middle; }
+  .sizes select, .sizes input { width:100%; margin:0; padding:6px; box-sizing:border-box; }
+  .sizes .c-idx { width:28px; color:#64748b; text-align:center; }
+  .sizes .c-loc { min-width:120px; }
+  .sizes .c-w, .sizes .c-d { min-width:130px; }
+  .sizes .c-qty { width:80px; }
+  .sizes .c-actions { width:36px; text-align:center; }
+  .icon-btn { background:none; border:none; color:#b91c1c; font-size:18px; cursor:pointer; padding:2px 6px; margin:0; }
+  .add-row { margin-top:12px; width:100%; padding:10px; border:1px dashed #94a3b8; border-radius:10px;
+             background:transparent; color:#334155; font-size:14px; font-weight:700; cursor:pointer; }
+  .chip { display:inline-block; font-size:11px; font-weight:700; border-radius:8px; padding:3px 8px; }
+  .chip-bad { color:#991b1b; background:#fee2e2; }
+  .blocked { margin-top:12px; background:#fee2e2; color:#991b1b; border-radius:10px; padding:10px 12px; font-size:13px; }
+  .blocked ul { margin:6px 0 0; padding-left:18px; }
+  @media (max-width: 720px) {
+    .sizes thead { display:none; }
+    .sizes tr { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:8px 0; border-bottom:1px solid #e2e8f0; }
+    .sizes td { border:none; padding:2px 0; }
+    .sizes td::before { content:attr(data-label); display:block; font-size:11px; color:#64748b; }
+    .sizes .c-idx, .sizes .c-loc, .sizes .c-status { grid-column:1 / -1; }
+  }
 </style>
 </head>
 <body>
@@ -331,14 +355,6 @@ pre {
       <h3>Size / ขนาด</h3>
       <div class="input-grid">
         <div>
-          <label for="widthRange">Width / ความกว้าง</label>
-          <select id="widthRange"></select>
-        </div>
-        <div>
-          <label for="dropRange">Drop / ความสูง</label>
-          <select id="dropRange"></select>
-        </div>
-        <div>
           <label for="fabric">Fabric Openness / ชนิดผ้า</label>
           <select id="fabric">
             <option value="5">5%</option>
@@ -346,12 +362,25 @@ pre {
             <option value="0">0%</option>
           </select>
         </div>
-        <div>
-          <label for="qty">Quantity / จำนวน</label>
-          <input id="qty" type="number" min="1" step="1" value="1">
-        </div>
       </div>
-
+      <div class="table-wrap">
+        <table class="sizes">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">ตำแหน่ง</th>
+              <th scope="col">Width / กว้าง</th>
+              <th scope="col">Drop / สูง</th>
+              <th scope="col">จำนวน</th>
+              <th scope="col">สถานะ</th>
+              <th scope="col"><span hidden>ลบ</span></th>
+            </tr>
+          </thead>
+          <tbody id="sizeBody"></tbody>
+        </table>
+      </div>
+      <button class="add-row" id="addRow" type="button">+ เพิ่มขนาด</button>
+      <div class="blocked" id="blocked" role="alert" hidden><strong>ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน</strong><ul id="blockedList"></ul></div>
       <h3>Frame Color / สีโครงอลูมิเนียม</h3>
       <div class="swatch-grid" id="frameColorGroup">
         <label class="swatch-option">
@@ -471,22 +500,8 @@ const PRICE_TABLES = {
 };
 
 function populateSelects() {
-  const widthSelect = document.getElementById("widthRange");
-  const dropSelect = document.getElementById("dropRange");
-
-  WIDTH_RANGES.forEach((range, index) => {
-    const option = document.createElement("option");
-    option.value = String(index);
-    option.textContent = range + " m";
-    widthSelect.appendChild(option);
-  });
-
-  DROP_RANGES.forEach((range, index) => {
-    const option = document.createElement("option");
-    option.value = String(index);
-    option.textContent = range + " m";
-    dropSelect.appendChild(option);
-  });
+  // ช่องกว้าง/สูง ย้ายไปอยู่ในตารางขนาดแล้ว renderRows() เป็นคนสร้างให้
+  // width and drop selects now live in the size rows; renderRows() builds them
 }
 
 function selectedRadioValue(name) {
@@ -505,19 +520,114 @@ function formatMoney(value, language) {
   return rounded.toLocaleString("th-TH") + " บาท";
 }
 
+
+// ===================== กรอกหลายขนาดในใบเดียว / multi-size entry =====================
+// แต่ละแถวคือม่านกันแดด 1 ขนาด ราคามาจาก PRICE_TABLES ชุดเดิมทุกประการ
+// ระบบมอเตอร์ / ชนิดผ้า / สีโครง / ส่วนลด ยังเป็นค่าของทั้งงาน
+let rows = [];
+let nextRowId = 1;
+
+function makeRow(data) {
+  return Object.assign({ id: nextRowId++, location: '', widthIndex: '0', dropIndex: '0', qty: '1' }, data);
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+  });
+}
+
+function renderRows() {
+  document.getElementById('sizeBody').innerHTML = rows.map(function (row, i) {
+    var id = row.id;
+    var wOpts = WIDTH_RANGES.map(function (r, n) {
+      return '<option value="' + n + '"' + (String(row.widthIndex) === String(n) ? ' selected' : '') + '>' + r + ' m</option>';
+    }).join('');
+    var dOpts = DROP_RANGES.map(function (r, n) {
+      return '<option value="' + n + '"' + (String(row.dropIndex) === String(n) ? ' selected' : '') + '>' + r + ' m</option>';
+    }).join('');
+    return '<tr class="size-row" data-row="' + id + '">' +
+      '<td class="c-idx">' + (i + 1) + '</td>' +
+      '<td class="c-loc" data-label="ตำแหน่ง"><input id="loc-' + id + '" data-field="location" type="text" placeholder="เช่น หน้าบ้าน" value="' + escapeHtml(row.location) + '" aria-label="ตำแหน่งของขนาดที่ ' + (i + 1) + '"></td>' +
+      '<td class="c-w" data-label="Width / กว้าง"><select id="w-' + id + '" data-field="widthIndex" aria-label="ความกว้าง ขนาดที่ ' + (i + 1) + '">' + wOpts + '</select></td>' +
+      '<td class="c-d" data-label="Drop / สูง"><select id="d-' + id + '" data-field="dropIndex" aria-label="ความสูง ขนาดที่ ' + (i + 1) + '">' + dOpts + '</select></td>' +
+      '<td class="c-qty" data-label="จำนวน"><input id="q-' + id + '" data-field="qty" type="number" min="1" step="1" inputmode="numeric" value="' + escapeHtml(row.qty) + '" aria-label="จำนวน ขนาดที่ ' + (i + 1) + '"></td>' +
+      '<td class="c-status" data-label="สถานะ"><span id="status-' + id + '" class="chip"></span></td>' +
+      '<td class="c-actions"><button type="button" id="remove-' + id + '" class="icon-btn" data-action="remove" aria-label="ลบขนาดที่ ' + (i + 1) + '">×</button></td>' +
+    '</tr>';
+  }).join('');
+  calculate();
+}
+
+function rowFromElement(el) {
+  var tr = el.closest('[data-row]');
+  if (!tr) return null;
+  for (var i = 0; i < rows.length; i++) if (rows[i].id === Number(tr.dataset.row)) return rows[i];
+  return null;
+}
+
+// คิดราคาของแถวเดียว ไม่โยน error เด็ดขาด
+function evaluateRow(row, motorType, fabricColumn) {
+  var wi = parseInt(row.widthIndex, 10);
+  var di = parseInt(row.dropIndex, 10);
+  var qty = parseInt(row.qty, 10);
+  if (!(qty >= 1)) return { ok: false, error: 'กรอกจำนวนให้ถูกต้อง' };
+  var table = PRICE_TABLES[motorType];
+  var cell = table && table[di] && table[di][wi];
+  var unit = cell && cell[fabricColumn];
+  if (typeof unit !== 'number') return { ok: false, error: 'ไม่มีราคาสำหรับขนาดนี้' };
+  return {
+    ok: true, qty: qty, unitPrice: unit, lineTotal: unit * qty,
+    widthRange: WIDTH_RANGES[wi], dropRange: DROP_RANGES[di]
+  };
+}
+
 function getFabricPriceColumn(fabric) {
   return fabric === "5" ? 0 : 1;
 }
 
 function getCurrentState() {
   const motorType = selectedRadioValue("motorType") || "prosense";
-  const widthIndex = cleanNumber(document.getElementById("widthRange").value);
-  const dropIndex = cleanNumber(document.getElementById("dropRange").value);
   const fabric = document.getElementById("fabric").value;
   const fabricColumn = getFabricPriceColumn(fabric);
-  const unitPrice = PRICE_TABLES[motorType][dropIndex][widthIndex][fabricColumn];
-  const qty = Math.max(1, Math.floor(cleanNumber(document.getElementById("qty").value)));
-  const subtotal = unitPrice * qty;
+
+  // คิดราคาทุกแถว แล้วโชว์ป้ายสถานะเฉพาะแถวที่มีปัญหา
+  const results = rows.map(row => ({ row: row, r: evaluateRow(row, motorType, fabricColumn) }));
+  results.forEach(x => {
+    const chip = document.getElementById('status-' + x.row.id);
+    if (!chip) return;
+    if (x.r.ok) { chip.className = 'chip'; chip.textContent = ''; }
+    else { chip.className = 'chip chip-bad'; chip.textContent = x.r.error; }
+  });
+
+  const problems = results.filter(x => !x.r.ok);
+  const blocked = document.getElementById('blocked');
+  if (blocked) {
+    if (problems.length || !rows.length) {
+      blocked.innerHTML = '<strong>ยังรวมราคาไม่ได้ ให้แก้ขนาดเหล่านี้ก่อน</strong><ul>' +
+        results.map((x, i) => x.r.ok ? '' :
+          '<li>ขนาดที่ ' + (i + 1) +
+          (x.row.location.trim() ? ' (' + escapeHtml(x.row.location.trim()) + ')' : '') +
+          ': ' + escapeHtml(x.r.error) + '</li>').join('') + '</ul>';
+      blocked.hidden = false;
+    } else {
+      blocked.hidden = true;
+    }
+  }
+
+  const sizes = results.filter(x => x.r.ok).map((x, i) => ({
+    index: i + 1,
+    location: x.row.location.trim(),
+    widthRange: x.r.widthRange,
+    dropRange: x.r.dropRange,
+    qty: x.r.qty,
+    unitPrice: x.r.unitPrice,
+    lineTotal: x.r.lineTotal
+  }));
+
+  const blockedJob = problems.length > 0 || rows.length === 0;
+  const qty = sizes.reduce((sum, s) => sum + s.qty, 0);
+  const subtotal = blockedJob ? 0 : sizes.reduce((sum, s) => sum + s.lineTotal, 0);
   const specialDiscountInput = Math.max(0, cleanNumber(document.getElementById("specialDiscount").value));
   const specialDiscountAmount = Math.min(specialDiscountInput, subtotal);
   const discountPercent = Math.min(100, Math.max(0, cleanNumber(document.getElementById("discount").value)));
@@ -528,12 +638,11 @@ function getCurrentState() {
   return {
     motorType,
     motorLabel: MOTOR_LABELS[motorType],
-    widthRange: WIDTH_RANGES[widthIndex],
-    dropRange: DROP_RANGES[dropIndex],
     fabric,
     frameColor: selectedRadioValue("frameColor") || "Black",
+    sizes,
+    blockedJob,
     qty,
-    unitPrice,
     subtotal,
     specialDiscountAmount,
     discountPercent,
@@ -545,14 +654,23 @@ function getCurrentState() {
 
 function buildThaiLines(state) {
   const lines = [];
+  if (state.blockedJob) {
+    // มีขนาดที่ยังหาราคาไม่ได้ จึงยังไม่สรุปยอด กันส่งราคาไม่ครบให้ลูกค้า
+    return ["แก้ขนาดที่มีปัญหาก่อน แล้วข้อความใบเสนอราคาจะแสดงที่นี่"];
+  }
   lines.push("ZIPGUIDE Ultra Series Outdoor Blind");
   lines.push("ระบบมอเตอร์: " + state.motorLabel);
-  lines.push("ขนาด: กว้าง " + state.widthRange + " m x สูง " + state.dropRange + " m");
   lines.push("ชนิดผ้า: " + state.fabric + "%");
   lines.push("สีโครงอลูมิเนียม: " + state.frameColor);
-  lines.push("จำนวน: " + state.qty + " ชุด");
+  lines.push("จำนวนรวม: " + state.qty + " ชุด (" + state.sizes.length + " ขนาด)");
   lines.push("");
-  lines.push("ราคาต่อชุด: " + formatMoney(state.unitPrice, "th"));
+  lines.push("รายการขนาด");
+  state.sizes.forEach(function (s) {
+    lines.push(s.index + ". " + (s.location ? s.location + ": " : "") +
+      "กว้าง " + s.widthRange + " m x สูง " + s.dropRange + " m x " + s.qty + " ชุด = " +
+      formatMoney(s.lineTotal, "th") + " (ชุดละ " + formatMoney(s.unitPrice, "th") + ")");
+  });
+  lines.push("");
   lines.push("ราคาก่อนส่วนลด: " + formatMoney(state.subtotal, "th"));
   if (state.specialDiscountAmount > 0) {
     lines.push("ส่วนลดพิเศษ: -" + formatMoney(state.specialDiscountAmount, "th"));
@@ -578,14 +696,22 @@ function buildThaiLines(state) {
 
 function buildEnglishLines(state) {
   const lines = [];
+  if (state.blockedJob) {
+    return ["Fix the sizes with problems and the quotation will appear here"];
+  }
   lines.push("ZIPGUIDE Ultra Series Outdoor Blind");
   lines.push("Motor System: " + state.motorLabel);
-  lines.push("Size: Width " + state.widthRange + " m x Drop " + state.dropRange + " m");
   lines.push("Fabric Openness: " + state.fabric + "%");
   lines.push("Aluminium Frame Color: " + state.frameColor);
-  lines.push("Quantity: " + state.qty + " set");
+  lines.push("Total quantity: " + state.qty + " set(s) in " + state.sizes.length + " size(s)");
   lines.push("");
-  lines.push("Unit Price: " + formatMoney(state.unitPrice, "en"));
+  lines.push("Sizes");
+  state.sizes.forEach(function (s) {
+    lines.push(s.index + ". " + (s.location ? s.location + ": " : "") +
+      "Width " + s.widthRange + " m x Drop " + s.dropRange + " m x " + s.qty + " set(s) = " +
+      formatMoney(s.lineTotal, "en") + " (" + formatMoney(s.unitPrice, "en") + " each)");
+  });
+  lines.push("");
   lines.push("Before Discount: " + formatMoney(state.subtotal, "en"));
   if (state.specialDiscountAmount > 0) {
     lines.push("Special Discount: -" + formatMoney(state.specialDiscountAmount, "en"));
@@ -664,9 +790,39 @@ function copyAll() {
 }
 
 function bindEvents() {
+  // ช่องระดับงาน (ไม่รวมช่องในตารางขนาด ซึ่งผูกแบบ delegate ด้านล่าง)
   document.querySelectorAll("select, input").forEach(element => {
+    if (element.closest('#sizeBody')) return;
     const eventName = element.type === "text" || element.type === "number" ? "input" : "change";
     element.addEventListener(eventName, calculate);
+  });
+
+  // แถวขนาด — ผูกที่ tbody จะได้ไม่ต้อง render ใหม่ตอนพิมพ์ (ไม่งั้นเคอร์เซอร์หลุด)
+  const body = document.getElementById('sizeBody');
+  const onRowInput = e => {
+    const field = e.target.dataset.field;
+    const row = field && rowFromElement(e.target);
+    if (!row) return;
+    row[field] = e.target.value;
+    calculate();
+  };
+  body.addEventListener('input', onRowInput);
+  body.addEventListener('change', onRowInput);
+  body.addEventListener('click', e => {
+    const btn = e.target.closest('[data-action="remove"]');
+    const row = btn && rowFromElement(btn);
+    if (!row) return;
+    rows = rows.filter(r => r.id !== row.id);
+    if (!rows.length) rows = [makeRow()];   // ไม่ปล่อยให้ตารางว่าง
+    renderRows();
+  });
+
+  document.getElementById('addRow').addEventListener('click', () => {
+    const row = makeRow();
+    rows.push(row);
+    renderRows();
+    const el = document.getElementById('loc-' + row.id);
+    if (el) el.focus();
   });
 
   document.querySelectorAll("[data-result-lang]").forEach(button => {
@@ -677,8 +833,9 @@ function bindEvents() {
 }
 
 populateSelects();
+rows = [makeRow()];      // เริ่มด้วย 1 ขนาด ไม่ใส่ตำแหน่งตัวอย่าง
 bindEvents();
-calculate();
+renderRows();            // renderRows เรียก calculate() ให้เอง
 </script>
 <!-- PWA: ลงทะเบียน service worker เพื่อให้ใช้งานออฟไลน์ได้
      register the service worker so this calculator works offline.
