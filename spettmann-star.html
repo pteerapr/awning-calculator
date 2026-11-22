@@ -513,6 +513,15 @@ function initResultLanguageToggle(){
   updateResultLanguageLabels();
 }
 
+// ผูกปุ่ม TH/EN เข้ากับ event — ตอนรวมไฟล์บรรทัดนี้หล่นหาย ปุ่มเลยกดไม่ติด
+// wire the TH/EN buttons; this call was lost in the merge, leaving them dead
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initResultLanguageToggle);
+} else {
+  initResultLanguageToggle();
+}
+
+
 
 // ===== ช่วงราคาสำหรับลูกค้า (รวมทุกแถว) =====
     function maskRangePrice(value) {

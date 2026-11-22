@@ -552,6 +552,15 @@ function initResultLanguageToggle(){
   updateResultLanguageLabels();
 }
 
+// ผูกปุ่ม TH/EN เข้ากับ event — ตอนรวมไฟล์บรรทัดนี้หล่นหาย ปุ่มเลยกดไม่ติด
+// wire the TH/EN buttons; this call was lost in the merge, leaving them dead
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initResultLanguageToggle);
+} else {
+  initResultLanguageToggle();
+}
+
+
 // ===== ช่วงราคาสำหรับลูกค้า (รวมทุกแถว ไม่ใช่ขนาดเดียวเหมือนเดิม) =====
 function maskRangePrice(value) {
   // 29,400 -> 2X,XXX ; เกิน 100,000 แสดง 2 หลักแรก เช่น 130,280 -> 13X,XXX
